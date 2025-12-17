@@ -14,11 +14,36 @@ generator client {
   binaryTargets = "native"
 }
 
-// Define your own datamodels here and run `yarn cedar prisma migrate dev`
-// to create migrations for them and apply to your dev DB.
-// TODO: Please remove the following example:
-model UserExample {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+// Enums
+enum Unit {
+  MG
+  ML
+  G
+  IU
+}
+
+model Dose {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  amount Float
+  unit Unit @default(G)
+}
+
+model Substance {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  description String?
+  doses Dose[]
+}
+
+model ApiKey {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key String @unique
+  enabled Boolean @default(true)
+  validUntil DateTime?
 }

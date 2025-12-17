@@ -19,3 +19,5 @@
   open = true
 [notifications]
   versionUpdates = ["latest"]
+[generate]
+  stories = false

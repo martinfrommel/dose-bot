@@ -7,5 +7,12 @@
   },
   "[prisma]": {
     "editor.formatOnSave": true
-  }
+  },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "activeClassName",
+    "errorClassName"
+  ],
+  "prisma.pinToPrisma6": true
 }
