@@ -1,6 +1,7 @@
 import type { QueryResolvers, MutationResolvers } from 'types/graphql'
 
 import { db } from 'src/lib/db'
+import { hashApiKey, generateApiKey } from 'src/lib/hash'
 
 export const apiKeys: QueryResolvers['apiKeys'] = () => {
   return db.apiKey.findMany()
@@ -12,10 +13,26 @@ export const apiKey: QueryResolvers['apiKey'] = ({ id }) => {
   })
 }
 
-export const createApiKey: MutationResolvers['createApiKey'] = ({ input }) => {
-  return db.apiKey.create({
-    data: input,
+export const createApiKey: MutationResolvers['createApiKey'] = async ({
+  input,
+}) => {
+  // Generate a random API key
+  const plainKey = generateApiKey()
+  // Hash it for storage
+  const hashedKey = await hashApiKey(plainKey)
+
+  const apiKey = await db.apiKey.create({
+    data: {
+      ...input,
+      hashedKey,
+    },
   })
+
+  // Return the plain key only once during creation
+  return {
+    ...apiKey,
+    key: plainKey,
+  }
 }
 
 export const updateApiKey: MutationResolvers['updateApiKey'] = ({

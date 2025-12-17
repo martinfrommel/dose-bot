@@ -31,7 +31,7 @@ const validate: ValidatorDirectiveFunc = ({ directiveArgs }) => {
     !directiveArgs.key ||
     directiveArgs.key !== process.env.OVERRIDE_AUTH_KEY
   ) {
-    throw new ForbiddenError('Invalid override auth key')
+    throw new ForbiddenError('Invalid authentication key. Access denied.')
   } else {
     logger.debug('Override auth successful')
   }

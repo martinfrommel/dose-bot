@@ -9,7 +9,7 @@ import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
-import { checkboxInputTag, timeTag } from 'src/lib/formatters.js'
+import { timeTag } from 'src/lib/formatters.js'
 
 const DELETE_API_KEY_MUTATION: TypedDocumentNode<
   DeleteApiKeyMutation,
@@ -45,60 +45,65 @@ const ApiKey = ({ apiKey }: Props) => {
 
   return (
     <>
-      <div className="rw-segment">
-        <header className="rw-segment-header">
-          <h2 className="rw-heading rw-heading-secondary">
-            ApiKey {apiKey.id} Detail
-          </h2>
-        </header>
-        <table className="rw-table">
-          <tbody>
-            <tr>
-              <th>Id</th>
-              <td>{apiKey.id}</td>
-            </tr>
-            <tr>
-              <th>Created at</th>
-              <td>{timeTag(apiKey.createdAt)}</td>
-            </tr>
-            <tr>
-              <th>Updated at</th>
-              <td>{timeTag(apiKey.updatedAt)}</td>
-            </tr>
-            <tr>
-              <th>Key</th>
-              <td>{apiKey.key}</td>
-            </tr>
-            <tr>
-              <th>Enabled</th>
-              <td>{checkboxInputTag(apiKey.enabled)}</td>
-            </tr>
-            <tr>
-              <th>Valid until</th>
-              <td>{timeTag(apiKey.validUntil)}</td>
-            </tr>
-            <tr>
-              <th>Description</th>
-              <td>{apiKey.description}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h2 className="card-title">API Key Details</h2>
+          <div className="divider"></div>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">ID</p>
+              <code className="text-sm">{apiKey.id}</code>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Created</p>
+              <p>{timeTag(apiKey.createdAt)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Updated</p>
+              <p>{timeTag(apiKey.updatedAt)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Status</p>
+              <p>
+                {apiKey.enabled ? (
+                  <span className="badge badge-success">Enabled</span>
+                ) : (
+                  <span className="badge badge-neutral">Disabled</span>
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Valid Until</p>
+              <p>
+                {apiKey.validUntil ? (
+                  timeTag(apiKey.validUntil)
+                ) : (
+                  <span className="badge badge-success">Forever</span>
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Description</p>
+              <p>{apiKey.description || '-'}</p>
+            </div>
+          </div>
+        </div>
+        <div className="card-actions justify-end">
+          <Link
+            to={routes.editApiKey({ id: apiKey.id })}
+            className="btn btn-primary"
+          >
+            Edit
+          </Link>
+          <button
+            type="button"
+            className="btn btn-error"
+            onClick={() => onDeleteClick(apiKey.id)}
+          >
+            Delete
+          </button>
+        </div>
       </div>
-      <nav className="rw-button-group">
-        <Link
-          to={routes.editApiKey({ id: apiKey.id })}
-          className="rw-button rw-button-blue"
-        >
-          Edit
-        </Link>
-        <button
-          type="button"
-          className="rw-button rw-button-red"
-          onClick={() => onDeleteClick(apiKey.id)}
-        >
-          Delete
-        </button>
-      </nav>
     </>
   )
 }

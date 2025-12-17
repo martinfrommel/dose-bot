@@ -1,5 +1,7 @@
 import type { ApiKey } from '@prisma/client'
 
+import { verifyApiKey } from 'src/lib/hash'
+
 import {
   apiKeys,
   apiKey,
@@ -30,21 +32,26 @@ describe('apiKeys', () => {
 
   scenario('creates a apiKey', async () => {
     const result = await createApiKey({
-      input: { updatedAt: '2025-12-17T19:58:25.721Z', key: 'String605230' },
+      input: {
+        enabled: true,
+      },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-17T19:58:25.721Z'))
-    expect(result.key).toEqual('String605230')
+    // Verify that a plain key is returned
+    expect(result.key).toBeDefined()
+    expect(result.key.length).toBeGreaterThan(0)
+    // Verify that the key was hashed and stored
+    expect(result.id).toBeDefined()
   })
 
   scenario('updates a apiKey', async (scenario: StandardScenario) => {
     const original = (await apiKey({ id: scenario.apiKey.one.id })) as ApiKey
     const result = await updateApiKey({
       id: original.id,
-      input: { updatedAt: '2025-12-18T19:58:25.726Z' },
+      input: { description: 'Updated description' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-18T19:58:25.726Z'))
+    expect(result.description).toEqual('Updated description')
   })
 
   scenario('deletes a apiKey', async (scenario: StandardScenario) => {

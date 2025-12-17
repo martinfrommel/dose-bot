@@ -10,7 +10,7 @@ import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import { QUERY } from 'src/components/ApiKey/ApiKeysCell'
-import { checkboxInputTag, timeTag, truncate } from 'src/lib/formatters.js'
+import { timeTag, truncate } from 'src/lib/formatters.js'
 
 const DELETE_API_KEY_MUTATION: TypedDocumentNode<
   DeleteApiKeyMutation,
@@ -45,55 +45,67 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
   }
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
-      <table className="rw-table">
+    <div className="overflow-x-auto">
+      <table className="table table-zebra">
         <thead>
           <tr>
             <th>Id</th>
-            <th>Created at</th>
-            <th>Updated at</th>
-            <th>Key</th>
+            <th>Created</th>
+            <th>Updated</th>
             <th>Enabled</th>
-            <th>Valid until</th>
+            <th>Valid Until</th>
             <th>Description</th>
-            <th>&nbsp;</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {apiKeys.map((apiKey) => (
             <tr key={apiKey.id}>
-              <td>{truncate(apiKey.id)}</td>
-              <td>{timeTag(apiKey.createdAt)}</td>
-              <td>{timeTag(apiKey.updatedAt)}</td>
-              <td>{truncate(apiKey.key)}</td>
-              <td>{checkboxInputTag(apiKey.enabled)}</td>
-              <td>{timeTag(apiKey.validUntil)}</td>
-              <td>{truncate(apiKey.description)}</td>
               <td>
-                <nav className="rw-table-actions">
+                <code className="text-xs">{truncate(apiKey.id)}</code>
+              </td>
+              <td className="text-xs">{timeTag(apiKey.createdAt)}</td>
+              <td className="text-xs">{timeTag(apiKey.updatedAt)}</td>
+              <td>
+                {apiKey.enabled ? (
+                  <span className="badge badge-success">Enabled</span>
+                ) : (
+                  <span className="badge badge-neutral">Disabled</span>
+                )}
+              </td>
+              <td className="text-xs">
+                {apiKey.validUntil ? (
+                  timeTag(apiKey.validUntil)
+                ) : (
+                  <span className="badge badge-success badge-sm">Forever</span>
+                )}
+              </td>
+              <td className="max-w-xs truncate">{apiKey.description}</td>
+              <td>
+                <div className="flex gap-2">
                   <Link
                     to={routes.apiKey({ id: apiKey.id })}
-                    title={'Show apiKey ' + apiKey.id + ' detail'}
-                    className="rw-button rw-button-small"
+                    className="btn btn-xs btn-ghost"
+                    title={'View apiKey ' + apiKey.id}
                   >
-                    Show
+                    View
                   </Link>
                   <Link
                     to={routes.editApiKey({ id: apiKey.id })}
+                    className="btn btn-xs btn-primary"
                     title={'Edit apiKey ' + apiKey.id}
-                    className="rw-button rw-button-small rw-button-blue"
                   >
                     Edit
                   </Link>
                   <button
                     type="button"
+                    className="btn btn-xs btn-error"
                     title={'Delete apiKey ' + apiKey.id}
-                    className="rw-button rw-button-small rw-button-red"
                     onClick={() => onDeleteClick(apiKey.id)}
                   >
                     Delete
                   </button>
-                </nav>
+                </div>
               </td>
             </tr>
           ))}

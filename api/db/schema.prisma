@@ -45,8 +45,16 @@ model ApiKey {
   id String @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  key String @unique
+  hashedKey String
   enabled Boolean @default(true)
   validUntil DateTime?
+  description String?
+}
+
+model AuthKey {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  hashedKey String
   description String?
 }

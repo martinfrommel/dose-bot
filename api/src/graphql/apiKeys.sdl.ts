@@ -3,6 +3,15 @@ export const schema = gql`
     id: String!
     createdAt: DateTime!
     updatedAt: DateTime!
+    enabled: Boolean!
+    validUntil: DateTime
+    description: String
+  }
+
+  type ApiKeyWithSecret {
+    id: String!
+    createdAt: DateTime
+    updatedAt: DateTime
     key: String!
     enabled: Boolean!
     validUntil: DateTime
@@ -15,21 +24,21 @@ export const schema = gql`
   }
 
   input CreateApiKeyInput {
-    key: String!
-    enabled: Boolean!
+    enabled: Boolean
     validUntil: DateTime
     description: String
   }
 
   input UpdateApiKeyInput {
-    key: String
     enabled: Boolean
     validUntil: DateTime
     description: String
   }
 
   type Mutation {
-    createApiKey(input: CreateApiKeyInput!): ApiKey! @overrideAuth @requireAuth
+    createApiKey(input: CreateApiKeyInput!): ApiKeyWithSecret!
+      @overrideAuth
+      @requireAuth
     updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey!
       @overrideAuth
       @requireAuth

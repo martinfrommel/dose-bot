@@ -1,3 +1,4 @@
+import { XIcon } from 'lucide-react'
 import type { FindApiKeys, FindApiKeysVariables } from 'types/graphql'
 
 import { Link, routes } from '@cedarjs/router'
@@ -15,7 +16,6 @@ export const QUERY: TypedDocumentNode<FindApiKeys, FindApiKeysVariables> = gql`
       id
       createdAt
       updatedAt
-      key
       enabled
       validUntil
       description
@@ -23,21 +23,26 @@ export const QUERY: TypedDocumentNode<FindApiKeys, FindApiKeysVariables> = gql`
   }
 `
 
-export const Loading = () => <div>Loading...</div>
+export const Loading = () => (
+  <div className="loading loading-lg">Loading...</div>
+)
 
 export const Empty = () => {
   return (
-    <div className="rw-text-center">
-      No apiKeys yet.{' '}
-      <Link to={routes.newApiKey()} className="rw-link">
-        Create one?
+    <div className="py-8 text-center">
+      <p className="mb-4">No API Keys yet.</p>
+      <Link to={routes.newApiKey()} className="btn btn-primary">
+        Create one
       </Link>
     </div>
   )
 }
 
-export const Failure = ({ error }: CellFailureProps<FindApiKeys>) => (
-  <div className="rw-cell-error">{error?.message}</div>
+export const Failure = ({ errorCode }: CellFailureProps<FindApiKeys>) => (
+  <div className="alert alert-error">
+    <XIcon className="mr-2 h-6 w-6 shrink-0" />
+    <span>Could not load API keys due to an error {`CODE: ${errorCode}`}</span>
+  </div>
 )
 
 export const Success = ({

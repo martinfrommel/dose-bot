@@ -15,7 +15,6 @@ export const QUERY: TypedDocumentNode<FindApiKeyById, FindApiKeyByIdVariables> =
         id
         createdAt
         updatedAt
-        key
         enabled
         validUntil
         description

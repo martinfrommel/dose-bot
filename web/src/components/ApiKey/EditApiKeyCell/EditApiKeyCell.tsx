@@ -1,3 +1,4 @@
+import { XCircle } from 'lucide-react'
 import type {
   EditApiKeyById,
   UpdateApiKeyInput,
@@ -21,7 +22,6 @@ export const QUERY: TypedDocumentNode<EditApiKeyById> = gql`
       id
       createdAt
       updatedAt
-      key
       enabled
       validUntil
       description
@@ -38,7 +38,6 @@ const UPDATE_API_KEY_MUTATION: TypedDocumentNode<
       id
       createdAt
       updatedAt
-      key
       enabled
       validUntil
       description
@@ -46,10 +45,13 @@ const UPDATE_API_KEY_MUTATION: TypedDocumentNode<
   }
 `
 
-export const Loading = () => <div>Loading...</div>
+export const Loading = () => <div className="loading">Loading...</div>
 
 export const Failure = ({ error }: CellFailureProps) => (
-  <div className="rw-cell-error">{error?.message}</div>
+  <div className="alert alert-error">
+    <XCircle className="h-6 w-6 shrink-0" />
+    <span>{error?.message}</span>
+  </div>
 )
 
 export const Success = ({ apiKey }: CellSuccessProps<EditApiKeyById>) => {
@@ -74,13 +76,10 @@ export const Success = ({ apiKey }: CellSuccessProps<EditApiKeyById>) => {
   }
 
   return (
-    <div className="rw-segment">
-      <header className="rw-segment-header">
-        <h2 className="rw-heading rw-heading-secondary">
-          Edit ApiKey {apiKey?.id}
-        </h2>
-      </header>
-      <div className="rw-segment-main">
+    <div className="card bg-base-100 shadow-lg">
+      <div className="card-body">
+        <h2 className="card-title">Edit API Key {apiKey?.id}</h2>
+        <div className="divider"></div>
         <ApiKeyForm
           apiKey={apiKey}
           onSave={onSave}

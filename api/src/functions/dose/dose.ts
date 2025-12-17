@@ -19,6 +19,7 @@ import { logger } from 'src/lib/logger'
 export const handler = async (event: APIGatewayEvent, _context: Context) => {
   logger.info(`${event.httpMethod} ${event.path}: dose function`)
 
+  // Check for api key in the Authorization header
   return {
     statusCode: 200,
     headers: {

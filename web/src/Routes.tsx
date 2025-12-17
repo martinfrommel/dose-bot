@@ -7,21 +7,21 @@
 // 'src/pages/HomePage/HomePage.js'         -> HomePage
 // 'src/pages/Admin/BooksPage/BooksPage.js' -> AdminBooksPage
 
-import { Set, Router, Route } from '@cedarjs/router'
+import { Router, Route, Set } from '@cedarjs/router'
 
-import ScaffoldLayout from 'src/layouts/ScaffoldLayout'
+import MainLayout from './layouts/MainLayout/MainLayout'
 
 const Routes = () => {
   return (
     <Router>
-      <Set wrap={ScaffoldLayout} title="ApiKeys" titleTo="apiKeys" buttonLabel="New ApiKey" buttonTo="newApiKey">
+      <Set wrap={MainLayout}>
         <Route path="/api-keys/new" page={ApiKeyNewApiKeyPage} name="newApiKey" />
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />
         <Route path="/api-keys/{id}" page={ApiKeyApiKeyPage} name="apiKey" />
         <Route path="/api-keys" page={ApiKeyApiKeysPage} name="apiKeys" />
+        <Route path="/" page={HomePage} name="home" />
+        <Route notfound page={NotFoundPage} />
       </Set>
-      <Route path="/" page={HomePage} name="home" />
-      <Route notfound page={NotFoundPage} />
     </Router>
   )
 }
