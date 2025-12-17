@@ -1,5 +1,6 @@
-// import { db } from 'api/src/lib/db.js'
+import crypto from 'node:crypto'
 
+import { db } from 'api/src/lib/db.js'
 // Manually apply seeds via the `yarn cedar prisma db seed` command.
 //
 // Seeds automatically run the first time you run the `yarn cedar prisma migrate dev`
@@ -9,18 +10,15 @@
 
 export default async () => {
   try {
-    // Create your database records here! For example, seed some users:
-    //
-    // const users = [
-    //   { name: 'Alice', email: 'alice@cedarjs.com' },
-    //   { name: 'Bob', email: 'bob@cedarjs.com' },
-    // ]
-    //
-    // await db.user.createMany({ data: users })
-
-    console.info(
-      '\n  No seed data, skipping. See scripts/seed.ts to start seeding your database!\n'
-    )
+    // Generate a default API on a new database instance
+    const apiKey = await db.apiKey.create({
+      data: {
+        key: crypto.randomBytes(16).toString('base64'),
+        description: 'Default API Key, valid for 1 year',
+        validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+      },
+    })
+    console.log(`Generated default API Key: ${apiKey.key}`)
   } catch (error) {
     console.error(error)
   }

@@ -28,6 +28,8 @@ model Dose {
   updatedAt DateTime @updatedAt
   amount Float
   unit Unit @default(G)
+  substance Substance @relation(fields: [substanceId], references: [id])
+  substanceId String
 }
 
 model Substance {
@@ -46,4 +48,5 @@ model ApiKey {
   key String @unique
   enabled Boolean @default(true)
   validUntil DateTime?
+  description String?
 }
