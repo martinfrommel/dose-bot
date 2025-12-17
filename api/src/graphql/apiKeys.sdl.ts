@@ -1,6 +1,6 @@
 export const schema = gql`
   type ApiKey {
-    id: String
+    id: String!
     createdAt: DateTime!
     updatedAt: DateTime!
     key: String!
@@ -10,13 +10,13 @@ export const schema = gql`
   }
 
   type Query {
-    apiKeys: [ApiKey!]! @requireAuth
-    apiKey(id: String!): ApiKey @requireAuth
+    apiKeys: [ApiKey!]! @overrideAuth @requireAuth
+    apiKey(id: String!): ApiKey @overrideAuth @requireAuth
   }
 
   input CreateApiKeyInput {
     key: String!
-    enabled: Boolean
+    enabled: Boolean!
     validUntil: DateTime
     description: String
   }
@@ -29,8 +29,10 @@ export const schema = gql`
   }
 
   type Mutation {
-    createApiKey(input: CreateApiKeyInput!): ApiKey! @requireAuth
-    updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey! @requireAuth
-    deleteApiKey(id: String!): ApiKey! @requireAuth
+    createApiKey(input: CreateApiKeyInput!): ApiKey! @overrideAuth @requireAuth
+    updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey!
+      @overrideAuth
+      @requireAuth
+    deleteApiKey(id: String!): ApiKey! @overrideAuth @requireAuth
   }
 `

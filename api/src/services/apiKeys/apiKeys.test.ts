@@ -30,21 +30,21 @@ describe('apiKeys', () => {
 
   scenario('creates a apiKey', async () => {
     const result = await createApiKey({
-      input: { updatedAt: '2025-12-17T19:45:54.662Z', key: 'String9610005' },
+      input: { updatedAt: '2025-12-17T19:58:25.721Z', key: 'String605230' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-17T19:45:54.662Z'))
-    expect(result.key).toEqual('String9610005')
+    expect(result.updatedAt).toEqual(new Date('2025-12-17T19:58:25.721Z'))
+    expect(result.key).toEqual('String605230')
   })
 
   scenario('updates a apiKey', async (scenario: StandardScenario) => {
     const original = (await apiKey({ id: scenario.apiKey.one.id })) as ApiKey
     const result = await updateApiKey({
       id: original.id,
-      input: { updatedAt: '2025-12-18T19:45:54.666Z' },
+      input: { updatedAt: '2025-12-18T19:58:25.726Z' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-18T19:45:54.666Z'))
+    expect(result.updatedAt).toEqual(new Date('2025-12-18T19:58:25.726Z'))
   })
 
   scenario('deletes a apiKey', async (scenario: StandardScenario) => {
