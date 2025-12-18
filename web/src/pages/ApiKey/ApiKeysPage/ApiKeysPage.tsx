@@ -1,3 +1,5 @@
+import { PlusIcon } from 'lucide-react'
+
 import { Link, routes } from '@cedarjs/router'
 import { Metadata } from '@cedarjs/web'
 
@@ -10,7 +12,7 @@ const ApiKeysPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div></div>
         <Link to={routes.newApiKey()} className="btn btn-primary">
-          + Create New API Key
+          <PlusIcon className="size-4" /> Create New API Key
         </Link>
       </div>
       <div className="rounded-lg bg-base-100 p-4 shadow-md">

@@ -88,7 +88,7 @@ const ApiKey = ({ apiKey }: Props) => {
             </div>
           </div>
         </div>
-        <div className="card-actions justify-end">
+        <div className="card-actions justify-end p-4">
           <Link
             to={routes.editApiKey({ id: apiKey.id })}
             className="btn btn-primary"
