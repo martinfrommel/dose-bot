@@ -19,7 +19,7 @@ RUN yarn install --immutable
 COPY . .
 
 # Generate Prisma client
-RUN yarn prisma generate
+RUN yarn cedar prisma generate
 
 # Build the application
 RUN yarn cedar build
@@ -51,4 +51,4 @@ ENV DATABASE_URL="file:/app/data/dev.db"
 EXPOSE 8910 8911
 
 # Run migrations and start the application
-CMD ["sh", "-c", "yarn prisma migrate deploy && yarn cedar serve"]
+CMD ["sh", "-c", "yarn cedar prisma migrate deploy && yarn cedar serve"]
