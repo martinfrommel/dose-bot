@@ -1,5 +1,5 @@
+import * as bcrypt from 'bcryptjs'
 import { db } from 'api/src/lib/db.js'
-import { generateApiKey, hashApiKey } from 'api/src/lib/hash.js'
 
 // Manually apply seeds via the `yarn cedar prisma db seed` command.
 //
@@ -8,24 +8,74 @@ import { generateApiKey, hashApiKey } from 'api/src/lib/hash.js'
 //
 // See https://cedarjs.com/docs/database-seeds for more info
 
+const SALT_ROUNDS = 10
+
+/**
+ * Generate a random password for the admin user
+ */
+const generatePassword = (): string => {
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()'
+  let password = ''
+  for (let i = 0; i < 16; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return password
+}
+
+/**
+ * Send admin credentials via mailer (stub for now)
+ * TODO: Implement actual email sending via SMTP when configured
+ */
+const sendAdminCredentialsEmail = (email: string, password: string) => {
+  console.log('------- EMAIL STUB -------')
+  console.log(`To: ${email}`)
+  console.log('Subject: Your DoseBot Admin Account Credentials')
+  console.log('')
+  console.log('Email body:')
+  console.log(`Your DoseBot admin account has been created.`)
+  console.log(`Email: ${email}`)
+  console.log(`Password: ${password}`)
+  console.log('')
+  console.log('Please log in and change your password immediately.')
+  console.log('------- END EMAIL -------')
+}
+
 export default async () => {
   try {
-    // Generate a default API key on a new database instance
-    const plainKey = generateApiKey()
-    const hashedKey = await hashApiKey(plainKey)
+    // Get admin email from environment variable or use default
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
 
-    const apiKey = await db.apiKey.create({
+    // Check if admin user already exists
+    const existingAdmin = await db.user.findUnique({
+      where: { email: adminEmail },
+    })
+
+    if (existingAdmin) {
+      console.log(`Admin user ${adminEmail} already exists, skipping creation`)
+      return
+    }
+
+    // Generate password and hash it
+    const plainPassword = generatePassword()
+    const salt = await bcrypt.genSalt(SALT_ROUNDS)
+    const hashedPassword = await bcrypt.hash(plainPassword, salt)
+
+    // Create admin user
+    const adminUser = await db.user.create({
       data: {
-        hashedKey,
-        description: 'Default API Key, valid for 1 year',
-        validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+        email: adminEmail,
+        hashedPassword,
+        salt,
       },
     })
-    console.log(`Generated default API Key: ${plainKey}`)
-    console.log(`API Key ID: ${apiKey.id}`)
-    console.log(
-      'Store the API Key somewhere safe - you will not be able to see it again!'
-    )
+
+    console.log(`Created admin user: ${adminEmail}`)
+    console.log(`Admin user ID: ${adminUser.id}`)
+    console.log('')
+
+    // Send credentials via mailer stub
+    sendAdminCredentialsEmail(adminEmail, plainPassword)
   } catch (error) {
     console.error(error)
   }

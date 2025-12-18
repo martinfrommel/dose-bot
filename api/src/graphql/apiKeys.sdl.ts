@@ -21,8 +21,8 @@ export const schema = gql`
   }
 
   type Query {
-    apiKeys: [ApiKey!]! @skipAuth
-    apiKey(id: String!): ApiKey @skipAuth
+    apiKeys: [ApiKey!]! @requireAuth
+    apiKey(id: String!): ApiKey @requireAuth
   }
 
   input CreateApiKeyInput {
@@ -40,8 +40,8 @@ export const schema = gql`
   }
 
   type Mutation {
-    createApiKey(input: CreateApiKeyInput!): ApiKeyWithSecret! @skipAuth
-    updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey! @skipAuth
-    deleteApiKey(id: String!): ApiKey! @skipAuth
+    createApiKey(input: CreateApiKeyInput!): ApiKeyWithSecret! @requireAuth
+    updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey! @requireAuth
+    deleteApiKey(id: String!): ApiKey! @requireAuth
   }
 `

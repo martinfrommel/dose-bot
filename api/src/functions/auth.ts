@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEvent, Context } from 'aws-lambda'
 
 import { DbAuthHandler } from '@cedarjs/auth-dbauth-api'
-import type { DbAuthHandlerOptions, UserType } from '@cedarjs/auth-dbauth-api'
+import type { DbAuthHandlerOptions } from '@cedarjs/auth-dbauth-api'
 
 import { cookieName } from 'src/lib/auth'
 import { db } from 'src/lib/db'
@@ -93,59 +93,6 @@ export const handler = async (
     },
   }
 
-  interface UserAttributes {
-    name: string
-  }
-
-  const signupOptions: DbAuthHandlerOptions<
-    UserType,
-    UserAttributes
-  >['signup'] = {
-    // Whatever you want to happen to your data on new user signup. Redwood will
-    // check for duplicate usernames before calling this handler. At a minimum
-    // you need to save the `username`, `hashedPassword` and `salt` to your
-    // user table. `userAttributes` contains any additional object members that
-    // were included in the object given to the `signUp()` function you got
-    // from `useAuth()`.
-    //
-    // If you want the user to be immediately logged in, return the user that
-    // was created.
-    //
-    // If this handler throws an error, it will be returned by the `signUp()`
-    // function in the form of: `{ error: 'Error message' }`.
-    //
-    // If this returns anything else, it will be returned by the
-    // `signUp()` function in the form of: `{ message: 'String here' }`.
-    handler: ({
-      username,
-      hashedPassword,
-      salt,
-      userAttributes: _userAttributes,
-    }) => {
-      return db.user.create({
-        data: {
-          email: username,
-          hashedPassword: hashedPassword,
-          salt: salt,
-          // name: userAttributes.name
-        },
-      })
-    },
-
-    // Include any format checks for password here. Return `true` if the
-    // password is valid, otherwise throw a `PasswordValidationError`.
-    // Import the error along with `DbAuthHandler` from `@cedarjs/api` above.
-    passwordValidation: (_password) => {
-      return true
-    },
-
-    errors: {
-      // `field` will be either "username" or "password"
-      fieldMissing: '${field} is required',
-      usernameTaken: 'Username `${username}` already in use',
-    },
-  }
-
   const authHandler = new DbAuthHandler(event, context, {
     // Provide prisma db client
     db: db,
@@ -190,7 +137,19 @@ export const handler = async (
     forgotPassword: forgotPasswordOptions,
     login: loginOptions,
     resetPassword: resetPasswordOptions,
-    signup: signupOptions,
+    // Signup is handled via admin-only seed script, not client registration
+    signup: {
+      handler: () => {
+        throw new Error(
+          'Registration is disabled. Please contact an administrator.'
+        )
+      },
+      passwordValidation: () => true,
+      errors: {
+        fieldMissing: '${field} is required',
+        usernameTaken: 'Username `${username}` already in use',
+      },
+    },
 
     // See https://redwoodjs.com/docs/auth/dbauth#webauthn for options
     webAuthn: {
