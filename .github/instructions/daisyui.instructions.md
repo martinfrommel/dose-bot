@@ -1,8 +1,6 @@
 ---
 description: daisyUI 4 instructions for LLMs and code editors
-alwaysApply: true
 applyTo: "**"
-version: 4.12.24
 ---
 
 # daisyUI 4
