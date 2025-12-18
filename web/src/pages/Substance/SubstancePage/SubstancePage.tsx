@@ -1,11 +1,11 @@
 import SubstanceCell from 'src/components/Substance/SubstanceCell'
 
 type SubstancePageProps = {
-  id: string
+  slug: string
 }
 
-const SubstancePage = ({ id }: SubstancePageProps) => {
-  return <SubstanceCell id={id} />
+const SubstancePage = ({ slug }: SubstancePageProps) => {
+  return <SubstanceCell slug={slug} />
 }
 
 export default SubstancePage

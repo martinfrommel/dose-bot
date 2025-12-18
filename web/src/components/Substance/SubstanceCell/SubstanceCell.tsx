@@ -1,6 +1,6 @@
 import type {
-  FindSubstanceById,
-  FindSubstanceByIdVariables,
+  FindSubstanceBySlug,
+  FindSubstanceBySlugVariables,
 } from 'types/graphql'
 
 import type {
@@ -12,16 +12,17 @@ import type {
 import Substance from 'src/components/Substance/Substance'
 
 export const QUERY: TypedDocumentNode<
-  FindSubstanceById,
-  FindSubstanceByIdVariables
+  FindSubstanceBySlug,
+  FindSubstanceBySlugVariables
 > = gql`
-  query FindSubstanceById($id: String!) {
-    substance: substance(id: $id) {
+  query FindSubstanceBySlug($slug: String!) {
+    substance: substanceBySlug(slug: $slug) {
       id
       createdAt
       updatedAt
       name
       description
+      slug
     }
   }
 `
@@ -32,7 +33,7 @@ export const Empty = () => <div>Substance not found</div>
 
 export const Failure = ({
   error,
-}: CellFailureProps<FindSubstanceByIdVariables>) => (
+}: CellFailureProps<FindSubstanceBySlugVariables>) => (
   <div className="alert alert-error">
     <span>{error?.message}</span>
   </div>
@@ -40,6 +41,6 @@ export const Failure = ({
 
 export const Success = ({
   substance,
-}: CellSuccessProps<FindSubstanceById, FindSubstanceByIdVariables>) => {
+}: CellSuccessProps<FindSubstanceBySlug, FindSubstanceBySlugVariables>) => {
   return <Substance substance={substance} />
 }

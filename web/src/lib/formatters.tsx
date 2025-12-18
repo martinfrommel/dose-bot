@@ -2,7 +2,7 @@ import React from 'react'
 
 import humanize from 'humanize-string'
 
-const MAX_STRING_LENGTH = 150
+const MAX_STRING_LENGTH = 15
 
 export const formatEnum = (values: string | string[] | null | undefined) => {
   let output = ''
@@ -45,7 +45,13 @@ export const timeTag = (dateTime?: string) => {
   if (dateTime) {
     output = (
       <time dateTime={dateTime} title={dateTime}>
-        {new Date(dateTime).toUTCString()}
+        {new Date(dateTime).toLocaleString(undefined, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: 'numeric',
+          minute: '2-digit',
+        })}
       </time>
     )
   }

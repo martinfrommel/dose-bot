@@ -7,7 +7,6 @@ type MainLayoutProps = {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-
   return (
     <>
       <div className="flex min-h-screen flex-col bg-base-200">
@@ -29,10 +28,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <li>
                 <Link to={routes.substances()}>Substances</Link>
               </li>
-              <li>
-                <Link to={routes.doses()}>Doses</Link>
-              </li>
-
             </ul>
           </div>
         </div>

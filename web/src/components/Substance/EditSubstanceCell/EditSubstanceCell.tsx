@@ -1,5 +1,5 @@
 import type {
-  EditSubstanceById,
+  EditSubstanceBySlug,
   UpdateSubstanceInput,
   UpdateSubstanceMutationVariables,
 } from 'types/graphql'
@@ -15,14 +15,15 @@ import { toast } from '@cedarjs/web/toast'
 
 import SubstanceForm from 'src/components/Substance/SubstanceForm'
 
-export const QUERY: TypedDocumentNode<EditSubstanceById> = gql`
-  query EditSubstanceById($id: String!) {
-    substance: substance(id: $id) {
+export const QUERY: TypedDocumentNode<EditSubstanceBySlug> = gql`
+  query EditSubstanceBySlug($slug: String!) {
+    substance: substanceBySlug(slug: $slug) {
       id
       createdAt
       updatedAt
       name
       description
+      slug
     }
   }
 `
@@ -53,13 +54,13 @@ export const Failure = ({ error }: CellFailureProps) => (
   </div>
 )
 
-export const Success = ({ substance }: CellSuccessProps<EditSubstanceById>) => {
+export const Success = ({ substance }: CellSuccessProps<EditSubstanceBySlug>) => {
   const [updateSubstance, { loading, error }] = useMutation(
     UPDATE_SUBSTANCE_MUTATION,
     {
       onCompleted: () => {
         toast.success('Substance updated')
-        navigate(routes.substances())
+        navigate(routes.substance({ slug: substance?.slug || '' }))
       },
       onError: (error) => {
         toast.error(error.message)
@@ -69,7 +70,7 @@ export const Success = ({ substance }: CellSuccessProps<EditSubstanceById>) => {
 
   const onSave = (
     input: UpdateSubstanceInput,
-    id: EditSubstanceById['substance']['id']
+    id: EditSubstanceBySlug['substance']['id']
   ) => {
     updateSubstance({ variables: { id, input } })
   }
@@ -77,7 +78,7 @@ export const Success = ({ substance }: CellSuccessProps<EditSubstanceById>) => {
   return (
     <div className="card bg-base-100 shadow">
       <div className="card-body">
-        <h2 className="card-title">Edit Substance {substance?.id}</h2>
+        <h2 className="card-title">Edit Substance {substance?.name}</h2>
         <SubstanceForm
           substance={substance}
           onSave={onSave}

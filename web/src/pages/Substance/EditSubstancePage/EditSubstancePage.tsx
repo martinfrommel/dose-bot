@@ -1,11 +1,11 @@
 import EditSubstanceCell from 'src/components/Substance/EditSubstanceCell'
 
 type SubstancePageProps = {
-  id: string
+  slug: string
 }
 
-const EditSubstancePage = ({ id }: SubstancePageProps) => {
-  return <EditSubstanceCell id={id} />
+const EditSubstancePage = ({ slug }: SubstancePageProps) => {
+  return <EditSubstanceCell slug={slug} />
 }
 
 export default EditSubstancePage

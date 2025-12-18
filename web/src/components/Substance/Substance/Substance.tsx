@@ -1,7 +1,7 @@
 import type {
   DeleteSubstanceMutation,
   DeleteSubstanceMutationVariables,
-  FindSubstanceById,
+  FindSubstanceBySlug,
 } from 'types/graphql'
 
 import { Link, routes, navigate } from '@cedarjs/router'
@@ -23,7 +23,7 @@ const DELETE_SUBSTANCE_MUTATION: TypedDocumentNode<
 `
 
 interface Props {
-  substance: NonNullable<FindSubstanceById['substance']>
+  substance: NonNullable<FindSubstanceBySlug['substance']>
 }
 
 const Substance = ({ substance }: Props) => {

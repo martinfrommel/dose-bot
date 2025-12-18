@@ -5,12 +5,14 @@ export const schema = gql`
     updatedAt: DateTime!
     name: String!
     description: String
+    slug: String!
     doses: [Dose]!
   }
 
   type Query {
     substances: [Substance!]! @requireAuth
     substance(id: String!): Substance @requireAuth
+    substanceBySlug(slug: String!): Substance @requireAuth
   }
 
   input CreateSubstanceInput {

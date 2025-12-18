@@ -5,6 +5,7 @@ import type {
 } from 'types/graphql'
 
 import { db } from 'src/lib/db'
+import { slugify } from 'src/lib/slug'
 
 export const substances: QueryResolvers['substances'] = () => {
   return db.substance.findMany()
@@ -16,11 +17,23 @@ export const substance: QueryResolvers['substance'] = ({ id }) => {
   })
 }
 
+export const substanceBySlug: QueryResolvers['substanceBySlug'] = ({
+  slug,
+}) => {
+  return db.substance.findUnique({
+    where: { slug },
+  })
+}
+
 export const createSubstance: MutationResolvers['createSubstance'] = ({
   input,
 }) => {
+  const slug = slugify(input.name)
   return db.substance.create({
-    data: input,
+    data: {
+      ...input,
+      slug,
+    },
   })
 }
 
@@ -28,8 +41,11 @@ export const updateSubstance: MutationResolvers['updateSubstance'] = ({
   id,
   input,
 }) => {
+  const updateData = input.name
+    ? { ...input, slug: slugify(input.name) }
+    : input
   return db.substance.update({
-    data: input,
+    data: updateData,
     where: { id },
   })
 }

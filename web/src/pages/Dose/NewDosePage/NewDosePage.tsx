@@ -1,7 +1,11 @@
 import NewDose from 'src/components/Dose/NewDose'
 
-const NewDosePage = () => {
-  return <NewDose />
+type NewDosePageProps = {
+  slug: string
+}
+
+const NewDosePage = ({ slug }: NewDosePageProps) => {
+  return <NewDose slug={slug} />
 }
 
 export default NewDosePage

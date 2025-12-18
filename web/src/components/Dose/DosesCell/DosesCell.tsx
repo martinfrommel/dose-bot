@@ -18,17 +18,24 @@ export const QUERY: TypedDocumentNode<FindDoses, FindDosesVariables> = gql`
       amount
       unit
       substanceId
+      substance {
+        slug
+      }
     }
   }
 `
 
+type DosesCellProps = {
+  slug: string
+}
+
 export const Loading = () => <div>Loading...</div>
 
-export const Empty = () => {
+export const Empty = ({ slug }: DosesCellProps) => {
   return (
     <div className="text-center">
       No doses yet.{' '}
-      <Link to={routes.newDose()} className="btn btn-primary btn-sm">
+      <Link to={routes.newDose({ slug })} className="btn btn-primary btn-sm">
         Create one
       </Link>
     </div>
@@ -43,6 +50,7 @@ export const Failure = ({ error }: CellFailureProps<FindDoses>) => (
 
 export const Success = ({
   doses,
-}: CellSuccessProps<FindDoses, FindDosesVariables>) => {
-  return <Doses doses={doses} />
+  slug,
+}: CellSuccessProps<FindDoses, FindDosesVariables> & DosesCellProps) => {
+  return <Doses doses={doses} slug={slug} />
 }

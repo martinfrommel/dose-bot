@@ -26,27 +26,19 @@ const ListActions = ({
   return (
     <div className="flex gap-2">
       {viewTo && (
-        <Link
-          to={viewTo}
-          className="btn btn-xs btn-ghost"
-          title={viewTitle}
-        >
+        <Link to={viewTo} className="btn btn-ghost btn-xs" title={viewTitle}>
           {viewLabel}
         </Link>
       )}
       {editTo && (
-        <Link
-          to={editTo}
-          className="btn btn-xs btn-primary"
-          title={editTitle}
-        >
+        <Link to={editTo} className="btn btn-primary btn-xs" title={editTitle}>
           {editLabel}
         </Link>
       )}
       {onDelete && (
         <button
           type="button"
-          className="btn btn-xs btn-error"
+          className="btn btn-error btn-xs"
           title={deleteTitle}
           onClick={onDelete}
         >

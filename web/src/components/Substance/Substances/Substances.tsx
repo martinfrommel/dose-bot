@@ -4,11 +4,12 @@ import type {
   FindSubstances,
 } from 'types/graphql'
 
-import { Link, routes } from '@cedarjs/router'
+import { routes } from '@cedarjs/router'
 import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import ListActions from 'src/components/ListActions/ListActions'
 import { QUERY } from 'src/components/Substance/SubstancesCell'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
@@ -31,9 +32,6 @@ const SubstancesList = ({ substances }: FindSubstances) => {
     onError: (error) => {
       toast.error(error.message)
     },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
     refetchQueries: [{ query: QUERY }],
     awaitRefetchQueries: true,
   })
@@ -69,12 +67,12 @@ const SubstancesList = ({ substances }: FindSubstances) => {
               <td className="max-w-xs truncate">{substance.description}</td>
               <td>
                 <ListActions
-                  viewTo={routes.substance({ id: substance.id })}
-                  editTo={routes.editSubstance({ id: substance.id })}
+                  viewTo={routes.substance({ slug: substance.slug })}
+                  editTo={routes.editSubstance({ slug: substance.slug })}
                   onDelete={() => onDeleteClick(substance.id)}
-                  viewTitle={'View substance ' + substance.id}
-                  editTitle={'Edit substance ' + substance.id}
-                  deleteTitle={'Delete substance ' + substance.id}
+                  viewTitle={'View substance ' + substance.name}
+                  editTitle={'Edit substance ' + substance.name}
+                  deleteTitle={'Delete substance ' + substance.name}
                 />
               </td>
             </tr>

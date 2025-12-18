@@ -24,7 +24,11 @@ const DELETE_DOSE_MUTATION: TypedDocumentNode<
   }
 `
 
-const DosesList = ({ doses }: FindDoses) => {
+type DosesProps = FindDoses & {
+  slug: string
+}
+
+const DosesList = ({ doses, slug }: DosesProps) => {
   const [deleteDose] = useMutation(DELETE_DOSE_MUTATION, {
     onCompleted: () => {
       toast.success('Dose deleted')
@@ -73,8 +77,14 @@ const DosesList = ({ doses }: FindDoses) => {
               </td>
               <td>
                 <ListActions
-                  viewTo={routes.dose({ id: dose.id })}
-                  editTo={routes.editDose({ id: dose.id })}
+                  viewTo={routes.dose({
+                    slug: dose.substance.slug,
+                    id: dose.id,
+                  })}
+                  editTo={routes.editDose({
+                    slug: dose.substance.slug,
+                    id: dose.id,
+                  })}
                   onDelete={() => onDeleteClick(dose.id)}
                   viewTitle={'View dose ' + dose.id}
                   editTitle={'Edit dose ' + dose.id}

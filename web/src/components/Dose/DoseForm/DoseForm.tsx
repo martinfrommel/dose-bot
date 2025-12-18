@@ -70,20 +70,6 @@ const DoseForm = (props: DoseFormProps) => {
         <FieldError name="unit" className="label-text-alt text-error" />
       </div>
 
-      <div className="form-control mb-4 w-full">
-        <Label name="substanceId" className="label" errorClassName="label">
-          <span className="label-text">Substance ID</span>
-        </Label>
-        <TextField
-          name="substanceId"
-          defaultValue={props.dose?.substanceId}
-          className="input input-bordered w-full"
-          errorClassName="input input-bordered input-error w-full"
-          validation={{ required: true }}
-        />
-        <FieldError name="substanceId" className="label-text-alt text-error" />
-      </div>
-
       <div className="form-control mt-6">
         <Submit disabled={props.loading} className="btn btn-primary">
           {props.loading ? 'Saving...' : 'Save'}

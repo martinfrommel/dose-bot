@@ -18,6 +18,7 @@ export const QUERY: TypedDocumentNode<FindSubstances, FindSubstancesVariables> =
         updatedAt
         name
         description
+        slug
       }
     }
   `
