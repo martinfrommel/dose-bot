@@ -19,7 +19,7 @@ const WELCOME_MESSAGE = 'Welcome back!'
 const REDIRECT = routes.home()
 
 const LoginPage = () => {
-  const { isAuthenticated, loading, logIn } = useAuth()
+  const { isAuthenticated, logIn } = useAuth()
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -33,23 +33,27 @@ const LoginPage = () => {
     usernameRef.current?.focus()
   }, [])
 
-  const onSubmit = async (data) => {
-    const response = await logIn({
+  interface LoginCredentials {
+    username: string
+    password: string
+  }
+
+  interface LoginResponse {
+    error?: string
+    message?: string
+  }
+
+  const onSubmit = async (data: LoginCredentials): Promise<void> => {
+    const response: LoginResponse = await logIn({
       username: data.username,
       password: data.password,
     })
 
     if (response.error) {
       toast.error(response.error)
-    } else if (response.message) {
-      toast(response.message)
     } else {
       toast.success(WELCOME_MESSAGE)
     }
-  }
-
-  if (loading) {
-    return null
   }
 
   return (

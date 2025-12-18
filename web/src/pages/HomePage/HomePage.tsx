@@ -43,7 +43,7 @@ const HomePage = () => {
               <p className="mb-4">
                 Add and manage substances you are tracking doses for. This could
                 be anything, we are leaving the possibilities vague by design.
-                *wink*
+                😏
               </p>
               <div className="card-actions">
                 <Link to={routes.substances()} className="btn btn-secondary">

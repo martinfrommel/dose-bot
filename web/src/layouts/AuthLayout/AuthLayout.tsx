@@ -11,18 +11,7 @@ interface AuthLayoutProps {
 const AuthLayout = ({ children, title, footer }: AuthLayoutProps) => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-base-200 p-4">
-      <Toaster
-        toastOptions={{
-          className: 'alert',
-          duration: 6000,
-          success: {
-            className: 'alert alert-success',
-          },
-          error: {
-            className: 'alert alert-error',
-          },
-        }}
-      />
+      <Toaster />
       <div className="w-full max-w-md">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
