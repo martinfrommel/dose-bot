@@ -26,6 +26,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <li>
                 <Link to={routes.apiKeys()}>API Keys</Link>
               </li>
+              <li>
+                <Link to={routes.substances()}>Substances</Link>
+              </li>
+              <li>
+                <Link to={routes.doses()}>Doses</Link>
+              </li>
 
             </ul>
           </div>

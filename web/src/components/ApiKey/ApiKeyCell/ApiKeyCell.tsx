@@ -29,7 +29,9 @@ export const Empty = () => <div>ApiKey not found</div>
 export const Failure = ({
   error,
 }: CellFailureProps<FindApiKeyByIdVariables>) => (
-  <div className="rw-cell-error">{error?.message}</div>
+  <div className="alert alert-error">
+    <span>{error?.message}</span>
+  </div>
 )
 
 export const Success = ({
