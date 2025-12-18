@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import type { EditApiKeyById, UpdateApiKeyInput } from 'types/graphql'
 
 import type { RWGqlError } from '@cedarjs/forms'
@@ -29,9 +30,7 @@ interface ApiKeyFormProps {
 }
 
 const ApiKeyForm = (props: ApiKeyFormProps) => {
-  const [validForever, setValidForever] = useState(
-    !props.apiKey?.validUntil
-  )
+  const [validForever, setValidForever] = useState(!props.apiKey?.validUntil)
 
   const onSubmit = (data: FormApiKey) => {
     // If valid forever is checked, set validUntil to null
@@ -52,15 +51,15 @@ const ApiKeyForm = (props: ApiKeyFormProps) => {
       />
 
       <div className="form-control mb-4 w-full">
-        <Label className="label cursor-pointer justify-start gap-2">
-          <CheckboxField
-            name="validForever"
+        <label className="label cursor-pointer justify-start gap-2">
+          <input
+            type="checkbox"
             className="checkbox"
             checked={validForever}
             onChange={(e) => setValidForever(e.target.checked)}
           />
           <span className="label-text">Valid Forever</span>
-        </Label>
+        </label>
       </div>
 
       <div className="form-control mb-4 w-full">
@@ -95,7 +94,10 @@ const ApiKeyForm = (props: ApiKeyFormProps) => {
       </div>
 
       <div className="form-control mb-4 w-full">
-        <Label className="label cursor-pointer justify-start gap-2">
+        <Label
+          name="enabled"
+          className="label cursor-pointer justify-start gap-2"
+        >
           <CheckboxField
             name="enabled"
             className="checkbox"

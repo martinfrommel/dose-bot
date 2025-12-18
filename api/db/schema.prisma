@@ -50,11 +50,3 @@ model ApiKey {
   validUntil DateTime?
   description String?
 }
-
-model AuthKey {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  hashedKey String
-  description String?
-}
