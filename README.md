@@ -1,26 +1,26 @@
-# DoseBot
+# 💊 DoseBot
 
 DoseBot is a simple, open-source application for recording, managing, and serving dosage data for substances via a GraphQL API and a simple web UI. It includes scaffolding to manage API keys, track substances, and record doses, making it easy to integrate with external services or bots.
 
 The project uses Prisma with SQLite by default, optional Memcached for caching, Tailwind CSS with daisyUI for UI components, and Vite for the web dev server.
 
-## Motivation behind this project
+## 🌱 Motivation behind this project
 
 We believe that having simple, locally deployable and accessible web-based apps is a good way of keeping your data to yourself, and through this experiment, we are hoping to further this endeavour.
 
-## Where can I run this
+## 🌍 Where can I run this
 
 Anywhere - you can deploy this through a third-party platfom like Coolify or Vercel, or you can run this locally on your machine and hook it up to something like Apple Shortcuts to log your data (this is how we use it).
 
-## Features
+## ✨ Features
 
-- GraphQL API for `Dose`, `Substance`, and `ApiKey` entities
-- Web UI scaffold to create, edit, and list API keys
-- Prisma ORM with SQLite (simple local development)
-- Optional Memcached-backed cache (via `memjs`)
-- Modern UI using Tailwind CSS and daisyUI
+- GraphQL API for `Dose`, `Substance`, and `ApiKey` entities ⚙️
+- Web UI scaffold to create, edit, and list API keys 🗝️
+- Prisma ORM with SQLite (simple local development) 🗄️
+- Optional Memcached-backed cache (via `memjs`) 🚀
+- Modern UI using Tailwind CSS and daisyUI 🎨
 
-## Stack
+## 🧰 Stack
 
 - CedarJS (API, Web, Router, Forms)
 - Prisma (SQLite by default)
@@ -28,12 +28,12 @@ Anywhere - you can deploy this through a third-party platfom like Coolify or Ver
 - Tailwind CSS 3 + daisyUI 4
 - Memcached (optional cache)
 
-## Prerequisites
+## 🛠️ Prerequisites
 
 - Node.js 24.x
 - Yarn 4.x (Corepack recommended)
 
-## Quick Start
+## ⚡ Quick Start
 
 1. Install dependencies:
 
@@ -57,7 +57,7 @@ yarn cedar dev
 
 Open the app at <http://localhost:8910>. The GraphQL server runs on <http://localhost:8911>.
 
-## Environment Variables
+## 🔑 Environment Variables
 
 Create a `.env` file at the project root (or use your preferred env management). Common variables:
 
@@ -67,22 +67,22 @@ Create a `.env` file at the project root (or use your preferred env management).
 
 Auth is not set up by default; see CedarJS docs if you plan to add it.
 
-## Database
+## 🗃️ Database
 
 This project ships with SQLite for simplicity. The Prisma schema lives at `api/db/schema.prisma`.
 
 - Run migrations: `yarn cedar prisma migrate dev`
 - Push changes (no migration): `yarn cedar prisma db push`
 
-## Optional Caching
+## 🚀 Optional Caching
 
 If `CACHE_HOST` is set, the API will attempt to connect to Memcached using `memjs`. In local development you can omit this and caching will fall back to in-memory.
 
-## Docker Compose
+## 🐳 Docker Compose
 
 For local development, you can spin up Memcached and optionally run the app inside a container. A `docker-compose.yml` is included.
 
-### Start Memcached only
+### ♻️ Start Memcached only
 
 ```bash
 docker compose up -d memcached
@@ -92,7 +92,7 @@ export CACHE_HOST=localhost:11211
 yarn cedar dev
 ```
 
-### Run the app in Docker (dev mode)
+### ▶️ Run the app in Docker (dev mode)
 
 ```bash
 docker compose up
@@ -105,7 +105,7 @@ This starts:
 
 Note: The app service mounts the workspace directory, so changes on your host are reflected in the container. Prisma uses the SQLite file in the repo.
 
-## Testing
+## ✅ Testing
 
 Jest configs exist for both `api` and `web`. You can run tests with:
 
@@ -113,6 +113,6 @@ Jest configs exist for both `api` and `web`. You can run tests with:
 yarn cedar test
 ```
 
-## License
+## 📄 License
 
 DoseBot is open-source software licensed under the MIT License. See `LICENSE` for details.
