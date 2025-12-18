@@ -4,7 +4,7 @@ import type {
   FindSubstances,
 } from 'types/graphql'
 
-import { routes } from '@cedarjs/router'
+import { Link, routes } from '@cedarjs/router'
 import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
@@ -47,24 +47,28 @@ const SubstancesList = ({ substances }: FindSubstances) => {
       <table className="table table-zebra">
         <thead>
           <tr>
-            <th>Id</th>
-            <th>Created</th>
-            <th>Updated</th>
             <th>Name</th>
             <th>Description</th>
+            <th>ID</th>
+            <th>Created</th>
+            <th>Updated</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {substances.map((substance) => (
             <tr key={substance.id}>
+              <td className="max-w-xs truncate text-lg font-bold">
+                <Link to={routes.substance({ slug: substance.slug })}>
+                  {substance.name}
+                </Link>
+              </td>
+              <td className="max-w-xs truncate">{substance.description}</td>
               <td>
                 <code className="text-xs">{truncate(substance.id)}</code>
               </td>
               <td className="text-xs">{timeTag(substance.createdAt)}</td>
               <td className="text-xs">{timeTag(substance.updatedAt)}</td>
-              <td className="max-w-xs truncate">{substance.name}</td>
-              <td className="max-w-xs truncate">{substance.description}</td>
               <td>
                 <ListActions
                   viewTo={routes.substance({ slug: substance.slug })}

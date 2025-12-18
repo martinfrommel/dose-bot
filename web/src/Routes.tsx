@@ -9,19 +9,22 @@
 
 import { Router, Route, Set } from '@cedarjs/router'
 
+import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
 import MainLayout from './layouts/MainLayout/MainLayout'
 
 const Routes = () => {
   return (
     <Router>
       <Set wrap={MainLayout}>
-        <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
-        <Route path="/substances/{slug}/doses/{id}/edit" page={DoseEditDosePage} name="editDose" />
-        <Route path="/substances/{slug}/doses/{id}" page={DoseDosePage} name="dose" />
+        <Set wrap={ItemViewLayout}>
+          <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
+          <Route path="/substances/{slug}/doses/{id}/edit" page={DoseEditDosePage} name="editDose" />
+          <Route path="/substances/{slug}/doses/{id}" page={DoseDosePage} name="dose" />
+          <Route path="/substances/new" page={SubstanceNewSubstancePage} name="newSubstance" />
+          <Route path="/substances/{slug}/edit" page={SubstanceEditSubstancePage} name="editSubstance" />
+          <Route path="/substances/{slug}" page={SubstanceSubstancePage} name="substance" />
+        </Set>
         <Route path="/substances/{slug}/doses" page={DoseDosesPage} name="doses" />
-        <Route path="/substances/new" page={SubstanceNewSubstancePage} name="newSubstance" />
-        <Route path="/substances/{slug}/edit" page={SubstanceEditSubstancePage} name="editSubstance" />
-        <Route path="/substances" page={SubstanceSubstancePage} name="substance" />
         <Route path="/substances" page={SubstanceSubstancesPage} name="substances" />
         <Route path="/api-keys/new" page={ApiKeyNewApiKeyPage} name="newApiKey" />
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />

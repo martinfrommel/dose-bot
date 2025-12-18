@@ -7,6 +7,7 @@ import type {
 } from '@cedarjs/web'
 
 import Dose from 'src/components/Dose/Dose'
+import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<FindDoseById, FindDoseByIdVariables> =
   gql`
@@ -35,5 +36,12 @@ export const Failure = ({ error }: CellFailureProps<FindDoseByIdVariables>) => (
 export const Success = ({
   dose,
 }: CellSuccessProps<FindDoseById, FindDoseByIdVariables>) => {
+  const { setDose } = useItemView()
+
+  // Set dose in context when it loads
+  React.useEffect(() => {
+    setDose(dose)
+  }, [dose, setDose])
+
   return <Dose dose={dose} />
 }

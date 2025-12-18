@@ -9,7 +9,9 @@ import type {
   TypedDocumentNode,
 } from '@cedarjs/web'
 
+import BackButton from 'src/components/BackButton/BackButton'
 import Substance from 'src/components/Substance/Substance'
+import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<
   FindSubstanceBySlug,
@@ -29,7 +31,12 @@ export const QUERY: TypedDocumentNode<
 
 export const Loading = () => <div>Loading...</div>
 
-export const Empty = () => <div>Substance not found</div>
+export const Empty = () => (
+  <section>
+    <h3>Substance not found</h3>
+    <BackButton />
+  </section>
+)
 
 export const Failure = ({
   error,
@@ -42,5 +49,12 @@ export const Failure = ({
 export const Success = ({
   substance,
 }: CellSuccessProps<FindSubstanceBySlug, FindSubstanceBySlugVariables>) => {
+  const { setSubstance } = useItemView()
+
+  // Set substance in context when it loads
+  React.useEffect(() => {
+    setSubstance(substance)
+  }, [substance, setSubstance])
+
   return <Substance substance={substance} />
 }

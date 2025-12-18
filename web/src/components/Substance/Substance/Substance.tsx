@@ -74,7 +74,13 @@ const Substance = ({ substance }: Props) => {
         </div>
         <div className="card-actions justify-end p-4">
           <Link
-            to={routes.editSubstance({ id: substance.id })}
+            to={routes.newDose({ slug: substance.slug })}
+            className="btn btn-sm btn-outline"
+          >
+            Add Dose
+          </Link>
+          <Link
+            to={routes.editSubstance({ slug: substance.slug })}
             className="btn btn-primary"
           >
             Edit

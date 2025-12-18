@@ -22,6 +22,7 @@ const CREATE_API_KEY_MUTATION: TypedDocumentNode<
   mutation CreateApiKeyMutation($input: CreateApiKeyInput!) {
     createApiKey(input: $input) {
       id
+      name
       key
       createdAt
       enabled

@@ -20,6 +20,7 @@ export const QUERY: TypedDocumentNode<EditApiKeyById> = gql`
   query EditApiKeyById($id: String!) {
     apiKey: apiKey(id: $id) {
       id
+      name
       createdAt
       updatedAt
       enabled

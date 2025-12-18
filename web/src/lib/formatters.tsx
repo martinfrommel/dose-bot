@@ -2,7 +2,7 @@ import React from 'react'
 
 import humanize from 'humanize-string'
 
-const MAX_STRING_LENGTH = 15
+const MAX_STRING_LENGTH = 10
 
 export const formatEnum = (values: string | string[] | null | undefined) => {
   let output = ''
@@ -57,6 +57,15 @@ export const timeTag = (dateTime?: string) => {
   }
 
   return output
+}
+
+export const formatDoseDate = (dateTime: string) => {
+  const date = new Date(dateTime)
+  return date.toLocaleDateString(undefined, {
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit',
+  })
 }
 
 export const checkboxInputTag = (checked: boolean) => {

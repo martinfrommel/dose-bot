@@ -17,7 +17,7 @@ const SUBSTANCE_QUERY: TypedDocumentNode<
   FindSubstanceBySlug,
   FindSubstanceBySlugVariables
 > = gql`
-  query FindSubstanceBySlug($slug: String!) {
+  query FindSubstanceBySlugOnDose($slug: String!) {
     substance: substanceBySlug(slug: $slug) {
       id
       name

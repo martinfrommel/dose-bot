@@ -1,4 +1,4 @@
-import { BotIcon } from 'lucide-react'
+import { BotIcon, KeyIcon, PillBottleIcon } from 'lucide-react'
 
 import { Link, routes } from '@cedarjs/router'
 import { Toaster } from '@cedarjs/web/toast'
@@ -23,10 +23,16 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="flex-none">
             <ul className="menu menu-horizontal px-1">
               <li>
-                <Link to={routes.apiKeys()}>API Keys</Link>
+                <Link to={routes.apiKeys()}>
+                  <KeyIcon className="size-3" />
+                  API Keys
+                </Link>
               </li>
               <li>
-                <Link to={routes.substances()}>Substances</Link>
+                <Link to={routes.substances()}>
+                  <PillBottleIcon className="size-3" />
+                  Substances
+                </Link>
               </li>
             </ul>
           </div>

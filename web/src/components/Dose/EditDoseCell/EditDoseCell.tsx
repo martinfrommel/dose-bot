@@ -14,6 +14,7 @@ import { useMutation } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import DoseForm from 'src/components/Dose/DoseForm'
+import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<EditDoseById> = gql`
   query EditDoseById($id: String!) {
@@ -53,6 +54,13 @@ export const Failure = ({ error }: CellFailureProps) => (
 )
 
 export const Success = ({ dose }: CellSuccessProps<EditDoseById>) => {
+  const { setDose } = useItemView()
+
+  // Set dose in context when it loads
+  React.useEffect(() => {
+    setDose(dose)
+  }, [dose, setDose])
+
   const [updateDose, { loading, error }] = useMutation(UPDATE_DOSE_MUTATION, {
     onCompleted: () => {
       toast.success('Dose updated')

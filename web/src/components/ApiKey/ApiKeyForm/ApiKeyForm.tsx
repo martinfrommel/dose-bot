@@ -9,9 +9,9 @@ import {
   FieldError,
   Label,
   DatetimeLocalField,
-  TextAreaField,
   CheckboxField,
   Submit,
+  TextField,
 } from '@cedarjs/forms'
 
 const formatDatetime = (value) => {
@@ -77,13 +77,29 @@ const ApiKeyForm = (props: ApiKeyFormProps) => {
 
         <FieldError name="validUntil" className="label-text-alt text-error" />
       </div>
+      <div className="form-control mb-4 w-full">
+        <Label name="name" className="label" errorClassName="label">
+          <span className="label-text">Name</span>
+        </Label>
+
+        <TextField
+          name="name"
+          placeholder="My API Key"
+          defaultValue={props.apiKey?.name}
+          className="input input-bordered w-full"
+          errorClassName="input input-bordered input-error w-full"
+        />
+
+        <FieldError name="name" className="label-text-alt text-error" />
+      </div>
 
       <div className="form-control mb-4 w-full">
         <Label name="description" className="label" errorClassName="label">
           <span className="label-text">Description</span>
         </Label>
 
-        <TextAreaField
+        <TextField
+          placeholder="Used on my laptop"
           name="description"
           defaultValue={props.apiKey?.description}
           className="textarea textarea-bordered w-full"

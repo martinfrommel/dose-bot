@@ -27,19 +27,19 @@ export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
   return (
-    <div className="text-center">
-      No substances yet.{' '}
+    <section className="block min-h-24 space-y-3 text-center">
+      <h3>No substances yet.</h3>
       <Link to={routes.newSubstance()} className="btn btn-primary btn-sm">
         Create one
       </Link>
-    </div>
+    </section>
   )
 }
 
 export const Failure = ({ error }: CellFailureProps<FindSubstances>) => (
-  <div className="alert alert-error">
+  <section className="alert alert-error">
     <span>{error?.message}</span>
-  </div>
+  </section>
 )
 
 export const Success = ({

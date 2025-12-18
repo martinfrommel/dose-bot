@@ -11,7 +11,7 @@ const HomePage = () => {
         description="Manage your substances and doses"
       />
       <div className="mx-auto my-auto max-w-2xl space-y-6">
-        <div className="card bg-base-100 shadow-lg">
+        <section className="card bg-base-100 shadow-lg">
           <div className="card-body">
             <h2 className="card-title mb-4 text-3xl">
               <BotIcon />
@@ -21,21 +21,36 @@ const HomePage = () => {
               A simple and secure tool to log your doses with API accessibility.
             </p>
           </div>
-        </div>
-        <div className="grid grid-cols-1 gap-4">
-          <div className="card bg-primary text-primary-content">
+        </section>
+        <div className="flex flex-row justify-around gap-4">
+          <section className="card bg-neutral text-neutral-content">
             <div className="card-body">
               <h3 className="card-title text-lg">API Keys</h3>
               <p className="mb-4">
                 Create and manage API keys for programmatic access to DoseBot.
               </p>
               <div className="card-actions">
-                <Link to={routes.apiKeys()} className="btn btn-secondary">
+                <Link to={routes.apiKeys()} className="btn btn-outline">
                   Manage API Keys
                 </Link>
               </div>
             </div>
-          </div>
+          </section>
+          <section className="card bg-primary text-primary-content">
+            <div className="card-body">
+              <h3 className="card-title text-lg">Substances</h3>
+              <p className="mb-4">
+                Add and manage substances you are tracking doses for. This could
+                be anything, we are leaving the possibilities vague by design.
+                *wink*
+              </p>
+              <div className="card-actions">
+                <Link to={routes.substances()} className="btn btn-secondary">
+                  Manage Substances
+                </Link>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </>

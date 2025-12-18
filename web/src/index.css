@@ -11,3 +11,8 @@
 /**
  * END --- SETUP TAILWINDCSS EDIT
  */
+
+
+ h3 {
+  @apply text-2xl font-bold leading-loose;
+ }

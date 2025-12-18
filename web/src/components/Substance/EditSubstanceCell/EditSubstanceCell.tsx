@@ -14,6 +14,7 @@ import { useMutation } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import SubstanceForm from 'src/components/Substance/SubstanceForm'
+import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<EditSubstanceBySlug> = gql`
   query EditSubstanceBySlug($slug: String!) {
@@ -29,7 +30,7 @@ export const QUERY: TypedDocumentNode<EditSubstanceBySlug> = gql`
 `
 
 const UPDATE_SUBSTANCE_MUTATION: TypedDocumentNode<
-  EditSubstanceById,
+  EditSubstanceBySlug,
   UpdateSubstanceMutationVariables
 > = gql`
   mutation UpdateSubstanceMutation(
@@ -54,7 +55,16 @@ export const Failure = ({ error }: CellFailureProps) => (
   </div>
 )
 
-export const Success = ({ substance }: CellSuccessProps<EditSubstanceBySlug>) => {
+export const Success = ({
+  substance,
+}: CellSuccessProps<EditSubstanceBySlug>) => {
+  const { setSubstance } = useItemView()
+
+  // Set substance in context when it loads
+  React.useEffect(() => {
+    setSubstance(substance)
+  }, [substance, setSubstance])
+
   const [updateSubstance, { loading, error }] = useMutation(
     UPDATE_SUBSTANCE_MUTATION,
     {
