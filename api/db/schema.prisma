@@ -28,7 +28,7 @@ model Dose {
   updatedAt DateTime @updatedAt
   amount Float
   unit Unit @default(G)
-  substance Substance @relation(fields: [substanceId], references: [id])
+  substance Substance @relation(fields: [substanceId], references: [id], onDelete: Cascade)
   substanceId String
 }
 
@@ -38,6 +38,7 @@ model Substance {
   updatedAt DateTime @updatedAt
   name String
   description String?
+  slug String @unique
   doses Dose[]
 }
 

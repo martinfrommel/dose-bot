@@ -32,7 +32,7 @@ export const verifyApiKey = async (
  * Validate an API key by checking if it's enabled and not expired
  * If validUntil is null, the key is valid forever
  */
-export const validateApiKey = (apiKey: {
+export const validateApiKeyEnabled = (apiKey: {
   enabled: boolean
   validUntil: Date | null
 }): boolean => {
