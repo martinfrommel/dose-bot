@@ -186,6 +186,7 @@ Commit messages should use descriptive emoji to indicate the type of work. When 
 - Use imperative mood: "add", "fix", "refactor", not "added", "fixed", "refactored"
 - Reference related issues when applicable
 - For multi-line commits, keep the main message under 50 characters, details under 72
+- Use appropriate semantic HTML tags throughout the codebase, avoid using div for everything
 
 ## Testing Strategy
 
