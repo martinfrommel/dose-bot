@@ -1,6 +1,7 @@
 export const schema = gql`
   type ApiKey {
     id: String!
+    name: String
     createdAt: DateTime!
     updatedAt: DateTime!
     enabled: Boolean!
@@ -10,6 +11,7 @@ export const schema = gql`
 
   type ApiKeyWithSecret {
     id: String!
+    name: String
     createdAt: DateTime
     updatedAt: DateTime
     key: String!
@@ -25,12 +27,14 @@ export const schema = gql`
 
   input CreateApiKeyInput {
     enabled: Boolean
+    name: String
     validUntil: DateTime
     description: String
   }
 
   input UpdateApiKeyInput {
     enabled: Boolean
+    name: String
     validUntil: DateTime
     description: String
   }
