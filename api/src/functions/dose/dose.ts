@@ -5,18 +5,10 @@ import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
 
 /**
- * The handler function is your code that processes http request events.
- * You can use return and throw to send a response or error, respectively.
- *
- * Important: When deployed, a custom serverless function is an open API endpoint and
- * is your responsibility to secure appropriately.
- *
- * @see {@link https://redwoodjs.com/docs/serverless-functions#security-considerations|Serverless Function Considerations}
- * in the RedwoodJS documentation for more information.
- *
- * @param { APIGatewayEvent } event - an object which contains information from the invoker.
- * @param { Context } context - contains information about the invocation,
- * function, and execution environment.
+ * Handler for single dose operations
+ * GET /dose/:id - Get a specific dose
+ * PUT /dose/:id - Update a specific dose
+ * DELETE /dose/:id - Delete a specific dose
  */
 export const handler = async (event: APIGatewayEvent, context: Context) => {
   const apiCall = new ApiCall(event, context)
@@ -34,14 +26,12 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
     switch (apiCall.method) {
       case 'GET':
         return await handleGet(apiCall)
-      case 'POST':
-        return await handlePost(apiCall)
       case 'PUT':
         return await handlePut(apiCall)
       case 'DELETE':
         return await handleDelete(apiCall)
       default:
-        return apiCall.methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE'])
+        return apiCall.methodNotAllowed(['GET', 'PUT', 'DELETE'])
     }
   } catch (error) {
     logger.error('Error in dose handler:', error)
@@ -50,102 +40,31 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
 }
 
 /**
- * Handle GET requests - Retrieve dose(s)
+ * Handle GET requests - Retrieve a specific dose
  */
 async function handleGet(apiCall: ApiCall) {
   const { id } = apiCall.pathParams
-  const { substanceId, slug } = apiCall.queryParams
 
-  try {
-    if (id) {
-      // Get a specific dose by ID
-      const dose = await db.dose.findUnique({
-        where: { id },
-        include: {
-          substance: true,
-        },
-      })
-
-      if (!dose) {
-        return apiCall.notFound(`Dose with ID ${id} not found`)
-      }
-
-      return apiCall.success(dose)
-    }
-
-    // Get doses with optional filtering
-    const where: any = {}
-
-    if (substanceId) {
-      where.substanceId = substanceId
-    } else if (slug) {
-      // Find substance by slug first
-      const substance = await db.substance.findUnique({
-        where: { slug },
-      })
-
-      if (!substance) {
-        return apiCall.notFound(`Substance with slug ${slug} not found`)
-      }
-
-      where.substanceId = substance.id
-    }
-
-    const doses = await db.dose.findMany({
-      where,
-      include: {
-        substance: true,
-      },
-      orderBy: {
-        amount: 'asc',
-      },
-    })
-
-    return apiCall.success(doses)
-  } catch (error) {
-    logger.error('Error retrieving doses:', error)
-    return apiCall.serverError('Failed to retrieve doses', error as Error)
-  }
-}
-
-/**
- * Handle POST requests - Create a new dose
- */
-async function handlePost(apiCall: ApiCall) {
-  const body = apiCall.body
-
-  if (!body || !body.amount || !body.unit || !body.substanceId) {
-    return apiCall.badRequest(
-      'Missing required fields: amount, unit, and substanceId are required'
-    )
+  if (!id) {
+    return apiCall.badRequest('Dose ID is required in the path')
   }
 
   try {
-    // Verify substance exists
-    const substance = await db.substance.findUnique({
-      where: { id: body.substanceId },
-    })
-
-    if (!substance) {
-      return apiCall.notFound(`Substance with ID ${body.substanceId} not found`)
-    }
-
-    // Create the dose
-    const dose = await db.dose.create({
-      data: {
-        amount: body.amount,
-        unit: body.unit,
-        substanceId: body.substanceId,
-      },
+    const dose = await db.dose.findUnique({
+      where: { id },
       include: {
         substance: true,
       },
     })
 
-    return apiCall.created(dose)
+    if (!dose) {
+      return apiCall.notFound(`Dose with ID ${id} not found`)
+    }
+
+    return apiCall.success(dose)
   } catch (error) {
-    logger.error('Error creating dose:', error)
-    return apiCall.serverError('Failed to create dose', error as Error)
+    logger.error('Error retrieving dose:', error)
+    return apiCall.serverError('Failed to retrieve dose', error as Error)
   }
 }
 
