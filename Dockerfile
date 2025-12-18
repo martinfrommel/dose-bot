@@ -45,7 +45,7 @@ RUN mkdir -p /app/data
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV DATABASE_URL="file:/app/data/dev.db"
+ENV DATABASE_URL="file:/app/data/dosebot.db"
 
 # Expose ports
 EXPOSE 8910 8911
