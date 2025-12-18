@@ -54,12 +54,13 @@ export const Failure = ({ error }: CellFailureProps) => (
 )
 
 export const Success = ({ dose }: CellSuccessProps<EditDoseById>) => {
-  const { setDose } = useItemView()
+  const { setDose, setCurrentPageTitle } = useItemView()
 
-  // Set dose in context when it loads
+  // Set dose and page title in context when it loads
   React.useEffect(() => {
     setDose(dose)
-  }, [dose, setDose])
+    setCurrentPageTitle('Edit')
+  }, [dose, setDose, setCurrentPageTitle])
 
   const [updateDose, { loading, error }] = useMutation(UPDATE_DOSE_MUTATION, {
     onCompleted: () => {

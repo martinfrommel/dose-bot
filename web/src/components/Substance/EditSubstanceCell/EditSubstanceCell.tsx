@@ -58,12 +58,13 @@ export const Failure = ({ error }: CellFailureProps) => (
 export const Success = ({
   substance,
 }: CellSuccessProps<EditSubstanceBySlug>) => {
-  const { setSubstance } = useItemView()
+  const { setSubstance, setCurrentPageTitle } = useItemView()
 
-  // Set substance in context when it loads
+  // Set substance and page title in context when it loads
   React.useEffect(() => {
     setSubstance(substance)
-  }, [substance, setSubstance])
+    setCurrentPageTitle('Edit')
+  }, [substance, setSubstance, setCurrentPageTitle])
 
   const [updateSubstance, { loading, error }] = useMutation(
     UPDATE_SUBSTANCE_MUTATION,

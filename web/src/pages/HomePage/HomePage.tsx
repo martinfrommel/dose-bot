@@ -18,7 +18,8 @@ const HomePage = () => {
               Welcome to DoseBot
             </h2>
             <p className="mb-4">
-              A simple and secure tool to log your doses with API accessibility.
+              A simple and secure tool to track you vices with API
+              accessibility.
             </p>
           </div>
         </section>

@@ -49,12 +49,13 @@ export const Failure = ({
 export const Success = ({
   substance,
 }: CellSuccessProps<FindSubstanceBySlug, FindSubstanceBySlugVariables>) => {
-  const { setSubstance } = useItemView()
+  const { setSubstance, setCurrentPageTitle } = useItemView()
 
-  // Set substance in context when it loads
+  // Set substance in context and clear page title when it loads
   React.useEffect(() => {
     setSubstance(substance)
-  }, [substance, setSubstance])
+    setCurrentPageTitle(undefined)
+  }, [substance, setSubstance, setCurrentPageTitle])
 
   return <Substance substance={substance} />
 }

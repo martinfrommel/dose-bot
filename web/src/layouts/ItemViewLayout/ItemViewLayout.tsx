@@ -7,12 +7,13 @@ type ItemViewLayoutProps = {
   children?: React.ReactNode
   substance?: NonNullable<FindSubstanceBySlug['substance']>
   dose?: NonNullable<FindDoseById['dose']>
+  currentPageTitle?: string
 }
 
-const ItemViewLayout = ({ children, substance, dose }: ItemViewLayoutProps) => {
+const ItemViewLayout = ({ children, substance, dose, currentPageTitle }: ItemViewLayoutProps) => {
   return (
     <ItemViewProvider substance={substance} dose={dose}>
-      <Breadcrumbs />
+      <Breadcrumbs currentPageTitle={currentPageTitle} />
       {children}
     </ItemViewProvider>
   )

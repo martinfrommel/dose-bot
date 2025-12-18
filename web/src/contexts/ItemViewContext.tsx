@@ -5,10 +5,12 @@ import type { FindSubstanceBySlug, FindDoseById } from 'types/graphql'
 interface ItemViewContextType {
   substance?: NonNullable<FindSubstanceBySlug['substance']>
   dose?: NonNullable<FindDoseById['dose']>
+  currentPageTitle?: string
   setSubstance: (
     substance?: NonNullable<FindSubstanceBySlug['substance']>
   ) => void
   setDose: (dose?: NonNullable<FindDoseById['dose']>) => void
+  setCurrentPageTitle: (title?: string) => void
 }
 
 const ItemViewContext = createContext<ItemViewContextType | undefined>(
@@ -28,10 +30,18 @@ export const ItemViewProvider = ({
 }: ItemViewProviderProps) => {
   const [substance, setSubstance] = useState(initialSubstance)
   const [dose, setDose] = useState(initialDose)
+  const [currentPageTitle, setCurrentPageTitle] = useState<string | undefined>()
 
   return (
     <ItemViewContext.Provider
-      value={{ substance, dose, setSubstance, setDose }}
+      value={{
+        substance,
+        dose,
+        currentPageTitle,
+        setSubstance,
+        setDose,
+        setCurrentPageTitle,
+      }}
     >
       {children}
     </ItemViewContext.Provider>

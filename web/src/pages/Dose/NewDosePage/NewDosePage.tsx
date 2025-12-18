@@ -5,7 +5,7 @@ type NewDosePageProps = {
 }
 
 const NewDosePage = ({ slug }: NewDosePageProps) => {
-  return <NewDose slug={slug} />
+  return <NewDose slug={slug} currentPageTitle="New Dose" />
 }
 
 export default NewDosePage

@@ -6,11 +6,14 @@ import type {
   FindSubstanceBySlugVariables,
 } from 'types/graphql'
 
+import React from 'react'
+
 import { navigate, routes } from '@cedarjs/router'
 import { useMutation, useQuery } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import { useItemView } from 'src/contexts/ItemViewContext'
 import DoseForm from 'src/components/Dose/DoseForm'
 
 const SUBSTANCE_QUERY: TypedDocumentNode<
@@ -38,12 +41,18 @@ const CREATE_DOSE_MUTATION: TypedDocumentNode<
 
 type NewDoseProps = {
   slug: string
+  currentPageTitle?: string
 }
 
-const NewDose = ({ slug }: NewDoseProps) => {
+const NewDose = ({ slug, currentPageTitle }: NewDoseProps) => {
+  const { setCurrentPageTitle } = useItemView()
   const { data, loading: queryLoading } = useQuery(SUBSTANCE_QUERY, {
     variables: { slug },
   })
+
+  React.useEffect(() => {
+    setCurrentPageTitle(currentPageTitle)
+  }, [currentPageTitle, setCurrentPageTitle])
 
   const [createDose, { loading, error }] = useMutation(CREATE_DOSE_MUTATION, {
     onCompleted: () => {

@@ -36,12 +36,13 @@ export const Failure = ({ error }: CellFailureProps<FindDoseByIdVariables>) => (
 export const Success = ({
   dose,
 }: CellSuccessProps<FindDoseById, FindDoseByIdVariables>) => {
-  const { setDose } = useItemView()
+  const { setDose, setCurrentPageTitle } = useItemView()
 
-  // Set dose in context when it loads
+  // Set dose in context and clear page title when it loads
   React.useEffect(() => {
     setDose(dose)
-  }, [dose, setDose])
+    setCurrentPageTitle(undefined)
+  }, [dose, setDose, setCurrentPageTitle])
 
   return <Dose dose={dose} />
 }
