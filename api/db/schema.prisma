@@ -1,9 +1,3 @@
-// Don't forget to tell Prisma about your edits to this file using
-// `yarn cedar prisma migrate dev` or `yarn cedar prisma db push`.
-// `migrate` is like committing while `push` is for prototyping.
-// Read more about both here:
-// https://www.prisma.io/docs/orm/prisma-migrate
-
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -23,31 +17,31 @@ enum Unit {
 }
 
 model Dose {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  amount Float
-  unit Unit @default(G)
-  substance Substance @relation(fields: [substanceId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  amount      Float
+  unit        Unit      @default(G)
+  substance   Substance @relation(fields: [substanceId], references: [id], onDelete: Cascade)
   substanceId String
 }
 
 model Substance {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name String
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
   description String?
-  slug String @unique
-  doses Dose[]
+  slug        String   @unique
+  doses       Dose[]
 }
 
 model ApiKey {
-  id String @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  hashedKey String
-  enabled Boolean @default(true)
-  validUntil DateTime?
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  hashedKey   String
+  enabled     Boolean   @default(true)
+  validUntil  DateTime?
   description String?
 }
