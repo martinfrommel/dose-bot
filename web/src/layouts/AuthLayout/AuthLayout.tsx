@@ -1,3 +1,5 @@
+import { BotIcon } from 'lucide-react'
+
 import { Toaster } from '@cedarjs/web/toast'
 
 interface AuthLayoutProps {
@@ -8,7 +10,7 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children, title, footer }: AuthLayoutProps) => {
   return (
-    <main className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+    <main className="flex min-h-screen items-center justify-center bg-base-200 p-4">
       <Toaster
         toastOptions={{
           className: 'alert',
@@ -24,13 +26,14 @@ const AuthLayout = ({ children, title, footer }: AuthLayoutProps) => {
       <div className="w-full max-w-md">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
-            <h2 className="card-title text-2xl font-bold justify-center mb-4">
+            <BotIcon className="mx-auto size-12" />
+            <h2 className="card-title mb-4 justify-center text-2xl font-bold">
               {title}
             </h2>
             {children}
           </div>
         </div>
-        {footer && <div className="text-center mt-4">{footer}</div>}
+        {footer && <div className="mt-4 text-center">{footer}</div>}
       </div>
     </main>
   )

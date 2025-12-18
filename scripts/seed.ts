@@ -1,5 +1,6 @@
-import * as bcrypt from 'bcryptjs'
 import { db } from 'api/src/lib/db.js'
+
+import { hashPassword } from '@cedarjs/auth-dbauth-api'
 
 // Manually apply seeds via the `yarn cedar prisma db seed` command.
 //
@@ -8,7 +9,7 @@ import { db } from 'api/src/lib/db.js'
 //
 // See https://cedarjs.com/docs/database-seeds for more info
 
-const SALT_ROUNDS = 10
+// Use Cedar's dbAuth hashing (scrypt) instead of bcrypt
 
 /**
  * Generate a random password for the admin user
@@ -51,18 +52,29 @@ export default async () => {
       where: { email: adminEmail },
     })
 
+    // Generate a new password and Cedar-compatible hash/salt
+    const plainPassword = generatePassword()
+    const [hashedPassword, salt] = hashPassword(plainPassword)
+
     if (existingAdmin) {
-      console.log(`Admin user ${adminEmail} already exists, skipping creation`)
+      const updated = await db.user.update({
+        where: { email: adminEmail },
+        data: {
+          hashedPassword,
+          salt,
+        },
+      })
+
+      console.log(`Updated admin user credentials: ${adminEmail}`)
+      console.log(`Admin user ID: ${updated.id}`)
+      console.log('')
+
+      sendAdminCredentialsEmail(adminEmail, plainPassword)
       return
     }
 
-    // Generate password and hash it
-    const plainPassword = generatePassword()
-    const salt = await bcrypt.genSalt(SALT_ROUNDS)
-    const hashedPassword = await bcrypt.hash(plainPassword, salt)
-
-    // Create admin user
-    const adminUser = await db.user.create({
+    // Create admin user (Cedar scrypt hashed password)
+    const created = await db.user.create({
       data: {
         email: adminEmail,
         hashedPassword,
@@ -71,10 +83,9 @@ export default async () => {
     })
 
     console.log(`Created admin user: ${adminEmail}`)
-    console.log(`Admin user ID: ${adminUser.id}`)
+    console.log(`Admin user ID: ${created.id}`)
     console.log('')
 
-    // Send credentials via mailer stub
     sendAdminCredentialsEmail(adminEmail, plainPassword)
   } catch (error) {
     console.error(error)

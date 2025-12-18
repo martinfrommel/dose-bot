@@ -6,6 +6,7 @@ import { Metadata } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
+import BackButton from 'src/components/BackButton/BackButton'
 import AuthLayout from 'src/layouts/AuthLayout/AuthLayout'
 
 const ForgotPasswordPage = () => {
@@ -40,7 +41,7 @@ const ForgotPasswordPage = () => {
 
   return (
     <>
-      <Metadata title="Forgot Password" />
+      <Metadata title="Forgot Password" description="Reset your password" />
       <AuthLayout title="Forgot Password">
         <Form onSubmit={onSubmit}>
           <div className="form-control w-full">
@@ -59,13 +60,17 @@ const ForgotPasswordPage = () => {
                 },
               }}
             />
-            <FieldError name="username" className="label-text-alt text-error mt-1" />
+            <FieldError
+              name="username"
+              className="label-text-alt mt-1 text-error"
+            />
           </div>
 
           <div className="form-control mt-6">
             <Submit className="btn btn-primary w-full">Submit</Submit>
           </div>
         </Form>
+        <BackButton />
       </AuthLayout>
     </>
   )

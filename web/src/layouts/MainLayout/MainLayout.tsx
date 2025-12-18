@@ -2,11 +2,15 @@ import { BotIcon, KeyIcon, PillBottleIcon } from 'lucide-react'
 
 import { Link, routes } from '@cedarjs/router'
 import { Toaster } from '@cedarjs/web/toast'
+
+import { useAuth } from 'src/auth'
+import LogoutButton from 'src/components/LogoutButton/LogoutButton'
 type MainLayoutProps = {
   children?: React.ReactNode
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
+  const { isAuthenticated } = useAuth()
   return (
     <>
       <div className="flex min-h-screen flex-col bg-base-200">
@@ -41,6 +45,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </main>
       </div>
+      {isAuthenticated && (
+        <div className="fixed bottom-4 right-4">
+          <LogoutButton />
+        </div>
+      )}
       <Toaster />
     </>
   )

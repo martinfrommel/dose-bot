@@ -7,12 +7,11 @@
 // 'src/pages/HomePage/HomePage.js'         -> HomePage
 // 'src/pages/Admin/BooksPage/BooksPage.js' -> AdminBooksPage
 
-import { Router, Route, Set } from '@cedarjs/router'
-
-import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
-import MainLayout from './layouts/MainLayout/MainLayout'
+import { Router, Route, Set, PrivateSet } from '@cedarjs/router'
 
 import { useAuth } from './auth.js'
+import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
+import MainLayout from './layouts/MainLayout/MainLayout'
 
 const Routes = () => {
   return (
@@ -20,7 +19,7 @@ const Routes = () => {
       <Route path="/login" page={LoginPage} name="login" />
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
-      <Set wrap={MainLayout}>
+      <PrivateSet unauthenticated={'login'} wrap={MainLayout}>
         <Set wrap={ItemViewLayout}>
           <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
           <Route path="/substances/{slug}/doses/{id}/edit" page={DoseEditDosePage} name="editDose" />
@@ -37,7 +36,7 @@ const Routes = () => {
         <Route path="/api-keys" page={ApiKeyApiKeysPage} name="apiKeys" />
         <Route path="/" page={HomePage} name="home" />
         <Route notfound page={NotFoundPage} />
-      </Set>
+      </PrivateSet>
     </Router>
   )
 }
