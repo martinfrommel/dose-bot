@@ -51,12 +51,6 @@
 .rw-link:hover {
   @apply text-blue-500;
 }
-.rw-forgot-link {
-  @apply mt-1 text-right text-xs text-gray-400 underline;
-}
-.rw-forgot-link:hover {
-  @apply text-blue-500;
-}
 .rw-heading {
   @apply font-semibold;
 }
@@ -102,12 +96,6 @@
 }
 .rw-button.rw-button-green:hover {
   @apply bg-green-700;
-}
-.rw-button.rw-button-blue {
-  @apply bg-blue-500 text-white;
-}
-.rw-button.rw-button-blue:hover {
-  @apply bg-blue-700;
 }
 .rw-button.rw-button-red {
   @apply bg-red-500 text-white;
@@ -225,19 +213,4 @@
 }
 .rw-text-center {
   @apply text-center;
-}
-.rw-login-container {
-  @apply mx-auto my-16 flex w-96 flex-wrap items-center justify-center;
-}
-.rw-login-container .rw-form-wrapper {
-  @apply w-full text-center;
-}
-.rw-login-link {
-  @apply mt-4 w-full text-center text-sm text-gray-600;
-}
-.rw-webauthn-wrapper {
-  @apply mx-4 mt-6 leading-6;
-}
-.rw-webauthn-wrapper h2 {
-  @apply mb-4 text-xl font-bold;
 }

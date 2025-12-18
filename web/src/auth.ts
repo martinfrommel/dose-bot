@@ -1,5 +1,5 @@
 import { createDbAuthClient, createAuth } from '@cedarjs/auth-dbauth-web'
-import WebAuthnClient from '@cedarjs/auth-dbauth-web/webAuthn'
+import WebAuthnClient from '@cedarjs/auth-dbauth-web/webauthn/WebAuthnClient'
 
 const dbAuthClient = createDbAuthClient({ webAuthn: new WebAuthnClient() })
 

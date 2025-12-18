@@ -10,9 +10,10 @@ import {
 } from '@cedarjs/forms'
 import { Link, navigate, routes } from '@cedarjs/router'
 import { Metadata } from '@cedarjs/web'
-import { toast, Toaster } from '@cedarjs/web/toast'
+import { toast } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
+import AuthLayout from 'src/layouts/AuthLayout/AuthLayout'
 
 const WELCOME_MESSAGE = 'Welcome back!'
 const REDIRECT = routes.home()
@@ -112,91 +113,94 @@ const LoginPage = ({ type }) => {
 
   const AuthWebAuthnPrompt = () => {
     return (
-      <div className="rw-webauthn-wrapper">
-        <h2>WebAuthn Login Enabled</h2>
-        <p>Log in with your fingerprint, face or PIN</p>
-        <div className="rw-button-group">
-          <button className="rw-button rw-button-blue" onClick={onAuthenticate}>
-            Open Authenticator
-          </button>
+      <div className="card bg-base-200">
+        <div className="card-body text-center">
+          <h3 className="text-xl font-semibold">WebAuthn Login Enabled</h3>
+          <p className="text-base-content/70">
+            Log in with your fingerprint, face or PIN
+          </p>
+          <div className="card-actions justify-center mt-4">
+            <button className="btn btn-primary" onClick={onAuthenticate}>
+              Open Authenticator
+            </button>
+          </div>
         </div>
       </div>
     )
   }
 
   const RegisterWebAuthnPrompt = () => (
-    <div className="rw-webauthn-wrapper">
-      <h2>No more Passwords!</h2>
-      <p>
-        Depending on your device you can log in with your fingerprint, face or
-        PIN next time.
-      </p>
-      <div className="rw-button-group">
-        <button className="rw-button rw-button-blue" onClick={onRegister}>
-          Turn On
-        </button>
-        <button className="rw-button" onClick={onSkip}>
-          Skip for now
-        </button>
+    <div className="card bg-base-200">
+      <div className="card-body text-center">
+        <h3 className="text-xl font-semibold">No more Passwords!</h3>
+        <p className="text-base-content/70">
+          Depending on your device you can log in with your fingerprint, face or
+          PIN next time.
+        </p>
+        <div className="card-actions justify-center mt-4 gap-2">
+          <button className="btn btn-primary" onClick={onRegister}>
+            Turn On
+          </button>
+          <button className="btn btn-ghost" onClick={onSkip}>
+            Skip for now
+          </button>
+        </div>
       </div>
     </div>
   )
 
   const PasswordForm = () => (
-    <Form onSubmit={onSubmit} className="rw-form-wrapper">
-      <Label
-        name="username"
-        className="rw-label"
-        errorClassName="rw-label rw-label-error"
-      >
-        Username
-      </Label>
-      <TextField
-        name="username"
-        className="rw-input"
-        errorClassName="rw-input rw-input-error"
-        ref={usernameRef}
-        autoFocus
-        validation={{
-          required: {
-            value: true,
-            message: 'Username is required',
-          },
-        }}
-      />
-
-      <FieldError name="username" className="rw-field-error" />
-
-      <Label
-        name="password"
-        className="rw-label"
-        errorClassName="rw-label rw-label-error"
-      >
-        Password
-      </Label>
-      <PasswordField
-        name="password"
-        className="rw-input"
-        errorClassName="rw-input rw-input-error"
-        autoComplete="current-password"
-        validation={{
-          required: {
-            value: true,
-            message: 'Password is required',
-          },
-        }}
-      />
-
-      <div className="rw-forgot-link">
-        <Link to={routes.forgotPassword()} className="rw-forgot-link">
-          Forgot Password?
-        </Link>
+    <Form onSubmit={onSubmit}>
+      <div className="form-control w-full">
+        <Label name="username" className="label">
+          <span className="label-text">Username</span>
+        </Label>
+        <TextField
+          name="username"
+          className="input input-bordered w-full"
+          errorClassName="input input-bordered input-error w-full"
+          ref={usernameRef}
+          autoFocus
+          validation={{
+            required: {
+              value: true,
+              message: 'Username is required',
+            },
+          }}
+        />
+        <FieldError name="username" className="label-text-alt text-error mt-1" />
       </div>
 
-      <FieldError name="password" className="rw-field-error" />
+      <div className="form-control w-full mt-4">
+        <Label name="password" className="label">
+          <span className="label-text">Password</span>
+        </Label>
+        <PasswordField
+          name="password"
+          className="input input-bordered w-full"
+          errorClassName="input input-bordered input-error w-full"
+          autoComplete="current-password"
+          validation={{
+            required: {
+              value: true,
+              message: 'Password is required',
+            },
+          }}
+        />
+        <div className="label">
+          <span className="label-text-alt"></span>
+          <Link
+            to={routes.forgotPassword()}
+            className="label-text-alt link link-hover"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+        <FieldError name="password" className="label-text-alt text-error mt-1" />
+      </div>
 
-      <div className="rw-button-group">
-        <Submit className="rw-button rw-button-blue">Login</Submit>
+      <div className="form-control mt-6">
+        <Submit className="btn btn-primary w-full">Login</Submit>
       </div>
     </Form>
   )
@@ -217,24 +221,14 @@ const LoginPage = ({ type }) => {
     if (showWebAuthn) {
       if (webAuthn.isEnabled()) {
         return (
-          <div className="rw-login-link">
-            <span>or login with </span>{' '}
-            <a href="?type=password" className="rw-link">
-              username and password
-            </a>
-          </div>
+          <div className="divider">OR</div>,
+          <a href="?type=password" className="link link-hover">
+            Login with username and password
+          </a>
         )
       }
-    } else {
-      return (
-        <div className="rw-login-link">
-          <span>Don&apos;t have an account?</span>{' '}
-          <Link to={routes.signup()} className="rw-link">
-            Sign up!
-          </Link>
-        </div>
-      )
     }
+    return null
   }
 
   if (loading) {
@@ -244,22 +238,10 @@ const LoginPage = ({ type }) => {
   return (
     <>
       <Metadata title="Login" />
-
-      <main className="rw-main">
-        <Toaster toastOptions={{ className: 'rw-toast', duration: 6000 }} />
-        <div className="rw-scaffold rw-login-container">
-          <div className="rw-segment">
-            <header className="rw-segment-header">
-              <h2 className="rw-heading rw-heading-secondary">Login</h2>
-            </header>
-
-            <div className="rw-segment-main">
-              <div className="rw-form-wrapper">{formToRender()}</div>
-            </div>
-          </div>
-          {linkToRender()}
-        </div>
-      </main>
+      <AuthLayout title="Login">
+        {formToRender()}
+        {linkToRender()}
+      </AuthLayout>
     </>
   )
 }
