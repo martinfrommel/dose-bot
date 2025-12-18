@@ -46,3 +46,25 @@ model ApiKey {
   validUntil  DateTime?
   description String?
 }
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  hashedPassword      String
+  salt                String
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  webAuthnChallenge   String? @unique
+  credentials         UserCredential[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model UserCredential {
+  id         String  @id
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  publicKey  Bytes
+  transports String?
+  counter    BigInt
+}

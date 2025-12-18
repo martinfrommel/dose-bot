@@ -11,9 +11,11 @@
     ]
   },
   "dependencies": {
+    "@cedarjs/auth-dbauth-web": "2.1.0",
     "@cedarjs/forms": "2.1.0",
     "@cedarjs/router": "2.1.0",
     "@cedarjs/web": "2.1.0",
+    "@simplewebauthn/browser": "^9",
     "humanize-string": "2.1.0",
     "lucide-react": "^0.561.0",
     "react": "18.3.1",

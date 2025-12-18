@@ -12,9 +12,15 @@ import { Router, Route, Set } from '@cedarjs/router'
 import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
 import MainLayout from './layouts/MainLayout/MainLayout'
 
+import { useAuth } from './auth.js'
+
 const Routes = () => {
   return (
-    <Router>
+    <Router useAuth={useAuth}>
+      <Route path="/login" page={LoginPage} name="login" />
+      <Route path="/signup" page={SignupPage} name="signup" />
+      <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
+      <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
       <Set wrap={MainLayout}>
         <Set wrap={ItemViewLayout}>
           <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
