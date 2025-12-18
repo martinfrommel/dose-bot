@@ -14,5 +14,9 @@
     "activeClassName",
     "errorClassName"
   ],
-  "prisma.pinToPrisma6": true
+  "prisma.pinToPrisma6": true,
+  "go.toolsEnvVars": {},
+  "files.watcherExclude": {
+    "**/target": true
+  }
 }

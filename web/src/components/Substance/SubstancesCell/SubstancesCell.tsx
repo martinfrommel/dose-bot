@@ -1,12 +1,13 @@
 import type { FindSubstances, FindSubstancesVariables } from 'types/graphql'
 
-import { Link, routes } from '@cedarjs/router'
+import { routes } from '@cedarjs/router'
 import type {
   CellSuccessProps,
   CellFailureProps,
   TypedDocumentNode,
 } from '@cedarjs/web'
 
+import EmptyState from 'src/components/EmptyState/EmptyState'
 import Substances from 'src/components/Substance/Substances'
 
 export const QUERY: TypedDocumentNode<FindSubstances, FindSubstancesVariables> =
@@ -27,12 +28,11 @@ export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
   return (
-    <section className="block min-h-24 space-y-3 text-center">
-      <h3>No substances yet.</h3>
-      <Link to={routes.newSubstance()} className="btn btn-primary btn-sm">
-        Create one
-      </Link>
-    </section>
+    <EmptyState
+      title="No substances yet."
+      createLink={routes.newSubstance()}
+      createLabel="Create one"
+    />
   )
 }
 

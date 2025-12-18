@@ -1,7 +1,7 @@
 import { XIcon } from 'lucide-react'
 import type { FindApiKeys, FindApiKeysVariables } from 'types/graphql'
 
-import { Link, routes } from '@cedarjs/router'
+import { routes } from '@cedarjs/router'
 import type {
   CellSuccessProps,
   CellFailureProps,
@@ -9,6 +9,7 @@ import type {
 } from '@cedarjs/web'
 
 import ApiKeys from 'src/components/ApiKey/ApiKeys'
+import EmptyState from 'src/components/EmptyState/EmptyState'
 
 export const QUERY: TypedDocumentNode<FindApiKeys, FindApiKeysVariables> = gql`
   query FindApiKeys {
@@ -29,12 +30,11 @@ export const Loading = () => (
 
 export const Empty = () => {
   return (
-    <div className="py-8 text-center">
-      <p className="mb-4">No API Keys yet.</p>
-      <Link to={routes.newApiKey()} className="btn btn-primary">
-        Create one
-      </Link>
-    </div>
+    <EmptyState
+      title="No API Keys yet."
+      createLink={routes.newApiKey()}
+      createLabel="Create one"
+    />
   )
 }
 

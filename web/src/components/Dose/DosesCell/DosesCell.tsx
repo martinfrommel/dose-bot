@@ -1,6 +1,6 @@
 import type { FindDoses, FindDosesVariables } from 'types/graphql'
 
-import { Link, routes } from '@cedarjs/router'
+import { routes } from '@cedarjs/router'
 import type {
   CellSuccessProps,
   CellFailureProps,
@@ -8,6 +8,7 @@ import type {
 } from '@cedarjs/web'
 
 import Doses from 'src/components/Dose/Doses'
+import EmptyState from 'src/components/EmptyState/EmptyState'
 import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<FindDoses, FindDosesVariables> = gql`
@@ -39,12 +40,11 @@ export const Loading = () => <div>Loading...</div>
 
 export const Empty = ({ slug }: DosesCellProps) => {
   return (
-    <section className="block min-h-24 space-y-3 text-center">
-      <h3>No doses yet.</h3>
-      <Link to={routes.newDose({ slug })} className="btn btn-primary btn-sm">
-        Create one
-      </Link>
-    </section>
+    <EmptyState
+      title="No doses yet."
+      createLink={routes.newDose({ slug })}
+      createLabel="Create one"
+    />
   )
 }
 
