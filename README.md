@@ -4,6 +4,14 @@ DoseBot is a simple, open-source application for recording, managing, and servin
 
 The project uses Prisma with SQLite by default, optional Memcached for caching, Tailwind CSS with daisyUI for UI components, and Vite for the web dev server.
 
+## Motivation behind this project
+
+We believe that having simple, locally deployable and accessible web-based apps is a good way of keeping your data to yourself, and through this experiment, we are hoping to further this endeavour.
+
+## Where can I run this
+
+Anywhere - you can deploy this through a third-party platfom like Coolify or Vercel, or you can run this locally on your machine and hook it up to something like Apple Shortcuts to log your data (this is how we use it).
+
 ## Features
 
 - GraphQL API for `Dose`, `Substance`, and `ApiKey` entities
