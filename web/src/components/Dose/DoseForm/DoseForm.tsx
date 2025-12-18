@@ -1,4 +1,7 @@
-import type { EditDoseById, UpdateDoseInput } from 'types/graphql'
+import React from 'react'
+
+import { SaveIcon } from 'lucide-react'
+import type { Dose, EditDoseById, UpdateDoseInput } from 'types/graphql'
 
 import type { RWGqlError } from '@cedarjs/forms'
 import {
@@ -6,12 +9,15 @@ import {
   FormError,
   FieldError,
   Label,
-  TextField,
   RadioField,
   Submit,
 } from '@cedarjs/forms'
 
+import AmountSlider from 'src/components/AmountSlider'
+
 type FormDose = NonNullable<EditDoseById['dose']>
+
+type DoseUnit = Dose['unit']
 
 interface DoseFormProps {
   dose?: EditDoseById['dose']
@@ -20,9 +26,37 @@ interface DoseFormProps {
   loading: boolean
 }
 
+interface MaxAmounts {
+  MG: number
+  ML: number
+  G: number
+  IU: number
+}
+
+const AVAILABLE_UNITS: DoseUnit[] = ['MG', 'ML', 'G', 'IU']
+
+const MAX_AMOUNTS: MaxAmounts = {
+  MG: 5000,
+  ML: 1000,
+  G: 100,
+  IU: 10000,
+}
+
+const AVAILABLE_STEPS = {
+  MG: 1,
+  ML: 10,
+  G: 0.5,
+  IU: 100,
+} as const
+
 const DoseForm = (props: DoseFormProps) => {
+  const [amount, setAmount] = React.useState(props.dose?.amount || 0)
+  const [unit, setUnit] = React.useState<DoseUnit>(
+    props.dose?.unit || AVAILABLE_UNITS[0]
+  )
+
   const onSubmit = (data: FormDose) => {
-    props.onSave(data, props?.dose?.id)
+    props.onSave({ ...data, amount }, props?.dose?.id)
   }
 
   return (
@@ -38,12 +72,13 @@ const DoseForm = (props: DoseFormProps) => {
         <Label name="amount" className="label" errorClassName="label">
           <span className="label-text">Amount</span>
         </Label>
-        <TextField
+        <AmountSlider
           name="amount"
-          defaultValue={props.dose?.amount}
-          className="input input-bordered w-full"
-          errorClassName="input input-bordered input-error w-full"
-          validation={{ valueAsNumber: true, required: true }}
+          value={amount}
+          onChange={setAmount}
+          min={0}
+          max={MAX_AMOUNTS[unit]}
+          step={AVAILABLE_STEPS[unit]}
         />
         <FieldError name="amount" className="label-text-alt text-error" />
       </div>
@@ -53,7 +88,7 @@ const DoseForm = (props: DoseFormProps) => {
           <span className="label-text">Unit</span>
         </Label>
         <div className="flex flex-wrap gap-4">
-          {['MG', 'ML', 'G', 'IU'].map((u, i) => (
+          {AVAILABLE_UNITS.map((u, i) => (
             <label key={u} className="label cursor-pointer gap-2">
               <RadioField
                 id={`dose-unit-${i}`}
@@ -62,6 +97,7 @@ const DoseForm = (props: DoseFormProps) => {
                 defaultChecked={props.dose?.unit?.includes(u)}
                 className="radio"
                 errorClassName="radio"
+                onChange={() => setUnit(u)}
               />
               <span className="label-text">{u}</span>
             </label>
@@ -72,6 +108,7 @@ const DoseForm = (props: DoseFormProps) => {
 
       <div className="form-control mt-6">
         <Submit disabled={props.loading} className="btn btn-primary">
+          <SaveIcon className="size-4" />
           {props.loading ? 'Saving...' : 'Save'}
         </Submit>
       </div>

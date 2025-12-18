@@ -23,8 +23,8 @@ const Routes = () => {
           <Route path="/substances/new" page={SubstanceNewSubstancePage} name="newSubstance" />
           <Route path="/substances/{slug}/edit" page={SubstanceEditSubstancePage} name="editSubstance" />
           <Route path="/substances/{slug}" page={SubstanceSubstancePage} name="substance" />
+          <Route path="/substances/{slug}/doses" page={DoseDosesPage} name="doses" />
         </Set>
-        <Route path="/substances/{slug}/doses" page={DoseDosesPage} name="doses" />
         <Route path="/substances" page={SubstanceSubstancesPage} name="substances" />
         <Route path="/api-keys/new" page={ApiKeyNewApiKeyPage} name="newApiKey" />
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />

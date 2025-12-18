@@ -8,6 +8,7 @@ import type {
 } from '@cedarjs/web'
 
 import Doses from 'src/components/Dose/Doses'
+import { useItemView } from 'src/contexts/ItemViewContext'
 
 export const QUERY: TypedDocumentNode<FindDoses, FindDosesVariables> = gql`
   query FindDoses {
@@ -19,6 +20,11 @@ export const QUERY: TypedDocumentNode<FindDoses, FindDosesVariables> = gql`
       unit
       substanceId
       substance {
+        id
+        createdAt
+        updatedAt
+        name
+        description
         slug
       }
     }
@@ -33,12 +39,12 @@ export const Loading = () => <div>Loading...</div>
 
 export const Empty = ({ slug }: DosesCellProps) => {
   return (
-    <div className="text-center">
-      No doses yet.{' '}
+    <section className="block min-h-24 space-y-3 text-center">
+      <h3>No doses yet.</h3>
       <Link to={routes.newDose({ slug })} className="btn btn-primary btn-sm">
         Create one
       </Link>
-    </div>
+    </section>
   )
 }
 
@@ -52,5 +58,13 @@ export const Success = ({
   doses,
   slug,
 }: CellSuccessProps<FindDoses, FindDosesVariables> & DosesCellProps) => {
+  const { setSubstance, setCurrentPageTitle } = useItemView()
+
+  // Set dose in context and clear page title when it loads
+  React.useEffect(() => {
+    setSubstance(doses[0]?.substance)
+    setCurrentPageTitle(undefined)
+  }, [doses, setSubstance, setCurrentPageTitle])
+
   return <Doses doses={doses} slug={slug} />
 }

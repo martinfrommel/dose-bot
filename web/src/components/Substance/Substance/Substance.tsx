@@ -1,3 +1,4 @@
+import { EditIcon, ListIcon, PlusIcon, TrashIcon } from 'lucide-react'
 import type {
   DeleteSubstanceMutation,
   DeleteSubstanceMutationVariables,
@@ -74,15 +75,24 @@ const Substance = ({ substance }: Props) => {
         </div>
         <div className="card-actions justify-end p-4">
           <Link
-            to={routes.newDose({ slug: substance.slug })}
-            className="btn btn-sm btn-outline"
+            to={routes.doses({ slug: substance.slug })}
+            className="btn btn-outline"
           >
+            <ListIcon className="size-4" />
+            View Doses
+          </Link>
+          <Link
+            to={routes.newDose({ slug: substance.slug })}
+            className="btn btn-outline"
+          >
+            <PlusIcon className="size-4" />
             Add Dose
           </Link>
           <Link
             to={routes.editSubstance({ slug: substance.slug })}
             className="btn btn-primary"
           >
+            <EditIcon className="size-4" />
             Edit
           </Link>
           <button
@@ -90,6 +100,7 @@ const Substance = ({ substance }: Props) => {
             className="btn btn-error"
             onClick={() => onDeleteClick(substance.id)}
           >
+            <TrashIcon className="size-4" />
             Delete
           </button>
         </div>
