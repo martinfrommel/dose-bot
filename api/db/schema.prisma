@@ -16,6 +16,11 @@ enum Unit {
   IU
 }
 
+enum Role {
+  Admin
+  User
+}
+
 model Dose {
   id          String    @id @default(cuid())
   createdAt   DateTime  @default(now())
@@ -52,6 +57,7 @@ model User {
   email               String    @unique
   hashedPassword      String
   salt                String
+  role                Role      @default(User)
   resetToken          String?
   resetTokenExpiresAt DateTime?
   webAuthnChallenge   String? @unique

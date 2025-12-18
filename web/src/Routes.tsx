@@ -16,10 +16,13 @@ import MainLayout from './layouts/MainLayout/MainLayout'
 const Routes = () => {
   return (
     <Router useAuth={useAuth}>
-      <Route path="/login" page={LoginPage} name="login" />
-      <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
-      <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
+      <Route path="/login" page={LoginPage} name="login" prerender />
+      <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" prerender />
+      <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" prerender />
       <PrivateSet unauthenticated={'login'} wrap={MainLayout}>
+        <PrivateSet unauthenticated={'/'} roles={'Admin'}>
+          <Route path="/users/new" page={UsersNewUserPage} name="users/newUser" />
+        </PrivateSet>
         <Set wrap={ItemViewLayout}>
           <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
           <Route path="/substances/{slug}/doses/{id}/edit" page={DoseEditDosePage} name="editDose" />
@@ -34,8 +37,8 @@ const Routes = () => {
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />
         <Route path="/api-keys/{id}" page={ApiKeyApiKeyPage} name="apiKey" />
         <Route path="/api-keys" page={ApiKeyApiKeysPage} name="apiKeys" />
-        <Route path="/" page={HomePage} name="home" />
-        <Route notfound page={NotFoundPage} />
+        <Route path="/" page={HomePage} name="home" prerender />
+        <Route notfound page={NotFoundPage} prerender />
       </PrivateSet>
     </Router>
   )

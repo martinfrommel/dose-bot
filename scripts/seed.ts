@@ -62,6 +62,7 @@ export default async () => {
         data: {
           hashedPassword,
           salt,
+          role: 'Admin',
         },
       })
 
@@ -79,6 +80,7 @@ export default async () => {
         email: adminEmail,
         hashedPassword,
         salt,
+        role: 'Admin',
       },
     })
 

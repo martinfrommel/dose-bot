@@ -1,7 +1,13 @@
 export const schema = gql`
+  enum Role {
+    Admin
+    User
+  }
+
   type User {
     id: Int!
     email: String!
+    role: Role!
     webAuthnChallenge: String
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -12,25 +18,10 @@ export const schema = gql`
     user(id: Int!): User @requireAuth
   }
 
-  input CreateUserInput {
-    email: String!
-    password: String!
-    resetToken: String
-    resetTokenExpiresAt: DateTime
-    webAuthnChallenge: String
-  }
-
-  input UpdateUserInput {
-    email: String
-    password: String
-    resetToken: String
-    resetTokenExpiresAt: DateTime
-    webAuthnChallenge: String
-  }
-
   type Mutation {
-    createUser(input: CreateUserInput!): User! @skipAuth
-    updateUser(id: Int!, input: UpdateUserInput!): User! @requireAuth
+    createUser(email: String!, plainPassword: String!, role: Role): User! @requireAuth
+    resetUserPassword(userId: Int!): String! @requireAuth
+    updateUser(id: Int!, email: String, role: Role): User! @requireAuth
     deleteUser(id: Int!): User! @requireAuth
   }
 `
