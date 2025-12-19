@@ -1,15 +1,15 @@
 # Build stage
 FROM node:24-alpine AS builder
 
-# Enable Corepack to use Yarn 4
-RUN corepack enable
-
 WORKDIR /app
 
 # Copy package files
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY api/package.json ./api/
 COPY web/package.json ./web/
+
+# Ensure the expected Yarn version is available without vendoring .yarn
+RUN corepack enable && corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
 
 # Install dependencies
 RUN yarn install --immutable
@@ -26,9 +26,6 @@ RUN yarn cedar build
 # Production stage
 FROM node:24-alpine
 
-# Enable Corepack to use Yarn 4
-RUN corepack enable
-
 WORKDIR /app
 
 # Copy built application from builder
@@ -37,6 +34,9 @@ COPY --from=builder /app/api ./api
 COPY --from=builder /app/web ./web
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/redwood.toml ./
+
+# Ensure Yarn is available at runtime for cedar commands
+RUN corepack enable && corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
 
 # Create data directory for SQLite database
 RUN mkdir -p /app/data
