@@ -40,6 +40,12 @@ export const user: QueryResolvers['user'] = ({ id }) => {
   })
 }
 
+export const needsInitialAdmin: QueryResolvers['needsInitialAdmin'] =
+  async () => {
+    const userCount = await db.user.count()
+    return userCount === 0
+  }
+
 export const createUser: MutationResolvers['createUser'] = async ({
   email,
   plainPassword,
@@ -137,3 +143,37 @@ export const deleteUser: MutationResolvers['deleteUser'] = async ({ id }) => {
     where: { id },
   })
 }
+
+export const createInitialAdmin: MutationResolvers['createInitialAdmin'] =
+  async ({ email, plainPassword }) => {
+    const sanitizedEmail = sanitizeEmail(email)
+
+    const admin = await db.$transaction(async (tx) => {
+      const userCount = await tx.user.count()
+      if (userCount > 0) {
+        throw new Error('Initial admin has already been created')
+      }
+
+      const existing = await tx.user.findUnique({
+        where: { email: sanitizedEmail },
+      })
+      if (existing) {
+        throw new Error(`User with email ${email} already exists`)
+      }
+
+      const [hashedPassword, salt] = hashPassword(plainPassword)
+      const avatarUrl = buildAvatarUrl()
+
+      return tx.user.create({
+        data: {
+          email: sanitizedEmail,
+          avatarUrl,
+          hashedPassword,
+          salt,
+          role: Role.Admin,
+        },
+      })
+    })
+
+    return admin
+  }
