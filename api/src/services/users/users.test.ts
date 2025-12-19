@@ -10,6 +10,29 @@ import type { StandardScenario } from './users.scenarios.js'
 // https://redwoodjs.com/docs/testing#jest-expect-type-considerations
 
 describe('users', () => {
+  const setCurrentUser = (user: Record<string, unknown> | null) => {
+    if (typeof globalThis.mockCurrentUser === 'function') {
+      globalThis.mockCurrentUser(user)
+      return
+    }
+
+    // Fallback in case mockCurrentUser is not available
+    ;(globalThis as typeof globalThis & { context?: Record<string, unknown> }).context = {
+      ...(globalThis as typeof globalThis & { context?: Record<string, unknown> })
+        .context,
+      currentUser: user,
+    }
+  }
+
+  beforeEach(() => {
+    setCurrentUser({
+      id: 999,
+      email: 'admin@example.com',
+      role: 'Admin',
+      roles: ['Admin'],
+    })
+  })
+
   scenario('returns all users', async (scenario: StandardScenario) => {
     const result = await users()
 
@@ -24,28 +47,24 @@ describe('users', () => {
 
   scenario('creates a user', async () => {
     const result = await createUser({
-      input: {
-        email: 'String4527021',
-        hashedPassword: 'String',
-        salt: 'String',
-        updatedAt: '2025-12-18T22:22:31.918Z',
-      },
+      email: 'NewUser@Example.com',
+      plainPassword: 'P@ssw0rd!',
     })
 
-    expect(result.email).toEqual('String4527021')
-    expect(result.hashedPassword).toEqual('String')
-    expect(result.salt).toEqual('String')
-    expect(result.updatedAt).toEqual(new Date('2025-12-18T22:22:31.918Z'))
+    expect(result.email).toEqual('newuser@example.com')
+    expect(result.hashedPassword).toBeDefined()
+    expect(result.salt).toBeDefined()
+    expect(result.avatarUrl).toBeDefined()
   })
 
   scenario('updates a user', async (scenario: StandardScenario) => {
     const original = (await user({ id: scenario.user.one.id })) as User
     const result = await updateUser({
       id: original.id,
-      input: { email: 'String2963862' },
+      email: 'UpdatedEmail@Example.com',
     })
 
-    expect(result.email).toEqual('String2963862')
+    expect(result.email).toEqual('updatedemail@example.com')
   })
 
   scenario('deletes a user', async (scenario: StandardScenario) => {

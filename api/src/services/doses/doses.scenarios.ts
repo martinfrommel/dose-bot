@@ -8,8 +8,13 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
       data: {
         updatedAt: '2025-12-18T02:47:35.619Z',
         amount: 4529457.43050556,
+        unit: 'MG',
         substance: {
-          create: { updatedAt: '2025-12-18T02:47:35.623Z', name: 'String' },
+          create: {
+            updatedAt: '2025-12-18T02:47:35.623Z',
+            name: 'String',
+            slug: 'string-slug-1',
+          },
         },
       },
     },
@@ -17,8 +22,13 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
       data: {
         updatedAt: '2025-12-18T02:47:35.623Z',
         amount: 6076834.933297018,
+        unit: 'MG',
         substance: {
-          create: { updatedAt: '2025-12-18T02:47:35.627Z', name: 'String' },
+          create: {
+            updatedAt: '2025-12-18T02:47:35.627Z',
+            name: 'String',
+            slug: 'string-slug-2',
+          },
         },
       },
     },

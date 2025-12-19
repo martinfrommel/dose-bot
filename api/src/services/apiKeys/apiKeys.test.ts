@@ -18,6 +18,28 @@ import type { StandardScenario } from './apiKeys.scenarios.js'
 // https://redwoodjs.com/docs/testing#jest-expect-type-considerations
 
 describe('apiKeys', () => {
+  const setCurrentUser = (user: Record<string, unknown> | null) => {
+    if (typeof globalThis.mockCurrentUser === 'function') {
+      globalThis.mockCurrentUser(user)
+      return
+    }
+
+    ;(globalThis as typeof globalThis & { context?: Record<string, unknown> }).context = {
+      ...(globalThis as typeof globalThis & { context?: Record<string, unknown> })
+        .context,
+      currentUser: user,
+    }
+  }
+
+  beforeEach(() => {
+    setCurrentUser({
+      id: 999,
+      email: 'admin@example.com',
+      role: 'Admin',
+      roles: ['Admin'],
+    })
+  })
+
   scenario('returns all apiKeys', async (scenario: StandardScenario) => {
     const result = await apiKeys()
 

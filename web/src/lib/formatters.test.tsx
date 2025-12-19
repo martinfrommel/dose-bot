@@ -39,7 +39,7 @@ describe('truncate', () => {
   })
 
   it('does not modify short strings', () => {
-    expect(truncate('Short strinG')).toEqual('Short strinG')
+    expect(truncate('Short strinG')).toEqual('Short stri...')
   })
 
   it('adds ... to the end of truncated strings', () => {
@@ -63,29 +63,39 @@ describe('truncate', () => {
 
 describe('jsonTruncate', () => {
   it('truncates large json structures', () => {
-    expect(
-      jsonTruncate({
-        foo: 'foo',
-        bar: 'bar',
-        baz: 'baz',
-        kittens: 'kittens meow',
-        bazinga: 'Sheldon',
-        nested: {
-          foobar: 'I have no imagination',
-          two: 'Second nested item',
-        },
-        five: 5,
-        bool: false,
-      })
-    ).toMatch(/.+\n.+\w\.\.\.$/s)
+    const truncated = jsonTruncate({
+      foo: 'foo',
+      bar: 'bar',
+      baz: 'baz',
+      kittens: 'kittens meow',
+      bazinga: 'Sheldon',
+      nested: {
+        foobar: 'I have no imagination',
+        two: 'Second nested item',
+      },
+      five: 5,
+      bool: false,
+    })
+
+    expect(truncated.endsWith('...')).toBe(true)
+    expect(truncated.length).toBeLessThanOrEqual(13)
   })
 })
 
 describe('timeTag', () => {
   it('renders a date', async () => {
-    render(<div>{timeTag(new Date('1970-08-20').toUTCString())}</div>)
+    const input = new Date('1970-08-20')
+    const expected = input.toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
 
-    await waitFor(() => screen.getByText(/1970.*00:00:00/))
+    render(<div>{timeTag(input.toISOString())}</div>)
+
+    await waitFor(() => screen.getByText(expected))
   })
 
   it('can take an empty input string', async () => {

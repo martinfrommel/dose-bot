@@ -39,16 +39,16 @@ describe('userCredentials', () => {
   scenario('creates a userCredential', async (scenario: StandardScenario) => {
     const result = await createUserCredential({
       input: {
-        id: 'String',
+        id: 'cred-new',
         userId: scenario.userCredential.two.userId,
-        publicKey: new Uint8Array([181, 275, 209]),
-        counter: 86086,
+        publicKey: new Uint8Array([181, 175, 209]),
+        counter: 8608631n,
       },
     })
 
-    expect(result.id).toEqual('String')
+    expect(result.id).toEqual('cred-new')
     expect(result.userId).toEqual(scenario.userCredential.two.userId)
-    expect(result.publicKey).toEqual(new Uint8Array([181, 275, 209]))
+    expect(result.publicKey).toEqual(new Uint8Array([181, 175, 209]))
     expect(result.counter).toEqual(8608631n)
   })
 

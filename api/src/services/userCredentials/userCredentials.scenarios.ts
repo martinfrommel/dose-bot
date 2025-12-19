@@ -6,8 +6,8 @@ export const standard = defineScenario<Prisma.UserCredentialCreateArgs>({
   userCredential: {
     one: {
       data: {
-        id: 'String',
-        publicKey: new Uint8Array([14, 274, 2]),
+        id: 'cred-one',
+        publicKey: new Uint8Array([14, 74, 2]),
         counter: 7654382,
         user: {
           create: {
@@ -21,8 +21,8 @@ export const standard = defineScenario<Prisma.UserCredentialCreateArgs>({
     },
     two: {
       data: {
-        id: 'String',
-        publicKey: new Uint8Array([97, 180, 287]),
+        id: 'cred-two',
+        publicKey: new Uint8Array([97, 180, 187]),
         counter: 3130448,
         user: {
           create: {
