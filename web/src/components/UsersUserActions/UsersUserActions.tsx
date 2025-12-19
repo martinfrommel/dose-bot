@@ -36,26 +36,27 @@ const UsersUserActions = ({
   const [deleteUser, { loading: deleting }] = useMutation(DELETE_USER)
   const [tempPassword, setTempPassword] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false)
+        setTempPassword(null)
       }
     }
 
-    if (isOpen) {
+    if (isOpen || tempPassword) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [isOpen])
+  }, [isOpen, tempPassword])
 
   const handleReset = async () => {
     setIsOpen(false)
@@ -89,8 +90,8 @@ const UsersUserActions = ({
   }
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      <div className="relative" ref={dropdownRef}>
+    <div className="relative flex flex-col items-end gap-2" ref={containerRef}>
+      <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -126,30 +127,47 @@ const UsersUserActions = ({
       </div>
 
       {tempPassword && (
-        <div className="alert alert-info w-full max-w-md text-left">
-          <div>
-            <p className="font-semibold">Temporary password for {userEmail}</p>
-            <code className="mb-2 block break-all rounded bg-base-300 p-2">
-              {tempPassword}
-            </code>
+        <div className="absolute right-0 top-[3.25rem] z-[200] w-80 rounded-box border border-base-300 bg-base-100 shadow-2xl">
+          <div className="flex items-start justify-between gap-3 border-b border-base-200 p-4">
+            <div>
+              <p className="text-sm font-semibold text-base-content">
+                Temporary password
+              </p>
+              <p className="text-xs text-base-content/70">for {userEmail}</p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-circle btn-ghost btn-xs"
+              onClick={() => setTempPassword(null)}
+              aria-label="Close temporary password popover"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="space-y-3 p-4">
+            <pre className="overflow-x-auto rounded-box bg-base-200 p-3 text-sm">
+              <code className="break-all font-mono">{tempPassword}</code>
+            </pre>
             <p className="text-sm text-base-content/80">
               Share securely and ask the user to change it after login.
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="flex items-center justify-end gap-2">
               <button
+                type="button"
+                className="btn btn-outline btn-sm"
                 onClick={() => {
                   navigator.clipboard.writeText(tempPassword)
                   toast.success('Password copied to clipboard')
                 }}
-                className="btn btn-ghost btn-xs"
               >
                 Copy
               </button>
               <button
+                type="button"
+                className="btn btn-primary btn-sm"
                 onClick={() => setTempPassword(null)}
-                className="btn btn-ghost btn-xs"
               >
-                Hide
+                Done
               </button>
             </div>
           </div>

@@ -1,20 +1,31 @@
-import { Form, Label, TextField, PasswordField, SelectField, Submit, FieldError } from '@cedarjs/forms'
+import {
+  Form,
+  Label,
+  PasswordField,
+  SelectField,
+  Submit,
+  FieldError,
+  EmailField,
+} from '@cedarjs/forms'
 
 interface UsersUserFormProps {
-  onSubmit: (data: { email: string; plainPassword: string; role?: string }) => void
+  onSubmit: (data: {
+    email: string
+    plainPassword: string
+    role?: string
+  }) => void
   loading?: boolean
 }
 
 const UsersUserForm = ({ onSubmit, loading }: UsersUserFormProps) => {
   return (
     <Form onSubmit={onSubmit}>
-      <div className="form-control w-full mb-4">
+      <div className="form-control mb-4 w-full">
         <Label name="email" className="label">
           <span className="label-text">Email</span>
         </Label>
-        <TextField
+        <EmailField
           name="email"
-          type="email"
           className="input input-bordered w-full"
           errorClassName="input input-bordered input-error w-full"
           validation={{
@@ -31,7 +42,7 @@ const UsersUserForm = ({ onSubmit, loading }: UsersUserFormProps) => {
         <FieldError name="email" className="label-text-alt mt-1 text-error" />
       </div>
 
-      <div className="form-control w-full mb-4">
+      <div className="form-control mb-4 w-full">
         <Label name="plainPassword" className="label">
           <span className="label-text">Password</span>
         </Label>
@@ -50,10 +61,13 @@ const UsersUserForm = ({ onSubmit, loading }: UsersUserFormProps) => {
             },
           }}
         />
-        <FieldError name="plainPassword" className="label-text-alt mt-1 text-error" />
+        <FieldError
+          name="plainPassword"
+          className="label-text-alt mt-1 text-error"
+        />
       </div>
 
-      <div className="form-control w-full mb-6">
+      <div className="form-control mb-6 w-full">
         <Label name="role" className="label">
           <span className="label-text">Role</span>
         </Label>
@@ -68,10 +82,7 @@ const UsersUserForm = ({ onSubmit, loading }: UsersUserFormProps) => {
         <FieldError name="role" className="label-text-alt mt-1 text-error" />
       </div>
 
-      <Submit
-        disabled={loading}
-        className="btn btn-primary w-full"
-      >
+      <Submit disabled={loading} className="btn btn-primary w-full">
         {loading ? 'Creating...' : 'Create User'}
       </Submit>
     </Form>

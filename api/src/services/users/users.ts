@@ -45,14 +45,9 @@ export const createUser: MutationResolvers['createUser'] = async ({
 
   const sanitizedEmail = sanitizeEmail(email)
 
-  // Check if user already exists (case-insensitive)
+  // Check if user already exists (email stored sanitized to lowercase)
   const existing = await db.user.findUnique({
-    where: {
-      email: {
-        equals: sanitizedEmail,
-        mode: 'insensitive',
-      } as any,
-    },
+    where: { email: sanitizedEmail },
   })
 
   if (existing) {
@@ -111,10 +106,4 @@ export const deleteUser: MutationResolvers['deleteUser'] = async ({ id }) => {
   return db.user.delete({
     where: { id },
   })
-}
-
-export const User: UserRelationResolvers = {
-  credentials: (_obj, { root }) => {
-    return db.user.findUnique({ where: { id: root?.id } }).credentials()
-  },
 }

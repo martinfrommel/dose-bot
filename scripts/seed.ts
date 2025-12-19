@@ -55,14 +55,9 @@ export default async () => {
     const adminEmailRaw = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
     const adminEmail = sanitizeEmail(adminEmailRaw)
 
-    // Check if admin user already exists (case-insensitive)
+    // Check if admin user already exists (emails stored sanitized)
     const existingAdmin = await db.user.findUnique({
-      where: {
-        email: {
-          equals: adminEmail,
-          mode: 'insensitive',
-        } as any,
-      },
+      where: { email: adminEmail },
     })
 
     // Generate a new password and Cedar-compatible hash/salt

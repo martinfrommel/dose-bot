@@ -53,7 +53,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                     }
                   >
                     <span
-                      className="flex cursor-not-allowed select-none items-center gap-2 rounded-btn px-4 py-2 text-base-content/50"
+                      className="pointer-events-none flex items-center gap-2 opacity-50"
                       aria-disabled="true"
                     >
                       <Users2Icon className="size-3" />
