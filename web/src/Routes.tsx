@@ -9,6 +9,9 @@
 
 import { Router, Route, Set, PrivateSet } from '@cedarjs/router'
 
+import UsersNewUserPage from 'src/pages/UsersNewUserPage/UsersNewUserPage'
+import UsersUsersPage from 'src/pages/UsersUsersPage/UsersUsersPage'
+
 import { useAuth } from './auth.js'
 import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
 import MainLayout from './layouts/MainLayout/MainLayout'
@@ -21,7 +24,8 @@ const Routes = () => {
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" prerender />
       <PrivateSet unauthenticated={'login'} wrap={MainLayout}>
         <PrivateSet unauthenticated={'/'} roles={'Admin'}>
-          <Route path="/users/new" page={UsersNewUserPage} name="users/newUser" />
+          <Route path="/users" page={UsersUsersPage} name="users" />
+          <Route path="/users/new" page={UsersNewUserPage} name="usersNewUser" />
         </PrivateSet>
         <Set wrap={ItemViewLayout}>
           <Route path="/substances/{slug}/doses/new" page={DoseNewDosePage} name="newDose" />
@@ -37,7 +41,7 @@ const Routes = () => {
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />
         <Route path="/api-keys/{id}" page={ApiKeyApiKeyPage} name="apiKey" />
         <Route path="/api-keys" page={ApiKeyApiKeysPage} name="apiKeys" />
-        <Route path="/" page={HomePage} name="home" prerender />
+        <Route path="/" page={HomePage} name="home" />
         <Route notfound page={NotFoundPage} prerender />
       </PrivateSet>
     </Router>

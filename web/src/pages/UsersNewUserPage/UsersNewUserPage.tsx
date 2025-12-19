@@ -1,11 +1,12 @@
-import { useMutation } from '@cedarjs/web/apollo'
-import { navigate, routes } from '@cedarjs/router'
-import { Metadata } from '@cedarjs/web'
-import { toast } from '@cedarjs/web/toast'
 import gql from 'graphql-tag'
 
+import { navigate, routes } from '@cedarjs/router'
+import { Metadata } from '@cedarjs/web'
+import { useMutation } from '@cedarjs/web'
+import { toast } from '@cedarjs/web/toast'
+
 import { useAuth } from 'src/auth'
-import UsersUserForm from 'src/components/UsersUserForm'
+import UsersUserForm from 'src/components/UsersUserForm/UsersUserForm'
 
 const CREATE_USER = gql`
   mutation CreateUser($email: String!, $plainPassword: String!, $role: Role) {
@@ -28,10 +29,16 @@ const UsersNewUserPage = () => {
   const [createUser, { loading }] = useMutation(CREATE_USER)
 
   // Only admins can access this page
-  if (currentUser?.email !== process.env.REACT_APP_ADMIN_EMAIL && currentUser?.email !== 'admin@dosebot.local') {
+  if (
+    currentUser?.email !== process.env.REACT_APP_ADMIN_EMAIL &&
+    currentUser?.email !== 'admin@dosebot.local'
+  ) {
     return (
       <>
-        <Metadata title="Access Denied" description="You do not have permission to access this page" />
+        <Metadata
+          title="Access Denied"
+          description="You do not have permission to access this page"
+        />
         <div className="flex min-h-screen items-center justify-center">
           <div className="alert alert-error">
             <span>Only admins can create new users.</span>
@@ -60,9 +67,12 @@ const UsersNewUserPage = () => {
 
   return (
     <>
-      <Metadata title="Create New User" description="Create a new user account" />
-      <div className="max-w-2xl mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Create New User</h1>
+      <Metadata
+        title="Create New User"
+        description="Create a new user account"
+      />
+      <div className="mx-auto max-w-2xl py-8">
+        <h1 className="mb-6 text-3xl font-bold">Create New User</h1>
         <UsersUserForm onSubmit={handleSubmit} loading={loading} />
       </div>
     </>

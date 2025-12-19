@@ -8,7 +8,7 @@ import UsersPasswordResetButton from './UsersPasswordResetButton'
 describe('UsersPasswordResetButton', () => {
   it('renders successfully', () => {
     expect(() => {
-      render(<UsersPasswordResetButton />)
+      render(<UsersPasswordResetButton userId={1} userEmail="admin@example.com" />)
     }).not.toThrow()
   })
 })
