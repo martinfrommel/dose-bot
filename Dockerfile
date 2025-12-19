@@ -40,6 +40,7 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
 COPY --from=builder /app/api ./api
 COPY --from=builder /app/web ./web
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/redwood.toml ./
 
@@ -56,9 +57,10 @@ ENV NODE_ENV=production
 ENV DATABASE_URL="file:/app/data/dosebot.db"
 ENV WEB_HOST=0.0.0.0
 ENV API_HOST=0.0.0.0
+ENV RUN_SEED=0
 
 # Expose ports
 EXPOSE 8910 8911
 
-# Run migrations and start the application
-CMD ["sh", "-c", "yarn cedar prisma migrate deploy && yarn cedar prisma db seed && yarn cedar serve --webHost ${WEB_HOST} --apiHost ${API_HOST}"]
+# Run migrations, optionally seed, and start the application
+CMD ["sh", "-c", "yarn cedar prisma migrate deploy && if [ \"${RUN_SEED:-0}\" = \"1\" ]; then yarn cedar prisma db seed; fi && yarn cedar serve --webHost ${WEB_HOST} --apiHost ${API_HOST}"]
