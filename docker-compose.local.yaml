@@ -1,8 +1,14 @@
+# docker-compose.local.yaml
+# This docker-compose file is intended for local development and testing.
+# It maps the container ports to the host machine for easy access and omits some of the Coolify-specific environment variables.
 services:
   dosebot:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
+        SCRIPT_EXCLUDES: ${SCRIPT_EXCLUDES:-buildImage.ts}
     container_name: dosebot
     ports:
       - "8910:8910"  # Dosebot main service
@@ -15,6 +21,8 @@ services:
       - DATABASE_URL=file:/app/data/dosebot.db
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - RUN_SEED=${RUN_SEED:?0}
+      - COPY_SCRIPTS=${COPY_SCRIPTS:-0}
+      - SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES:-buildImage.ts}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget --tries=5 --spider http://localhost:8910 || exit 1"]

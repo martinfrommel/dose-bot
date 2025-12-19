@@ -113,6 +113,17 @@ This starts:
 
 Note: The app service mounts the workspace directory, so changes on your host are reflected in the container. Prisma uses the SQLite file in the repo.
 
+### 🏗️ Build Docker image
+
+Include helper scripts for `cedar exec` during the image build by toggling `COPY_SCRIPTS` (default `0`) and optionally adjusting `SCRIPT_EXCLUDES` (default `buildImage.ts`). Example:
+
+```bash
+docker build \
+  --build-arg COPY_SCRIPTS=1 \
+  --build-arg SCRIPT_EXCLUDES="buildImage.ts" \
+  -t dosebot .
+```
+
 ## 🏷️ Versioning
 
 - Current release: 1.0.0

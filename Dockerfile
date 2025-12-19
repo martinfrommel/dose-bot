@@ -31,8 +31,13 @@ RUN yarn cedar build
 # Production stage
 FROM node:24-alpine
 
+ARG COPY_SCRIPTS=0
+ARG SCRIPT_EXCLUDES="buildImage.ts"
+
 ENV YARN_VERSION=4.12.0 \
-	COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+	COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+	COPY_SCRIPTS=${COPY_SCRIPTS} \
+	SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES}
 
 WORKDIR /app
 
@@ -40,9 +45,25 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
 COPY --from=builder /app/api ./api
 COPY --from=builder /app/web ./web
-COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/redwood.toml ./
+COPY --from=builder /app/scripts /tmp/scripts
+
+# Optionally copy scripts for cedar exec, excluding configured entries
+RUN if [ "${COPY_SCRIPTS}" = "1" ]; then \
+	mkdir -p /app/scripts; \
+	for f in /tmp/scripts/.* /tmp/scripts/*; do \
+		[ -e "$f" ] || continue; \
+		name=$(basename "$f"); \
+		case "$name" in "."|"..") continue;; esac; \
+		skip=0; \
+		for ex in ${SCRIPT_EXCLUDES}; do \
+			if [ "$name" = "$ex" ]; then skip=1; break; fi; \
+		done; \
+		[ "$skip" -eq 1 ] && continue; \
+		cp "$f" "/app/scripts/$name"; \
+	done; \
+fi && rm -rf /tmp/scripts
 
 # Ensure Yarn is available at runtime for cedar commands
 RUN corepack enable \

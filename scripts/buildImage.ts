@@ -10,6 +10,8 @@ interface AvailableArgs {
   'docker-target'?: boolean
   tag?: string
   'dry-run'?: boolean
+  'copy-scripts'?: boolean
+  'script-excludes'?: string
 }
 
 interface AvailableArgsShort {
@@ -18,6 +20,8 @@ interface AvailableArgsShort {
   dt?: AvailableArgs['docker-target']
   tg?: AvailableArgs['tag']
   dr?: AvailableArgs['dry-run']
+  cs?: AvailableArgs['copy-scripts']
+  se?: AvailableArgs['script-excludes']
 }
 
 type CombinedArgs = AvailableArgs & AvailableArgsShort
@@ -39,6 +43,8 @@ export default async ({ args: rawArgs }: Args) => {
     'docker-target': rawArgs.dt ?? rawArgs['docker-target'] ?? false,
     tag: rawArgs.tg ?? rawArgs.tag,
     'dry-run': rawArgs.dr ?? rawArgs['dry-run'] ?? false,
+    'copy-scripts': rawArgs.cs ?? rawArgs['copy-scripts'] ?? false,
+    'script-excludes': rawArgs.se ?? rawArgs['script-excludes'],
   }
 
   console.log('----------------------------------')
@@ -66,6 +72,17 @@ export default async ({ args: rawArgs }: Args) => {
 
     // Always add a tag - use provided tag or default to 'dosebot:latest'
     buildArgs.push('--tag', args.tag || 'dosebot:latest')
+
+    if (args['copy-scripts']) {
+      buildArgs.push('--build-arg', 'COPY_SCRIPTS=1')
+    }
+
+    if (args['script-excludes']) {
+      buildArgs.push(
+        '--build-arg',
+        `SCRIPT_EXCLUDES=${args['script-excludes']}`
+      )
+    }
 
     if (args.verbose) {
       buildArgs.push('--progress=plain')

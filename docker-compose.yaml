@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
+        SCRIPT_EXCLUDES: ${SCRIPT_EXCLUDES:-buildImage.ts}
     container_name: dosebot
     expose:
       - "8910"  # Web server
@@ -19,6 +22,8 @@ services:
       - DATABASE_URL=file:/app/data/dosebot.db
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - RUN_SEED=${RUN_SEED:?0}
+      - COPY_SCRIPTS=${COPY_SCRIPTS:-0}
+      - SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES:-buildImage.ts}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget --tries=5 --spider http://localhost:8910 || exit 1"]
