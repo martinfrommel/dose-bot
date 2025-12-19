@@ -18,6 +18,13 @@ import AuthLayout from 'src/layouts/AuthLayout/AuthLayout'
 const WELCOME_MESSAGE = 'Welcome back!'
 const REDIRECT = routes.home()
 
+/**
+ * Sanitize email to lowercase
+ */
+const sanitizeEmail = (email: string): string => {
+  return email.toLowerCase().trim()
+}
+
 const LoginPage = () => {
   const { isAuthenticated, logIn } = useAuth()
 
@@ -45,7 +52,7 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginCredentials): Promise<void> => {
     const response: LoginResponse = await logIn({
-      username: data.username,
+      username: sanitizeEmail(data.username),
       password: data.password,
     })
 

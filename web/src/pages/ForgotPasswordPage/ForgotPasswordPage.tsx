@@ -9,6 +9,13 @@ import { useAuth } from 'src/auth'
 import BackButton from 'src/components/BackButton/BackButton'
 import AuthLayout from 'src/layouts/AuthLayout/AuthLayout'
 
+/**
+ * Sanitize email to lowercase
+ */
+const sanitizeEmail = (email: string): string => {
+  return email.toLowerCase().trim()
+}
+
 const ForgotPasswordPage = () => {
   const { isAuthenticated, forgotPassword } = useAuth()
 
@@ -24,7 +31,7 @@ const ForgotPasswordPage = () => {
   }, [])
 
   const onSubmit = async (data: { username: string }) => {
-    const response = await forgotPassword(data.username)
+    const response = await forgotPassword(sanitizeEmail(data.username))
 
     if (response.error) {
       toast.error(response.error)

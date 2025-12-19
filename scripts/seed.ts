@@ -12,6 +12,13 @@ import { hashPassword } from '@cedarjs/auth-dbauth-api'
 // Use Cedar's dbAuth hashing (scrypt) instead of bcrypt
 
 /**
+ * Sanitize email to lowercase
+ */
+const sanitizeEmail = (email: string): string => {
+  return email.toLowerCase().trim()
+}
+
+/**
  * Generate a random password for the admin user
  */
 const generatePassword = (): string => {
@@ -45,11 +52,17 @@ const sendAdminCredentialsEmail = (email: string, password: string) => {
 export default async () => {
   try {
     // Get admin email from environment variable or use default
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
+    const adminEmailRaw = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
+    const adminEmail = sanitizeEmail(adminEmailRaw)
 
-    // Check if admin user already exists
+    // Check if admin user already exists (case-insensitive)
     const existingAdmin = await db.user.findUnique({
-      where: { email: adminEmail },
+      where: {
+        email: {
+          equals: adminEmail,
+          mode: 'insensitive',
+        } as any,
+      },
     })
 
     // Generate a new password and Cedar-compatible hash/salt
@@ -58,7 +71,7 @@ export default async () => {
 
     if (existingAdmin) {
       const updated = await db.user.update({
-        where: { email: adminEmail },
+        where: { id: existingAdmin.id },
         data: {
           hashedPassword,
           salt,

@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import type {
   QueryResolvers,
   MutationResolvers,
@@ -5,10 +6,10 @@ import type {
 } from 'types/graphql'
 
 import { hashPassword } from '@cedarjs/auth-dbauth-api'
-import { Role } from '@prisma/client'
 
 import { requireAuth } from 'src/lib/auth'
 import { db } from 'src/lib/db'
+import { sanitizeEmail } from 'src/lib/sanitizeEmail'
 
 /**
  * Generate a random password for new users
@@ -42,9 +43,16 @@ export const createUser: MutationResolvers['createUser'] = async ({
 }) => {
   requireAuth({ roles: [Role.Admin] })
 
-  // Check if user already exists
+  const sanitizedEmail = sanitizeEmail(email)
+
+  // Check if user already exists (case-insensitive)
   const existing = await db.user.findUnique({
-    where: { email },
+    where: {
+      email: {
+        equals: sanitizedEmail,
+        mode: 'insensitive',
+      } as any,
+    },
   })
 
   if (existing) {
@@ -56,7 +64,7 @@ export const createUser: MutationResolvers['createUser'] = async ({
 
   return db.user.create({
     data: {
-      email,
+      email: sanitizedEmail,
       hashedPassword,
       salt,
       role,
@@ -64,22 +72,21 @@ export const createUser: MutationResolvers['createUser'] = async ({
   })
 }
 
-export const resetUserPassword: MutationResolvers['resetUserPassword'] = async ({
-  userId,
-}) => {
-  requireAuth({ roles: [Role.Admin] })
+export const resetUserPassword: MutationResolvers['resetUserPassword'] =
+  async ({ userId }) => {
+    requireAuth({ roles: [Role.Admin] })
 
-  // Generate temp password
-  const tempPassword = generatePassword()
-  const [hashedPassword, salt] = hashPassword(tempPassword)
+    // Generate temp password
+    const tempPassword = generatePassword()
+    const [hashedPassword, salt] = hashPassword(tempPassword)
 
-  await db.user.update({
-    where: { id: userId },
-    data: { hashedPassword, salt },
-  })
+    await db.user.update({
+      where: { id: userId },
+      data: { hashedPassword, salt },
+    })
 
-  return tempPassword
-}
+    return tempPassword
+  }
 
 export const updateUser: MutationResolvers['updateUser'] = async ({
   id,
@@ -89,7 +96,7 @@ export const updateUser: MutationResolvers['updateUser'] = async ({
   requireAuth({ roles: [Role.Admin] })
 
   const data: any = {}
-  if (email) data.email = email
+  if (email) data.email = sanitizeEmail(email)
   if (role) data.role = role
 
   return db.user.update({

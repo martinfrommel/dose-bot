@@ -53,17 +53,17 @@ model ApiKey {
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
-  email               String    @unique
+  id                  Int              @id @default(autoincrement())
+  email               String           @unique
   hashedPassword      String
   salt                String
-  role                Role      @default(User)
+  role                Role             @default(User)
   resetToken          String?
   resetTokenExpiresAt DateTime?
-  webAuthnChallenge   String? @unique
+  webAuthnChallenge   String?          @unique
   credentials         UserCredential[]
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model UserCredential {
