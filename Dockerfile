@@ -8,7 +8,6 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 COPY api/package.json ./api/
 COPY web/package.json ./web/
 
@@ -34,7 +33,6 @@ WORKDIR /app
 
 # Copy built application from builder
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
-COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/api ./api
 COPY --from=builder /app/web ./web
 COPY --from=builder /app/node_modules ./node_modules
