@@ -22,3 +22,6 @@ api/src/lib/generateGraphiQLHeader.*
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Ignore coverage directory used by tools like istanbul
+coverage
