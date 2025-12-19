@@ -1,6 +1,9 @@
 # Build stage
 FROM node:24-alpine AS builder
 
+ENV YARN_VERSION=4.12.0 \
+	COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
 WORKDIR /app
 
 # Copy package files
@@ -8,14 +11,16 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY api/package.json ./api/
 COPY web/package.json ./web/
 
-# Ensure the expected Yarn version is available without vendoring .yarn
-RUN corepack enable && corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
-
-# Install dependencies
-RUN apt-get --assume-yes install yarn && apt-mark hold yarn
+# Ensure the expected Yarn version is available without relying on external tarball mirrors
+RUN corepack enable \
+	&& corepack prepare "yarn@${YARN_VERSION}" --activate \
+	|| (npm install -g "yarn@${YARN_VERSION}" && yarn --version)
 
 # Copy application code
 COPY . .
+
+# Install dependencies
+RUN yarn install --immutable --inline-builds
 
 # Generate Prisma client
 RUN yarn cedar prisma generate
@@ -25,6 +30,9 @@ RUN yarn cedar build
 
 # Production stage
 FROM node:24-alpine
+
+ENV YARN_VERSION=4.12.0 \
+	COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 WORKDIR /app
 
@@ -36,7 +44,9 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/redwood.toml ./
 
 # Ensure Yarn is available at runtime for cedar commands
-RUN corepack enable && corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
+RUN corepack enable \
+	&& corepack prepare "yarn@${YARN_VERSION}" --activate \
+	|| (npm install -g "yarn@${YARN_VERSION}" && yarn --version)
 
 # Create data directory for SQLite database
 RUN mkdir -p /app/data
