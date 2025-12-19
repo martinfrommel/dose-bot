@@ -12,7 +12,7 @@ COPY web/package.json ./web/
 RUN corepack enable && corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
 
 # Install dependencies
-RUN yarn install --immutable
+RUN apt-get --assume-yes install yarn && apt-mark hold yarn
 
 # Copy application code
 COPY . .
