@@ -12,7 +12,7 @@ services:
       - ./data:/app/data
     environment:
       - SERVICE_FQDN_DOSEBOT_8910
-      - SERVICE_FQDN_DOSEBOT_8911=/api
+      - SERVICE_FQDN_API_8911=/api
       - SESSION_SECRET=${SERVICE_BASE64_DOSEBOT}
       - NODE_ENV=production
       - DATABASE_URL=file:/app/data/dosebot.db
