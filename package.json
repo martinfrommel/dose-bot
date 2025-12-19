@@ -13,10 +13,9 @@
     "@cedarjs/core": "2.1.0",
     "@cedarjs/project-config": "2.1.0",
     "@cedarjs/testing": "2.1.0",
-    "@types/cli-spinner": "^0.2.3",
     "@types/colors": "^1.2.4",
-    "cli-spinner": "^0.2.10",
     "colors": "^1.4.0",
+    "picospinner": "2",
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-tailwindcss": "^0.5.12"
   },

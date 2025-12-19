@@ -6557,15 +6557,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cli-spinner@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@types/cli-spinner@npm:0.2.3"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/ef27ff638df6064eca1a5180478ce459660c0c95e2bead2826d19c301a4524d7ac3ab1ca3dc15ae27a8024c0b3eb15e3f78a7abfcbb46705cf55ac81f7239ce8
-  languageName: node
-  linkType: hard
-
 "@types/colors@npm:^1.2.4":
   version: 1.2.4
   resolution: "@types/colors@npm:1.2.4"
@@ -8857,13 +8848,6 @@ __metadata:
   dependencies:
     restore-cursor: "npm:^4.0.0"
   checksum: 10c0/e776e8c3c6727300d0539b0d25160b2bb56aed1a63942753ba1826b012f337a6f4b7ace3548402e4f2f13b5e16bfd751be672c44b203205e7eca8be94afec42c
-  languageName: node
-  linkType: hard
-
-"cli-spinner@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "cli-spinner@npm:0.2.10"
-  checksum: 10c0/74fe473bd2e4568088d59fb41e97696dc33d0771572e7b22c9a347fd48a0aebc189e992f35783ba9a67741a88d327039cf80942539d403446e935eb57cca41e3
   languageName: node
   linkType: hard
 
@@ -15843,6 +15827,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picospinner@npm:2":
+  version: 2.1.0
+  resolution: "picospinner@npm:2.1.0"
+  checksum: 10c0/7b3a1338bf66135b33e2026fc4b935b9e13a792598ed6e9be48b609854cd584a9abc05a4bec1a74d89c8b00c6465d97f336eb04328b09f27ce7f4cfd631077d8
+  languageName: node
+  linkType: hard
+
 "pify@npm:^2.3.0":
   version: 2.3.0
   resolution: "pify@npm:2.3.0"
@@ -17322,10 +17313,9 @@ __metadata:
     "@cedarjs/core": "npm:2.1.0"
     "@cedarjs/project-config": "npm:2.1.0"
     "@cedarjs/testing": "npm:2.1.0"
-    "@types/cli-spinner": "npm:^0.2.3"
     "@types/colors": "npm:^1.2.4"
-    cli-spinner: "npm:^0.2.10"
     colors: "npm:^1.4.0"
+    picospinner: "npm:2"
     prettier-plugin-prisma: "npm:^5.0.0"
     prettier-plugin-tailwindcss: "npm:^0.5.12"
   languageName: unknown
