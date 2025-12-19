@@ -6,13 +6,11 @@ services:
     container_name: dosebot
     ports:
       - "8910:8910"  # Dosebot main service
-      - "8911:8911"  # API service on a separate port
+      - "8911:8911"
     volumes:
       # Persist SQLite database
       - ./data:/app/data
     environment:
-      - SERVICE_FQDN_DOSEBOT_8910
-      - SESSION_SECRET=${SERVICE_BASE64_DOSEBOT}
       - NODE_ENV=production
       - DATABASE_URL=file:/app/data/dosebot.db
       - ADMIN_EMAIL=${ADMIN_EMAIL}
