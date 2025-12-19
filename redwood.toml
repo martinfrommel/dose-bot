@@ -9,7 +9,8 @@
   title = "DoseBot"
   port = 8910
   host = "0.0.0.0 "
-  apiUrl = "/.redwood/functions"
+  # The relative URL path where the API is served from the web side. We don't need to use port 8911 here as we are in a serverful setup.
+  apiUrl = "/api"
   includeEnvironmentVariables = [
     # Add any ENV vars that should be available to the web side to this array
     # See https://cedarjs.com/docs/environment-variables#web
