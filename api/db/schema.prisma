@@ -55,6 +55,7 @@ model ApiKey {
 model User {
   id                  Int              @id @default(autoincrement())
   email               String           @unique
+  avatarUrl           String?
   hashedPassword      String
   salt                String
   role                Role             @default(User)

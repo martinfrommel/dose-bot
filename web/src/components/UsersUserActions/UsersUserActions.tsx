@@ -9,6 +9,8 @@ import { toast } from '@cedarjs/web/toast'
 type UsersUserActionsProps = {
   userId: number
   userEmail: string
+  canDelete?: boolean
+  deleteTooltip?: string
   onRefresh?: () => void | Promise<unknown>
 }
 
@@ -29,6 +31,8 @@ const DELETE_USER = gql`
 const UsersUserActions = ({
   userId,
   userEmail,
+  canDelete = true,
+  deleteTooltip,
   onRefresh = () => {},
 }: UsersUserActionsProps) => {
   const [resetUserPassword, { loading: resetting }] =
@@ -74,6 +78,7 @@ const UsersUserActions = ({
   }
 
   const handleDelete = async () => {
+    if (!canDelete) return
     setIsOpen(false)
     const confirmed = globalThis.window?.confirm(
       `Delete ${userEmail}? This cannot be undone.`
@@ -113,14 +118,30 @@ const UsersUserActions = ({
               </button>
             </li>
             <li>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="gap-2 text-error"
-              >
-                <Trash2 className="size-4" />
-                {deleting ? 'Deleting...' : 'Delete user'}
-              </button>
+              {canDelete ? (
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex gap-2 text-white/20"
+                >
+                  <Trash2 className="size-4" />
+                  {deleting ? 'Deleting...' : 'Delete user'}
+                </button>
+              ) : (
+                <div
+                  className="tooltip tooltip-left"
+                  data-tip={deleteTooltip || 'Deletion not permitted'}
+                >
+                  <button
+                    onClick={handleDelete}
+                    disabled
+                    className="flex gap-2  text-white/20"
+                  >
+                    <Trash2 className="size-4" />
+                    Delete user
+                  </button>
+                </div>
+              )}
             </li>
           </ul>
         )}

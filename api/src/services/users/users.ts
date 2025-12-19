@@ -1,9 +1,7 @@
+import { randomBytes } from 'crypto'
+
 import { Role } from '@prisma/client'
-import type {
-  QueryResolvers,
-  MutationResolvers,
-  UserRelationResolvers,
-} from 'types/graphql'
+import type { QueryResolvers, MutationResolvers } from 'types/graphql'
 
 import { hashPassword } from '@cedarjs/auth-dbauth-api'
 
@@ -22,6 +20,12 @@ const generatePassword = (): string => {
     password += chars.charAt(Math.floor(Math.random() * chars.length))
   }
   return password
+}
+
+const buildAvatarUrl = () => {
+  const seed = randomBytes(8).toString('hex')
+  const encodedSeed = encodeURIComponent(seed)
+  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodedSeed}`
 }
 
 export const users: QueryResolvers['users'] = () => {
@@ -56,10 +60,12 @@ export const createUser: MutationResolvers['createUser'] = async ({
 
   // Hash password using Cedar scrypt
   const [hashedPassword, salt] = hashPassword(plainPassword)
+  const avatarUrl = buildAvatarUrl()
 
   return db.user.create({
     data: {
       email: sanitizedEmail,
+      avatarUrl,
       hashedPassword,
       salt,
       role,
@@ -102,6 +108,30 @@ export const updateUser: MutationResolvers['updateUser'] = async ({
 
 export const deleteUser: MutationResolvers['deleteUser'] = async ({ id }) => {
   requireAuth({ roles: [Role.Admin] })
+
+  const currentUserId = (context.currentUser as { id?: number } | undefined)?.id
+  const currentUserRole =
+    (context.currentUser as { role?: Role; roles?: Role[] } | undefined)
+      ?.role ||
+    (context.currentUser as { roles?: Role[] } | undefined)?.roles?.[0]
+
+  if (!currentUserId || !currentUserRole) {
+    throw new Error('Unable to determine current user for authorization')
+  }
+
+  const targetUser = await db.user.findUnique({ where: { id } })
+
+  if (!targetUser) {
+    throw new Error('User not found')
+  }
+
+  if (targetUser.id === currentUserId) {
+    throw new Error('You cannot delete your own account')
+  }
+
+  if (targetUser.role === Role.Admin) {
+    throw new Error('Admins cannot delete other admins')
+  }
 
   return db.user.delete({
     where: { id },

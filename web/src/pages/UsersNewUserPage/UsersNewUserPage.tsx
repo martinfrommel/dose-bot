@@ -14,6 +14,7 @@ const CREATE_USER = gql`
     createUser(email: $email, plainPassword: $plainPassword, role: $role) {
       id
       email
+      avatarUrl
       role
     }
   }

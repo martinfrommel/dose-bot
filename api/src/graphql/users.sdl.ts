@@ -7,6 +7,7 @@ export const schema = gql`
   type User {
     id: Int!
     email: String!
+    avatarUrl: String
     role: Role!
     webAuthnChallenge: String
     createdAt: DateTime!

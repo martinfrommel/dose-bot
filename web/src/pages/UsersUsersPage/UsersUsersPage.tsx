@@ -3,6 +3,8 @@ import gql from 'graphql-tag'
 import { Link, routes } from '@cedarjs/router'
 import { Metadata, useQuery } from '@cedarjs/web'
 
+import { useAuth } from 'src/auth'
+import UserAvatar from 'src/components/UserAvatar/UserAvatar'
 import UsersUserActions from 'src/components/UsersUserActions/UsersUserActions'
 
 const GET_USERS = gql`
@@ -10,6 +12,7 @@ const GET_USERS = gql`
     users {
       id
       email
+      avatarUrl
       role
       createdAt
     }
@@ -18,6 +21,7 @@ const GET_USERS = gql`
 
 const UsersUsersPage = () => {
   const { data, loading, error, refetch } = useQuery(GET_USERS)
+  const { currentUser } = useAuth()
 
   const users = data?.users ?? []
 
@@ -69,22 +73,27 @@ const UsersUsersPage = () => {
               </thead>
               <tbody>
                 {users.map((user: any) => {
-                  const initial = user.email?.charAt(0)?.toUpperCase() ?? '?'
                   const joined = new Date(user.createdAt).toLocaleDateString()
                   const roleClass =
                     user.role === 'Admin' ? 'badge-warning' : 'badge-info'
+                  const isSelf = currentUser?.id === user.id
+                  const isAdminTarget = user.role === 'Admin'
+                  const canDelete = !isSelf && !isAdminTarget
+                  const deleteTooltip = isSelf
+                    ? 'You cannot delete your own account.'
+                    : isAdminTarget
+                      ? 'Admins cannot delete other admins.'
+                      : undefined
 
                   return (
                     <tr key={user.id}>
                       <td>
                         <div className="flex items-center gap-3">
-                          <div className="avatar placeholder">
-                            <div className="w-10 rounded-full bg-neutral text-neutral-content">
-                              <span className="text-lg font-semibold">
-                                {initial}
-                              </span>
-                            </div>
-                          </div>
+                          <UserAvatar
+                            email={user.email}
+                            avatarUrl={user.avatarUrl}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-semibold">{user.email}</div>
                             <div className="text-sm text-base-content/70">
@@ -105,6 +114,8 @@ const UsersUsersPage = () => {
                         <UsersUserActions
                           userId={user.id}
                           userEmail={user.email}
+                          canDelete={canDelete}
+                          deleteTooltip={deleteTooltip}
                           onRefresh={() => refetch()}
                         />
                       </td>
