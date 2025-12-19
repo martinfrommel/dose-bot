@@ -60,7 +60,8 @@ ENV API_HOST=0.0.0.0
 ENV RUN_SEED=0
 
 # Expose ports
-EXPOSE 8910 8911
+EXPOSE 8910
+# EXPOSE 8911  # Uncomment if you want to expose the API on a separate port
 
 # Run migrations, optionally seed, and start the application
 CMD ["sh", "-c", "yarn cedar prisma migrate deploy && if [ \"${RUN_SEED:-0}\" = \"1\" ]; then yarn cedar prisma db seed; fi && yarn cedar serve --webHost ${WEB_HOST} --apiHost ${API_HOST}"]
