@@ -15,7 +15,7 @@ services:
       - ./data:/app/data
     environment:
       # Coolify magic vars set the proxy targets: root -> 8910, API path -> 8911
-      - SERVICE_URL_DOSEBOT_8910
+      - SERVICE_URL_DOSEBOT_8910=
       - SERVICE_URL_DOSEBOT_8911=/.redwood/functions
       - SESSION_SECRET=${SERVICE_BASE64_DOSEBOT}
       - NODE_ENV=production
