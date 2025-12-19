@@ -1,6 +1,10 @@
 # 💊 DoseBot
 
+Version: 1.0.0
+
 DoseBot is a simple, open-source application for recording, managing, and serving dosage data for substances via a GraphQL API and a simple web UI. It includes scaffolding to manage API keys, track substances, and record doses, making it easy to integrate with external services or bots.
+
+Full API reference: see [docs/api.md](docs/api.md).
 
 The project uses Prisma with SQLite by default, optional Memcached for caching, Tailwind CSS with daisyUI for UI components, and Vite for the web dev server.
 
@@ -41,7 +45,7 @@ Anywhere - you can deploy this through a third-party platfom like Coolify or Ver
 yarn install
 ```
 
-2. Set up the database (SQLite) and generate Prisma client:
+1. Set up the database (SQLite) and generate Prisma client (runs seeds and prints admin credentials):
 
 ```bash
 yarn cedar prisma migrate dev
@@ -49,7 +53,7 @@ yarn cedar prisma migrate dev
 yarn cedar prisma db push
 ```
 
-3. Start the development servers (API + Web):
+1. Start the development servers (API + Web):
 
 ```bash
 yarn cedar dev
@@ -65,7 +69,11 @@ Create a `.env` file at the project root (or use your preferred env management).
 - `CACHE_HOST`: Optional Memcached host, e.g. `localhost:11211` (or `memcached:11211` when using Docker Compose)
 - `NODE_ENV`: `development`, `test`, or `production`
 
-Auth is not set up by default; see CedarJS docs if you plan to add it.
+## 🛡️ Authentication & Access
+
+- GraphQL uses Cedar dbAuth with session cookies. All operations are protected by `@requireAuth`; user/admin role checks happen in service logic.
+- Database seeds create/update an Admin user using `ADMIN_EMAIL` (default `admin@dosebot.local`) and a generated password printed during seeding.
+- REST endpoints require API keys via `Authorization: Bearer <API_KEY>`. Manage keys through GraphQL (`createApiKey` returns the plain key once). See [docs/api.md](docs/api.md) for endpoints.
 
 ## 🗃️ Database
 
@@ -104,6 +112,11 @@ This starts:
 - `app` using Node 24, running `yarn cedar dev`, exposing ports 8910 (web) and 8911 (api)
 
 Note: The app service mounts the workspace directory, so changes on your host are reflected in the container. Prisma uses the SQLite file in the repo.
+
+## 🏷️ Versioning
+
+- Current release: 1.0.0
+- Tag releases with `git tag v1.0.0 && git push origin v1.0.0` to align git tags with package versions.
 
 ## ✅ Testing
 
