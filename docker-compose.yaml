@@ -12,15 +12,15 @@ services:
       - ./data:/app/data
     environment:
       - SERVICE_FQDN_DOSEBOT_8910
-      - SERVICE_FQDN_API_8911=/api
+      - SERVICE_FQDN_DOSEBOT_8911=/api
+      - SESSION_SECRET=${SERVICE_BASE64_DOSEBOT}
       - NODE_ENV=production
       - DATABASE_URL=file:/app/data/dosebot.db
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - RUN_SEED=${RUN_SEED:-0}
-      - SESSION_SECRET=${SERVICE_BASE64_DOSEBOT}
+      - RUN_SEED=${RUN_SEED:?0}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8910"]
+      test: ["CMD-SHELL", "wget --tries=5 --spider http://localhost:8910 && wget --tries=5 --spider http://localhost:8911"]
       interval: 30s
       timeout: 10s
       retries: 3
