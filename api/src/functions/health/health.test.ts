@@ -1,0 +1,26 @@
+import { mockHttpEvent, mockContext } from '@cedarjs/testing/api'
+
+import { handler } from './health'
+
+describe('health function', () => {
+  it('Should respond with 200', async () => {
+    const httpEvent = mockHttpEvent({
+      queryStringParameters: {
+        id: '42', // Add parameters here
+      },
+    })
+
+    const response = await handler(httpEvent, mockContext())
+    const { success } = JSON.parse(response.body)
+
+    expect(response.statusCode).toBe(200)
+    expect(success).toBe(true)
+  })
+
+  // You can also use scenarios to test your api functions
+  // See guide here: https://redwoodjs.com/docs/testing#scenarios
+  //
+  // scenario('Scenario test', async () => {
+  //
+  // })
+})

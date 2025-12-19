@@ -170,7 +170,7 @@ export class ApiCall {
   /**
    * 200 OK - Success response
    */
-  success(data: any, headers?: Record<string, string>): ApiResponse {
+  success(data?: any, headers?: Record<string, string>): ApiResponse {
     logger.info(`${this.method} ${this.path}: 200 OK`)
     return this.createResponse(200, { success: true, data }, headers)
   }
