@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import type { Role } from 'types/graphql'
 
 import { navigate, routes } from '@cedarjs/router'
 import { Metadata } from '@cedarjs/web'
@@ -21,18 +22,17 @@ const CREATE_USER = gql`
 interface FormData {
   email: string
   plainPassword: string
-  role?: string
+  role?: Role
 }
 
 const UsersNewUserPage = () => {
   const { currentUser } = useAuth()
   const [createUser, { loading }] = useMutation(CREATE_USER)
 
+  const isAdmin = currentUser?.role === 'Admin'
+
   // Only admins can access this page
-  if (
-    currentUser?.email !== process.env.REACT_APP_ADMIN_EMAIL &&
-    currentUser?.email !== 'admin@dosebot.local'
-  ) {
+  if (!isAdmin) {
     return (
       <>
         <Metadata
@@ -54,12 +54,12 @@ const UsersNewUserPage = () => {
         variables: {
           email: data.email,
           plainPassword: data.plainPassword,
-          role: data.role || 'User',
+          role: data.role || ('User' as Role),
         },
       })
 
       toast.success(`User ${result.createUser.email} created successfully`)
-      navigate(routes.home())
+      navigate(routes.users())
     } catch (error: any) {
       toast.error(error.message || 'Failed to create user')
     }

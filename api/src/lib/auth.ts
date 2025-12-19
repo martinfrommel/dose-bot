@@ -1,3 +1,5 @@
+import type { Role } from '@prisma/client'
+
 import type { Decoded } from '@cedarjs/api'
 import { AuthenticationError, ForbiddenError } from '@cedarjs/graphql-server'
 
@@ -34,10 +36,21 @@ export const getCurrentUser = async (session: Decoded) => {
     throw new Error('Invalid session')
   }
 
-  return await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.id },
-    select: { id: true, role: true },
+    // Expose minimal fields needed on the client and for role checks
+    select: { id: true, email: true, role: true },
   })
+
+  if (!user) {
+    return null
+  }
+
+  // Return user with both `role` and `roles` for Cedar compatibility
+  return {
+    ...user,
+    roles: [user.role], // Cedar's PrivateSet expects a `roles` array
+  }
 }
 
 /**
@@ -53,7 +66,7 @@ export const isAuthenticated = (): boolean => {
  * When checking role membership, roles can be a single value, a list, or none.
  * You can use Prisma enums too (if you're using them for roles), just import your enum type from `@prisma/client`
  */
-type AllowedRoles = string | string[] | undefined
+type AllowedRoles = Role | Role[] | string | string[] | undefined
 
 /**
  * Checks if the currentUser is authenticated (and assigned one of the given roles)
@@ -68,32 +81,27 @@ export const hasRole = (roles: AllowedRoles): boolean => {
     return false
   }
 
-  const currentUserRoles = context.currentUser?.roles
+  // Support both singular `role` and array `roles` fields
+  const currentUserRoles =
+    (context.currentUser as { roles?: string[] })?.roles ||
+    (context.currentUser as { role?: Role })?.role
 
-  if (typeof roles === 'string') {
-    if (typeof currentUserRoles === 'string') {
-      // roles to check is a string, currentUser.roles is a string
-      return currentUserRoles === roles
-    } else if (Array.isArray(currentUserRoles)) {
-      // roles to check is a string, currentUser.roles is an array
-      return currentUserRoles?.some((allowedRole) => roles === allowedRole)
-    }
+  if (!currentUserRoles) {
+    return false
   }
 
-  if (Array.isArray(roles)) {
-    if (Array.isArray(currentUserRoles)) {
-      // roles to check is an array, currentUser.roles is an array
-      return currentUserRoles?.some((allowedRole) =>
-        roles.includes(allowedRole)
-      )
-    } else if (typeof currentUserRoles === 'string') {
-      // roles to check is an array, currentUser.roles is a string
-      return roles.some((allowedRole) => currentUserRoles === allowedRole)
-    }
-  }
+  // Normalize currentUserRoles to array
+  const userRolesArray = Array.isArray(currentUserRoles)
+    ? currentUserRoles
+    : [currentUserRoles]
 
-  // roles not found
-  return false
+  // Normalize requested roles to array
+  const requestedRolesArray = Array.isArray(roles) ? roles : [roles]
+
+  // Check if any user role matches any requested role
+  return userRolesArray.some((userRole) =>
+    requestedRolesArray.includes(userRole)
+  )
 }
 
 /**

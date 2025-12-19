@@ -1,4 +1,4 @@
-import { BotIcon, KeyIcon, PillBottleIcon } from 'lucide-react'
+import { BotIcon, KeyIcon, PillBottleIcon, Users2Icon } from 'lucide-react'
 
 import { Link, routes } from '@cedarjs/router'
 import { Toaster } from '@cedarjs/web/toast'
@@ -10,7 +10,8 @@ type MainLayoutProps = {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, currentUser } = useAuth()
+  const isAdmin = currentUser?.role === 'Admin'
   return (
     <>
       <div className="flex min-h-screen flex-col bg-base-200">
@@ -37,6 +38,29 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <PillBottleIcon className="size-3" />
                   Substances
                 </Link>
+              </li>
+              <li>
+                {isAdmin ? (
+                  <Link to={routes.users()}>
+                    <Users2Icon className="size-3" />
+                    Users
+                  </Link>
+                ) : (
+                  <div
+                    className="tooltip tooltip-bottom"
+                    data-tip={
+                      isAuthenticated ? 'Admin only' : 'Sign in to access'
+                    }
+                  >
+                    <span
+                      className="flex cursor-not-allowed select-none items-center gap-2 rounded-btn px-4 py-2 text-base-content/50"
+                      aria-disabled="true"
+                    >
+                      <Users2Icon className="size-3" />
+                      Users
+                    </span>
+                  </div>
+                )}
               </li>
             </ul>
           </div>

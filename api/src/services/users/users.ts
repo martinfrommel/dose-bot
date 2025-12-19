@@ -5,7 +5,7 @@ import type {
 } from 'types/graphql'
 
 import { hashPassword } from '@cedarjs/auth-dbauth-api'
-import { context } from '@cedarjs/api'
+import { Role } from '@prisma/client'
 
 import { requireAuth } from 'src/lib/auth'
 import { db } from 'src/lib/db'
@@ -24,10 +24,12 @@ const generatePassword = (): string => {
 }
 
 export const users: QueryResolvers['users'] = () => {
+  requireAuth({ roles: [Role.Admin] })
   return db.user.findMany()
 }
 
 export const user: QueryResolvers['user'] = ({ id }) => {
+  requireAuth({ roles: [Role.Admin] })
   return db.user.findUnique({
     where: { id },
   })
@@ -36,13 +38,9 @@ export const user: QueryResolvers['user'] = ({ id }) => {
 export const createUser: MutationResolvers['createUser'] = async ({
   email,
   plainPassword,
-  role = 'User',
+  role = Role.User,
 }) => {
-  // Enforce admin-only access by checking currentUser email
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
-  if (context.currentUser?.email !== adminEmail) {
-    throw new Error('Only admins can create users')
-  }
+  requireAuth({ roles: [Role.Admin] })
 
   // Check if user already exists
   const existing = await db.user.findUnique({
@@ -69,11 +67,7 @@ export const createUser: MutationResolvers['createUser'] = async ({
 export const resetUserPassword: MutationResolvers['resetUserPassword'] = async ({
   userId,
 }) => {
-  // Enforce admin-only access
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
-  if (context.currentUser?.email !== adminEmail) {
-    throw new Error('Only admins can reset passwords')
-  }
+  requireAuth({ roles: [Role.Admin] })
 
   // Generate temp password
   const tempPassword = generatePassword()
@@ -92,11 +86,7 @@ export const updateUser: MutationResolvers['updateUser'] = async ({
   email,
   role,
 }) => {
-  // Enforce admin-only for role changes
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
-  if (role && context.currentUser?.email !== adminEmail) {
-    throw new Error('Only admins can change user roles')
-  }
+  requireAuth({ roles: [Role.Admin] })
 
   const data: any = {}
   if (email) data.email = email
@@ -109,11 +99,7 @@ export const updateUser: MutationResolvers['updateUser'] = async ({
 }
 
 export const deleteUser: MutationResolvers['deleteUser'] = async ({ id }) => {
-  // Enforce admin-only access
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@dosebot.local'
-  if (context.currentUser?.email !== adminEmail) {
-    throw new Error('Only admins can delete users')
-  }
+  requireAuth({ roles: [Role.Admin] })
 
   return db.user.delete({
     where: { id },

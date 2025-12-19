@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import gql from 'graphql-tag'
 import { MoreVertical, RotateCcw, Trash2 } from 'lucide-react'
@@ -31,11 +31,34 @@ const UsersUserActions = ({
   userEmail,
   onRefresh = () => {},
 }: UsersUserActionsProps) => {
-  const [resetUserPassword, { loading: resetting }] = useMutation(RESET_USER_PASSWORD)
+  const [resetUserPassword, { loading: resetting }] =
+    useMutation(RESET_USER_PASSWORD)
   const [deleteUser, { loading: deleting }] = useMutation(DELETE_USER)
   const [tempPassword, setTempPassword] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [isOpen])
 
   const handleReset = async () => {
+    setIsOpen(false)
     try {
       const { data } = await resetUserPassword({ variables: { userId } })
       const newPassword = data?.resetUserPassword
@@ -50,7 +73,10 @@ const UsersUserActions = ({
   }
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`Delete ${userEmail}? This cannot be undone.`)
+    setIsOpen(false)
+    const confirmed = globalThis.window?.confirm(
+      `Delete ${userEmail}? This cannot be undone.`
+    )
     if (!confirmed) return
 
     try {
@@ -64,31 +90,39 @@ const UsersUserActions = ({
 
   return (
     <div className="flex flex-col items-end gap-2">
-      <div className="dropdown dropdown-end">
-        <label tabIndex={0} className="btn btn-ghost btn-xs">
-          <MoreVertical className="size-4" />
-        </label>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu w-56 rounded-box bg-base-100 p-2 shadow"
+      <div className="relative" ref={dropdownRef}>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="btn btn-ghost btn-xs"
+          aria-label="User actions"
         >
-          <li>
-            <button onClick={handleReset} disabled={resetting} className="gap-2">
-              <RotateCcw className="size-4" />
-              {resetting ? 'Resetting...' : 'Reset password'}
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="gap-2 text-error"
-            >
-              <Trash2 className="size-4" />
-              {deleting ? 'Deleting...' : 'Delete user'}
-            </button>
-          </li>
-        </ul>
+          <MoreVertical className="size-4" />
+        </button>
+        {isOpen && (
+          <ul className="menu absolute right-0 top-full z-[100] w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+            <li>
+              <button
+                onClick={handleReset}
+                disabled={resetting}
+                className="gap-2"
+              >
+                <RotateCcw className="size-4" />
+                {resetting ? 'Resetting...' : 'Reset password'}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="gap-2 text-error"
+              >
+                <Trash2 className="size-4" />
+                {deleting ? 'Deleting...' : 'Delete user'}
+              </button>
+            </li>
+          </ul>
+        )}
       </div>
 
       {tempPassword && (

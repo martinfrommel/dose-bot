@@ -7,6 +7,8 @@
 // 'src/pages/HomePage/HomePage.js'         -> HomePage
 // 'src/pages/Admin/BooksPage/BooksPage.js' -> AdminBooksPage
 
+import type { Role } from 'types/graphql'
+
 import { Router, Route, Set, PrivateSet } from '@cedarjs/router'
 
 import UsersNewUserPage from 'src/pages/UsersNewUserPage/UsersNewUserPage'
@@ -23,7 +25,7 @@ const Routes = () => {
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" prerender />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" prerender />
       <PrivateSet unauthenticated={'login'} wrap={MainLayout}>
-        <PrivateSet unauthenticated={'/'} roles={'Admin'}>
+        <PrivateSet unauthenticated={'home'} roles={['Admin' as Role]}>
           <Route path="/users" page={UsersUsersPage} name="users" />
           <Route path="/users/new" page={UsersNewUserPage} name="usersNewUser" />
         </PrivateSet>
@@ -41,7 +43,7 @@ const Routes = () => {
         <Route path="/api-keys/{id}/edit" page={ApiKeyEditApiKeyPage} name="editApiKey" />
         <Route path="/api-keys/{id}" page={ApiKeyApiKeyPage} name="apiKey" />
         <Route path="/api-keys" page={ApiKeyApiKeysPage} name="apiKeys" />
-        <Route path="/" page={HomePage} name="home" />
+        <Route path="/" page={HomePage} name="home" prerender />
         <Route notfound page={NotFoundPage} prerender />
       </PrivateSet>
     </Router>
