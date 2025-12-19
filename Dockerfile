@@ -31,6 +31,9 @@ RUN yarn cedar build
 # Production stage
 FROM node:24-alpine
 
+# Get Curl for health checks
+RUN apk add --no-cache curl
+
 ARG COPY_SCRIPTS=0
 ARG SCRIPT_EXCLUDES="buildImage.ts"
 
