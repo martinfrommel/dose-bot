@@ -54,9 +54,11 @@ RUN mkdir -p /app/data
 # Set environment variables
 ENV NODE_ENV=production
 ENV DATABASE_URL="file:/app/data/dosebot.db"
+ENV WEB_HOST=0.0.0.0
+ENV API_HOST=0.0.0.0
 
 # Expose ports
 EXPOSE 8910 8911
 
 # Run migrations and start the application
-CMD ["sh", "-c", "yarn cedar prisma migrate deploy && yarn cedar serve"]
+CMD ["sh", "-c", "yarn cedar prisma migrate deploy && yarn cedar prisma db seed && yarn cedar serve --webHost ${WEB_HOST} --apiHost ${API_HOST}"]

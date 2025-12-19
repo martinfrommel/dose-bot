@@ -8,6 +8,7 @@
 [web]
   title = "DoseBot"
   port = 8910
+  host = "0.0.0.0"
   apiUrl = "/.redwood/functions"
   includeEnvironmentVariables = [
     # Add any ENV vars that should be available to the web side to this array
@@ -15,6 +16,7 @@
   ]
 [api]
   port = 8911
+  host = "0.0.0.0"
 [browser]
   open = true
 [notifications]
