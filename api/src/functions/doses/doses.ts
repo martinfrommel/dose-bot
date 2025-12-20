@@ -8,6 +8,9 @@ import { logger } from 'src/lib/logger'
  * Handler for multiple doses operations
  * GET /doses - List all doses with optional filtering
  * POST /doses - Create a new dose
+ * @param event - The API Gateway event.
+ * @param context - The Lambda execution context.
+ * @returns A JSON response with the result of the operation.
  */
 export const handler = async (event: APIGatewayEvent, context: Context) => {
   const apiCall = new ApiCall(event, context)
