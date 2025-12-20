@@ -8,11 +8,11 @@
     ]
   },
   "devDependencies": {
-    "@cedarjs/auth-dbauth-setup": "2.1.0",
-    "@cedarjs/cli-data-migrate": "2.1.0",
-    "@cedarjs/core": "2.1.0",
-    "@cedarjs/project-config": "2.1.0",
-    "@cedarjs/testing": "2.1.0",
+    "@cedarjs/auth-dbauth-setup": "2.1.1",
+    "@cedarjs/cli-data-migrate": "2.1.1",
+    "@cedarjs/core": "2.1.1",
+    "@cedarjs/project-config": "2.1.1",
+    "@cedarjs/testing": "2.1.1",
     "@types/colors": "^1.2.4",
     "colors": "^1.4.0",
     "picospinner": "2",
