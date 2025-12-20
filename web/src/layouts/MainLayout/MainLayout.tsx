@@ -1,7 +1,6 @@
 import { BotIcon, KeyIcon, PillBottleIcon, Users2Icon } from 'lucide-react'
 
 import { Link, routes } from '@cedarjs/router'
-import { Head } from '@cedarjs/web'
 import { Toaster } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'

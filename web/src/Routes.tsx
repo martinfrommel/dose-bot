@@ -9,14 +9,11 @@
 
 import { useEffect, useRef } from 'react'
 
+import { useApolloClient } from '@apollo/client'
 import gql from 'graphql-tag'
 import type { Role } from 'types/graphql'
 
 import { PrivateSet, Route, Router, Set, navigate, routes, useLocation } from '@cedarjs/router'
-import { useApolloClient } from '@apollo/client'
-
-import UsersNewUserPage from 'src/pages/UsersNewUserPage/UsersNewUserPage'
-import UsersUsersPage from 'src/pages/UsersUsersPage/UsersUsersPage'
 
 import { useAuth } from './auth.js'
 import ItemViewLayout from './layouts/ItemViewLayout/ItemViewLayout'
@@ -69,7 +66,7 @@ const Routes = () => {
     <Router useAuth={useAuth}>
       <Set wrap={InitialSetupGate}>
         <Route path="/setup" page={SetupPage} name="setup" />
-        <Route path="/login" page={LoginPage} name="login" prerender />
+        <Route path="/login" page={LoginPage} name="login" />
         <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" prerender />
         <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" prerender />
         <PrivateSet unauthenticated={'login'} wrap={MainLayout}>
