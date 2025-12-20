@@ -71,3 +71,10 @@ export const formatDoseDate = (dateTime: string) => {
 export const checkboxInputTag = (checked: boolean) => {
   return <input type="checkbox" checked={checked} disabled />
 }
+
+export const formatUrl = (url: string) => {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  return `https://${url}`
+}
