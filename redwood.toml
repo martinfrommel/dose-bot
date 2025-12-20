@@ -12,6 +12,7 @@
   # The relative URL path where the API is served from the web side. We don't need to use port 8911 here as we are in a serverful setup.
   apiUrl = "/.redwood/functions"
   includeEnvironmentVariables = [
+    "DEMO_MODE"
   ]
 [api]
   port = 8911

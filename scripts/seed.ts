@@ -11,6 +11,9 @@ import { hashPassword } from '@cedarjs/auth-dbauth-api'
 
 // Use Cedar's dbAuth hashing (scrypt) instead of bcrypt
 
+const isDemoMode = () =>
+  process.env.DEMO_MODE === '1' || process.env.REDWOOD_ENV_DEMO_MODE === '1'
+
 /**
  * Sanitize email to lowercase
  */
@@ -49,6 +52,42 @@ const sendAdminCredentialsEmail = (email: string, password: string) => {
   console.log('------- END EMAIL -------')
 }
 
+const ensureDemoUser = async () => {
+  if (!isDemoMode()) return
+
+  const demoEmail = sanitizeEmail('demo@dosebot.local')
+  const [hashedPassword, salt] = hashPassword('demo')
+
+  const existingDemo = await db.user.findUnique({
+    where: { email: demoEmail },
+  })
+
+  if (existingDemo) {
+    await db.user.update({
+      where: { id: existingDemo.id },
+      data: {
+        hashedPassword,
+        salt,
+        role: 'User',
+      },
+    })
+
+    console.log(`Updated demo user credentials: ${demoEmail}`)
+    return
+  }
+
+  await db.user.create({
+    data: {
+      email: demoEmail,
+      hashedPassword,
+      salt,
+      role: 'User',
+    },
+  })
+
+  console.log(`Created demo user: ${demoEmail}`)
+}
+
 export default async () => {
   try {
     // Get admin email from environment variable or use default
@@ -79,6 +118,7 @@ export default async () => {
       console.log('')
 
       sendAdminCredentialsEmail(adminEmail, plainPassword)
+      await ensureDemoUser()
       return
     }
 
@@ -97,6 +137,8 @@ export default async () => {
     console.log('')
 
     sendAdminCredentialsEmail(adminEmail, plainPassword)
+
+    await ensureDemoUser()
   } catch (error) {
     console.error(error)
   }

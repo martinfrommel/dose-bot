@@ -14,11 +14,30 @@ interface AppProps {
   children?: ReactNode
 }
 
+const DemoBanner = () => {
+  const isDemoMode = process.env.DEMO_MODE === '1'
+
+  if (!isDemoMode) return null
+
+  return (
+    <div className="alert alert-warning fixed bottom-4 left-4 z-50 flex w-80  flex-col gap-1  opacity-70 shadow-lg">
+      <div className="font-semibold">Demo mode</div>
+      <div className="text-sm leading-snug">
+        This sandbox resets its data every midnight. Try things out
+        freely—changes will not persist.
+      </div>
+    </div>
+  )
+}
+
 const App = ({ children }: AppProps) => (
   <FatalErrorBoundary page={FatalErrorPage}>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
+      <DemoBanner />
       <AuthProvider>
-        <RedwoodApolloProvider useAuth={useAuth}>{children}</RedwoodApolloProvider>
+        <RedwoodApolloProvider useAuth={useAuth}>
+          {children}
+        </RedwoodApolloProvider>
       </AuthProvider>
     </RedwoodProvider>
   </FatalErrorBoundary>
