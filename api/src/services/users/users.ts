@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto'
 
 import { Role } from '@prisma/client'
+import { ForbiddenError } from '@cedarjs/graphql-server'
 import type { QueryResolvers, MutationResolvers } from 'types/graphql'
 
 import { hashPassword } from '@cedarjs/auth-dbauth-api'
@@ -82,6 +83,26 @@ export const createUser: MutationResolvers['createUser'] = async ({
 export const resetUserPassword: MutationResolvers['resetUserPassword'] =
   async ({ userId }) => {
     requireAuth({ roles: [Role.Admin] })
+
+    const currentUser = context.currentUser as
+      | { id?: number; role?: Role; roles?: Role[] }
+      | undefined
+
+    if (currentUser?.id === userId) {
+      throw new ForbiddenError('You cannot reset your own password')
+    }
+
+    const targetUser = await db.user.findUnique({ where: { id: userId } })
+    if (!targetUser) {
+      throw new Error('User not found')
+    }
+
+    const currentUserRole = currentUser?.role ?? currentUser?.roles?.[0]
+    if (targetUser.role === Role.Admin && currentUserRole === Role.Admin) {
+      throw new ForbiddenError(
+        'Admins cannot reset passwords for other admins'
+      )
+    }
 
     // Generate temp password
     const tempPassword = generatePassword()

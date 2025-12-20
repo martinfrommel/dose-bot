@@ -14,6 +14,7 @@ type MainLayoutProps = {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const { isAuthenticated, currentUser } = useAuth()
   const isAdmin = currentUser?.role === 'Admin'
+
   return (
     <>
       {process.env.ANALYTICS_ENABLED === '1' && (

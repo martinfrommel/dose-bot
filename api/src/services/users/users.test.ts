@@ -3,6 +3,11 @@ import type { User } from '@prisma/client'
 import { users, user, createUser, updateUser, deleteUser } from './users.js'
 import type { StandardScenario } from './users.scenarios.js'
 
+type TestGlobal = typeof globalThis & {
+  mockCurrentUser?: (user: Record<string, unknown> | null) => void
+  context?: Record<string, unknown>
+}
+
 // Generated boilerplate tests do not account for all circumstances
 // and can fail without adjustments, e.g. Float.
 //           Please refer to the RedwoodJS Testing Docs:
@@ -11,15 +16,16 @@ import type { StandardScenario } from './users.scenarios.js'
 
 describe('users', () => {
   const setCurrentUser = (user: Record<string, unknown> | null) => {
-    if (typeof globalThis.mockCurrentUser === 'function') {
-      globalThis.mockCurrentUser(user)
+    const testGlobal = globalThis as TestGlobal
+
+    if (typeof testGlobal.mockCurrentUser === 'function') {
+      testGlobal.mockCurrentUser(user)
       return
     }
 
     // Fallback in case mockCurrentUser is not available
-    ;(globalThis as typeof globalThis & { context?: Record<string, unknown> }).context = {
-      ...(globalThis as typeof globalThis & { context?: Record<string, unknown> })
-        .context,
+    testGlobal.context = {
+      ...testGlobal.context,
       currentUser: user,
     }
   }
@@ -46,10 +52,10 @@ describe('users', () => {
   })
 
   scenario('creates a user', async () => {
-    const result = await createUser({
+    const result = (await createUser({
       email: 'NewUser@Example.com',
       plainPassword: 'P@ssw0rd!',
-    })
+    })) as User
 
     expect(result.email).toEqual('newuser@example.com')
     expect(result.hashedPassword).toBeDefined()

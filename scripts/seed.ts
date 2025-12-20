@@ -11,8 +11,7 @@ import { hashPassword } from '@cedarjs/auth-dbauth-api'
 
 // Use Cedar's dbAuth hashing (scrypt) instead of bcrypt
 
-const isDemoMode = () =>
-  process.env.DEMO_MODE === '1' || process.env.REDWOOD_ENV_DEMO_MODE === '1'
+const isDemoMode = () => process.env.DEMO_MODE === '1'
 
 /**
  * Sanitize email to lowercase
@@ -81,7 +80,7 @@ const ensureDemoUser = async () => {
       email: demoEmail,
       hashedPassword,
       salt,
-      role: 'User',
+      role: 'Admin',
     },
   })
 

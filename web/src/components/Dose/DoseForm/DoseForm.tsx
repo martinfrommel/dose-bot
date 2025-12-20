@@ -98,7 +98,10 @@ const DoseForm = (props: DoseFormProps) => {
                 className="radio"
                 errorClassName="radio"
                 onChange={() => setUnit(u)}
-                validation={{ required: true, value: u }}
+                validation={{
+                  required: true,
+                  value: u,
+                }}
               />
               <span className="label-text">{u}</span>
             </label>
