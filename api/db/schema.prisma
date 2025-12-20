@@ -22,23 +22,27 @@ enum Role {
 }
 
 model Dose {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  amount      Float
-  unit        Unit      @default(G)
-  substance   Substance @relation(fields: [substanceId], references: [id], onDelete: Cascade)
-  substanceId String
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  amount        Float
+  unit          Unit      @default(G)
+  substance     Substance @relation(fields: [substanceId, substanceName, substanceSlug], references: [id, name, slug], onDelete: Cascade)
+  substanceId   String
+  substanceName String
+  substanceSlug String
 }
 
 model Substance {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  name        String
+  name        String   @unique
   description String?
-  slug        String   @unique
+  slug        String
   doses       Dose[]
+
+  @@unique([name, id, slug])
 }
 
 model ApiKey {

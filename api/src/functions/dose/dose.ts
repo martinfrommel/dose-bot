@@ -1,3 +1,4 @@
+import { type Unit } from '@prisma/client'
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 
 import { ApiCall } from 'src/lib/ApiCall'
@@ -33,6 +34,8 @@ export const handler = async (event: APIGatewayEvent, context: Context) => {
         return await handlePut(apiCall)
       case 'DELETE':
         return await handleDelete(apiCall)
+      case 'POST':
+        return await handleCreate(apiCall)
       default:
         return apiCall.methodNotAllowed(['GET', 'PUT', 'DELETE'])
     }
@@ -160,5 +163,57 @@ async function handleDelete(apiCall: ApiCall) {
   } catch (error) {
     logger.error('Error deleting dose:', error)
     return apiCall.serverError('Failed to delete dose', error as Error)
+  }
+}
+
+/*
+ * Handle POST requests - Create a new dose on a substance
+ */
+async function handleCreate(apiCall: ApiCall) {
+  const body = apiCall.body
+
+  if (!body) {
+    return apiCall.badRequest('Request body is required')
+  }
+
+  const { amount, unit, substanceName } = body
+
+  if (amount === undefined || !substanceName) {
+    return apiCall.badRequest('Amount and substanceName are required')
+  } else if (
+    (typeof amount !== 'number' && typeof amount !== 'string') ||
+    Number(amount) <= 0
+  ) {
+    return apiCall.badRequest('Amount must be a positive number')
+  }
+
+  try {
+    // Verify the substance exists
+    const substance = await db.substance.findUnique({
+      where: { name: substanceName },
+    })
+
+    if (!substance) {
+      return apiCall.notFound(`Substance with name ${substanceName} not found`)
+    }
+
+    // Create the dose
+    const dose = await db.dose.create({
+      data: {
+        amount: Number(amount),
+        unit: unit as Unit,
+        substance: {
+          connect: { id: substance.id },
+        },
+      },
+      include: {
+        substance: true,
+      },
+    })
+
+    return apiCall.created(dose)
+  } catch (error) {
+    logger.error('Error creating dose:', error)
+    return apiCall.serverError('Failed to create dose', error as Error)
   }
 }
