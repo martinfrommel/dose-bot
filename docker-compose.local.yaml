@@ -22,7 +22,7 @@ services:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - RUN_SEED=${RUN_SEED:?0}
       - COPY_SCRIPTS=${COPY_SCRIPTS:-0}
-      - SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES:-"buildImage.ts, setupDocker.ts, dockerUtils.ts, lib/"}
+      - SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES:-"buildImage.ts, dockerUtils.ts, lib/"}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -X GET  http://localhost:8911/health || exit 1"]
