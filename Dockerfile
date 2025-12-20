@@ -35,7 +35,8 @@ FROM node:24-alpine
 RUN apk add --no-cache curl
 
 ARG COPY_SCRIPTS=0
-ARG SCRIPT_EXCLUDES="buildImage.ts"
+# Space-separated list of script names/paths to skip during COPY_SCRIPTS handling
+ARG SCRIPT_EXCLUDES="buildImage.ts dockerUtils.ts lib/"
 
 ENV YARN_VERSION=4.12.0 \
 	COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
