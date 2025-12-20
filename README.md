@@ -68,6 +68,8 @@ Create a `.env` file at the project root (or use your preferred env management).
 - `DATABASE_URL`: Prisma connection string. Default for SQLite: `file:./api/db/dev.db`
 - `CACHE_HOST`: Optional Memcached host, e.g. `localhost:11211` (or `memcached:11211` when using Docker Compose)
 - `NODE_ENV`: `development`, `test`, or `production`
+- `DEMO_MODE`: Set to `1` to enable demo mode on the API (seeds a demo user) and nightly-reset messaging. Default: unset/`0`.
+- `REDWOOD_ENV_DEMO_MODE`: Set to `1` to surface demo mode in the web UI (floating banner). Default: unset/`0`.
 
 ## 🛡️ Authentication & Access
 
