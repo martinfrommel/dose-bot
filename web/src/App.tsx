@@ -26,6 +26,14 @@ const DemoBanner = () => {
         This sandbox resets its data every midnight. Try things out
         freely—changes will not persist.
       </div>
+      <ul className="flex w-full flex-col gap-1 pt-2 text-sm">
+        <li>
+          <strong>Username:</strong>&nbsp; <span>demo@dosebot.local</span>
+        </li>
+        <li>
+          <strong>Password:</strong>&nbsp; <span>demo</span>
+        </li>
+      </ul>
     </div>
   )
 }
