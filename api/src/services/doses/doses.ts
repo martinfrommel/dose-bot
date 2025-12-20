@@ -17,8 +17,9 @@ export const dose: QueryResolvers['dose'] = ({ id }) => {
 }
 
 export const createDose: MutationResolvers['createDose'] = ({ input }) => {
+  const { substanceId, ...rest } = input
   return db.dose.create({
-    data: input,
+    data: { ...rest, substance: { connect: { id: substanceId } } },
   })
 }
 
