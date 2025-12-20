@@ -2,40 +2,22 @@ import { runCommandWithSpinner, Logger } from './lib/scriptUtils'
 
 export interface AvailableArgsLong {
   verbose: boolean
-  // The docker registry url to push to
+  // Full image reference to build (and push, if requested)
   target?: string
-  'docker-target'?: boolean
+  // Optional local tag when not pushing
   tag?: string
-  'dry-run'?: boolean
-  'copy-scripts'?: boolean
-  'script-excludes'?: string
-  login?: boolean
-  username?: string
-  password?: string
-  registry?: string
+  // Push image after build
+  push?: boolean
 }
 
 export interface AvailableArgsShort {
   v?: AvailableArgs['verbose']
   tr?: AvailableArgs['target']
-  dt?: AvailableArgs['docker-target']
   tg?: AvailableArgs['tag']
-  dr?: AvailableArgs['dry-run']
-  cs?: AvailableArgs['copy-scripts']
-  se?: AvailableArgs['script-excludes']
-  l?: AvailableArgs['login']
-  u?: AvailableArgs['username']
-  p?: AvailableArgs['password']
-  r?: AvailableArgs['registry']
+  ps?: AvailableArgs['push']
 }
 
 export type AvailableArgs = AvailableArgsLong & AvailableArgsShort
-
-export interface DockerLoginConfig {
-  username: string
-  password: string
-  registry: string
-}
 
 interface Args {
   _: string[]
@@ -51,15 +33,8 @@ export default async ({ args: rawArgs }: Args) => {
   const args: AvailableArgs = {
     verbose: rawArgs.v ?? rawArgs.verbose ?? false,
     target: rawArgs.tr ?? rawArgs.target,
-    'docker-target': rawArgs.dt ?? rawArgs['docker-target'] ?? false,
     tag: rawArgs.tg ?? rawArgs.tag,
-    'dry-run': rawArgs.dr ?? rawArgs['dry-run'] ?? false,
-    'copy-scripts': rawArgs.cs ?? rawArgs['copy-scripts'] ?? false,
-    'script-excludes': rawArgs.se ?? rawArgs['script-excludes'],
-    login: rawArgs.l ?? rawArgs.login ?? false,
-    username: rawArgs.u ?? rawArgs.username,
-    password: rawArgs.p ?? rawArgs.password,
-    registry: rawArgs.r ?? rawArgs.registry,
+    push: rawArgs.ps ?? rawArgs.push ?? false,
   }
 
   console.log('----------------------------------')
@@ -72,79 +47,39 @@ export default async ({ args: rawArgs }: Args) => {
   }
   console.log('----------------------------------')
 
-  if (args.target && !validateTargetUrl(args.target)) {
-    Logger.error(`The provided target: "${args.target}" is not a valid URL.`)
+  if (args.push && !args.target) {
+    Logger.error('Pushing requires --target to specify the destination image.')
     process.exit(1)
   }
 
-  const loginConfig = buildLoginConfig(args)
+  const imageTag = args.push
+    ? (args.target as string)
+    : args.target || args.tag || 'dosebot:latest'
 
   try {
-    const buildArgs = []
-    if (args.target) {
-      buildArgs.push('--target', args.target)
-    } else if (!args.target && args['docker-target']) {
-      buildArgs.push('--target', 'production-docker')
-    }
-
-    // Always add a tag - use provided tag or default to 'dosebot:latest'
-    buildArgs.push('--tag', args.tag || 'dosebot:latest')
-
-    if (args['copy-scripts']) {
-      buildArgs.push('--build-arg', 'COPY_SCRIPTS=1')
-    }
-
-    if (args['script-excludes']) {
-      buildArgs.push(
-        '--build-arg',
-        `SCRIPT_EXCLUDES=${args['script-excludes']}`
-      )
-    }
+    const buildArgs = ['--tag', imageTag]
 
     if (args.verbose) {
       buildArgs.push('--progress=plain')
     }
 
-    if (args['dry-run']) {
-      Logger.info('Dry run enabled. Building image locally for testing...')
-      // Replace the tag with test tag for dry-run
-      const tagIndex = buildArgs.indexOf('--tag')
-      if (tagIndex !== -1) {
-        buildArgs[tagIndex + 1] = 'dosebot:test'
-      }
-      buildArgs.push('--load')
+    await runCommandWithSpinner(
+      `docker build . ${buildArgs.join(' ')}`,
+      `Building Docker image as ${imageTag}...`,
+      args.verbose
+    )
+
+    Logger.success(`Docker image built successfully as ${imageTag}.`)
+
+    if (args.push && args.target) {
+      await loginToRegistry(args.target)
 
       await runCommandWithSpinner(
-        `docker build . ${buildArgs.join(' ')}`,
-        'Building Docker image (test mode)...',
+        `docker push ${args.target}`,
+        `Pushing Docker image to ${args.target}...`,
         args.verbose
       )
-
-      Logger.success('Docker image built successfully as dosebot:test')
-      Logger.info(
-        'You can now test the image locally with: docker run dosebot:test'
-      )
-      Logger.info('Optionally you can also run docker-compose up to test it.')
-    } else {
-      await runCommandWithSpinner(
-        `docker build . ${buildArgs.join(' ')}`,
-        'Building Docker image...',
-        args.verbose
-      )
-
-      Logger.success('Docker image built successfully.')
-      if (loginConfig) {
-        await loginToRegistry(loginConfig, args.verbose)
-      }
-
-      if (args.target) {
-        await runCommandWithSpinner(
-          `docker push ${args.target}`,
-          `Pushing Docker image to ${args.target}...`,
-          args.verbose
-        )
-        Logger.success('Docker image pushed successfully.')
-      }
+      Logger.success('Docker image pushed successfully.')
     }
   } catch (error) {
     Logger.error(`An error occurred during the Docker image build process.`)
@@ -153,67 +88,36 @@ export default async ({ args: rawArgs }: Args) => {
   }
 }
 
-export const loginToRegistry = async (
-  config: DockerLoginConfig,
-  verbose: boolean
-) => {
-  const { registry, username, password } = config
+export const loginToRegistry = async (target: string) => {
+  const registry = extractRegistryFromTarget(target)
+  const loginTarget = registry ?? ''
+  const spinnerLabel = registry
+    ? `Logging into ${registry}...`
+    : 'Logging into Docker Hub...'
 
-  if (!validateRegistryUrl(registry)) {
-    Logger.error(`The provided registry: "${registry}" is not a valid URL.`)
-    process.exit(1)
-  }
-
+  // Use verbose mode for login so docker can prompt for credentials interactively.
   await runCommandWithSpinner(
-    {
-      cmd: 'docker',
-      args: ['login', registry, '-u', username, '--password-stdin'],
-      stdinData: password,
-    },
-    `Logging into ${registry}...`,
-    verbose
+    loginTarget ? `docker login ${loginTarget}` : 'docker login',
+    spinnerLabel,
+    true
   )
 
-  Logger.success(`Logged into ${registry} successfully.`)
-}
-
-const validateTargetUrl = (url: string) => {
-  const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(:[0-9]{1,5})?(\/.*)?$/
-  return urlPattern.test(url)
-}
-
-const validateRegistryUrl = (url: string) => {
-  const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(:[0-9]{1,5})?(\/.*)?$/
-  return urlPattern.test(url)
-}
-
-const buildLoginConfig = (args: AvailableArgs): DockerLoginConfig | null => {
-  const loginRequested = Boolean(
-    args.login || args.username || args.password || args.registry
+  Logger.success(
+    registry
+      ? `Logged into ${registry} successfully.`
+      : 'Logged into Docker Hub successfully.'
   )
+}
 
-  if (!loginRequested) return null
+const extractRegistryFromTarget = (target: string): string | null => {
+  const normalized = target.replace(/^https?:\/\//, '')
+  const [first] = normalized.split('/')
 
-  const missing: string[] = []
-  if (!args.username) missing.push('username (--username or -u)')
-  if (!args.password) missing.push('password (--password or -p)')
-  if (!args.registry) missing.push('registry (--registry or -r)')
+  if (!first) return null
 
-  if (missing.length) {
-    Logger.error(`Missing required login arguments: ${missing.join(', ')}`)
-    process.exit(1)
+  if (first.includes('.') || first.includes(':') || first === 'localhost') {
+    return first
   }
 
-  if (!validateRegistryUrl(args.registry as string)) {
-    Logger.error(
-      `The provided registry: "${args.registry}" is not a valid URL.`
-    )
-    process.exit(1)
-  }
-
-  return {
-    username: args.username as string,
-    password: args.password as string,
-    registry: args.registry as string,
-  }
+  return null
 }
