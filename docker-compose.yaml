@@ -25,6 +25,10 @@ services:
       COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
       SCRIPT_EXCLUDES: "${SCRIPT_EXCLUDES:-buildImage.ts dockerUtils.ts lib/}"
       DEMO_MODE: ${DEMO_MODE:-0}
+      ANALYTICS_ENABLED: "${ANALYTICS_ENABLED:-1}"
+      ANALYTICS_ENDPOINT: "${ANALYTICS_ENDPOINT:-}"
+      ANALYTICS_WEBSITE_ID: "${ANALYTICS_WEBSITE_ID:-}"
+      ANALYTICS_SCRIPT_URL: "${ANALYTICS_SCRIPT_URL:-}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dosebot-api.rule=Host(`dosebot-sos4g8cs04g8kkc8g84ow04g.athanor.software`) && PathPrefix(`/api`)"
