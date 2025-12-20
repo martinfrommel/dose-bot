@@ -18,13 +18,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <>
       {process.env.ANALYTICS_ENABLED === '1' && (
-        <Head>
-          <Analytics
-            endpoint={process.env.ANALYTICS_ENDPOINT}
-            websiteId={process.env.ANALYTICS_WEBSITE_ID}
-            scriptUrl={process.env.ANALYTICS_SCRIPT_URL}
-          />
-        </Head>
+        <Analytics
+          endpoint={process.env.ANALYTICS_ENDPOINT}
+          websiteId={process.env.ANALYTICS_WEBSITE_ID}
+          scriptUrl={process.env.ANALYTICS_SCRIPT_URL}
+        />
       )}
       <div className="flex min-h-screen flex-col bg-base-200">
         <div className="navbar bg-base-100 shadow-md">

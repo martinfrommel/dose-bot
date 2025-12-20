@@ -1,3 +1,5 @@
+import { Head } from '@cedarjs/web'
+
 import { formatUrl } from 'src/lib/formatters'
 
 interface AnalyticsProps {
@@ -15,11 +17,13 @@ const Analytics = ({ endpoint, websiteId, scriptUrl }: AnalyticsProps) => {
   const formattedEndpoint = formatUrl(endpoint!)
 
   return (
-    <script
-      defer
-      src={`${formattedEndpoint}${scriptUrl ?? '/script.js'}`}
-      data-website-id={websiteId}
-    />
+    <Head>
+      <script
+        defer
+        src={`${formattedEndpoint}${scriptUrl ?? '/script.js'}`}
+        data-website-id={websiteId}
+      />
+    </Head>
   )
 }
 
