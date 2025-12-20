@@ -70,6 +70,7 @@ Create a `.env` file at the project root (or use your preferred env management).
 - `NODE_ENV`: `development`, `test`, or `production`
 - `DEMO_MODE`: Set to `1` to enable demo mode on the API (seeds a demo user) and nightly-reset messaging. Default: unset/`0`.
 - `REDWOOD_ENV_DEMO_MODE`: Set to `1` to surface demo mode in the web UI (floating banner). Default: unset/`0`.
+- `COPY_SCRIPTS`: Optional; when `1`, copies scripts into the image for `cedar exec`. Independently, if `DEMO_MODE=1`, `seed.ts` is copied to the image to ensure demo seeding is available at runtime.
 
 ## 🛡️ Authentication & Access
 

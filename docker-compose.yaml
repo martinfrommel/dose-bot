@@ -6,6 +6,7 @@ services:
       args:
         COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
         SCRIPT_EXCLUDES: ${SCRIPT_EXCLUDES:-"buildImage.ts"}
+        DEMO_MODE: ${DEMO_MODE:-0}
     container_name: dosebot
     expose:
       - "8910"  # Web port
@@ -23,6 +24,7 @@ services:
       RUN_SEED: ${RUN_SEED:-0}
       COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
       SCRIPT_EXCLUDES: "${SCRIPT_EXCLUDES:-buildImage.ts dockerUtils.ts lib/}"
+      DEMO_MODE: ${DEMO_MODE:-0}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dosebot-api.rule=Host(`dosebot-sos4g8cs04g8kkc8g84ow04g.athanor.software`) && PathPrefix(`/api`)"
