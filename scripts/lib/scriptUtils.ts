@@ -12,6 +12,9 @@ export type CommandInput =
       shell?: boolean
     }
 
+/*Simple logger singleton with success, error, and info methods.
+Each method outputs a colored label followed by the message.
+*/
 export const Logger = {
   success: (message: string) => {
     console.log(bgGreen(white(' SUCCESS ')), message)
@@ -24,6 +27,28 @@ export const Logger = {
   },
 }
 
+/*
+Validate that required arguments are present in the args object.
+If any required argument is missing, the onfail callback is executed.
+ */
+export const validateArguments = <T extends object>(
+  args: T,
+  requiredArgs: (keyof T)[],
+  onfail: () => void
+): boolean | void => {
+  for (const arg of requiredArgs) {
+    const value = (args as Record<string, unknown>)[arg as string]
+    if (!value) {
+      return onfail()
+    }
+  }
+  return true
+}
+
+/*
+Run a command with a spinner. If verbose is true, output command output directly.
+Otherwise, capture output and show spinner until command completes.
+*/
 export const runCommandWithSpinner = (
   command: CommandInput,
   spinnerText: string,

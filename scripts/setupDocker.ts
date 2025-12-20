@@ -1,7 +1,11 @@
 import buildImage, {
   type AvailableArgs as AvailableBuildArgs,
 } from './buildImage'
-import { runCommandWithSpinner, Logger } from './lib/scriptUtils'
+import {
+  runCommandWithSpinner,
+  Logger,
+  validateArguments,
+} from './lib/scriptUtils'
 
 interface AvailableArgsLong {
   username?: string
@@ -64,16 +68,18 @@ export default async ({ args }: Args) => {
   }
   console.log('----------------------------------')
 
-  if (
-    !normalizedArgs.username ||
-    !normalizedArgs.password ||
-    !normalizedArgs.registry
-  ) {
+  const requiredArgs: Array<keyof AvailableArgs> = [
+    'username',
+    'password',
+    'registry',
+  ]
+
+  validateArguments(normalizedArgs, requiredArgs, () => {
     Logger.error(
       'Missing required arguments: username, password, and registry are required.'
     )
     process.exit(1)
-  }
+  })
 
   if (!validateRegistryUrl(normalizedArgs.registry)) {
     Logger.error(
