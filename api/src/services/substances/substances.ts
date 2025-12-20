@@ -20,7 +20,7 @@ export const substance: QueryResolvers['substance'] = ({ id }) => {
 export const substanceBySlug: QueryResolvers['substanceBySlug'] = ({
   slug,
 }) => {
-  return db.substance.findUnique({
+  return db.substance.findFirst({
     where: { slug },
   })
 }

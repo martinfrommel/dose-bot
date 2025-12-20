@@ -1,4 +1,4 @@
-import type { FindDoses, FindDosesVariables } from 'types/graphql'
+import type { Unit } from 'types/graphql'
 
 import { routes } from '@cedarjs/router'
 import type {
@@ -11,22 +11,50 @@ import Doses from 'src/components/Dose/Doses'
 import EmptyState from 'src/components/EmptyState/EmptyState'
 import { useItemView } from 'src/contexts/ItemViewContext'
 
-export const QUERY: TypedDocumentNode<FindDoses, FindDosesVariables> = gql`
-  query FindDoses {
-    doses {
+type DoseForSubstance = {
+  id: string
+  createdAt: string
+  updatedAt: string
+  amount: number
+  unit: Unit
+  substanceId: string
+}
+
+export type FindDosesBySlug = {
+  substance?: {
+    id: string
+    createdAt: string
+    updatedAt: string
+    name: string
+    description?: string | null
+    slug: string
+    doses: DoseForSubstance[]
+  }
+}
+
+export type FindDosesBySlugVariables = {
+  slug: string
+}
+
+export const QUERY: TypedDocumentNode<
+  FindDosesBySlug,
+  FindDosesBySlugVariables
+> = gql`
+  query FindDosesBySlug($slug: String!) {
+    substance: substanceBySlug(slug: $slug) {
       id
       createdAt
       updatedAt
-      amount
-      unit
-      substanceId
-      substance {
+      name
+      description
+      slug
+      doses {
         id
         createdAt
         updatedAt
-        name
-        description
-        slug
+        amount
+        unit
+        substanceId
       }
     }
   }
@@ -48,23 +76,44 @@ export const Empty = ({ slug }: DosesCellProps) => {
   )
 }
 
-export const Failure = ({ error }: CellFailureProps<FindDoses>) => (
+export const Failure = ({ error }: CellFailureProps<FindDosesBySlug>) => (
   <div className="alert alert-error">
     <span>{error?.message}</span>
   </div>
 )
 
 export const Success = ({
-  doses,
+  substance,
   slug,
-}: CellSuccessProps<FindDoses, FindDosesVariables> & DosesCellProps) => {
+}: CellSuccessProps<FindDosesBySlug, FindDosesBySlugVariables> &
+  DosesCellProps) => {
   const { setSubstance, setCurrentPageTitle } = useItemView()
 
-  // Set dose in context and clear page title when it loads
+  // Set substance in context and clear page title when it loads
   React.useEffect(() => {
-    setSubstance(doses[0]?.substance)
+    setSubstance(substance || undefined)
     setCurrentPageTitle(undefined)
-  }, [doses, setSubstance, setCurrentPageTitle])
+  }, [substance, setSubstance, setCurrentPageTitle])
 
-  return <Doses doses={doses} slug={slug} />
+  if (!substance) {
+    return (
+      <EmptyState
+        title="Substance not found."
+        createLink={routes.newSubstance()}
+        createLabel="Create substance"
+      />
+    )
+  }
+
+  if (substance.doses.length === 0) {
+    return (
+      <EmptyState
+        title="No doses yet."
+        createLink={routes.newDose({ slug })}
+        createLabel="Create one"
+      />
+    )
+  }
+
+  return <Doses substance={substance} />
 }

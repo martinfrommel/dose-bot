@@ -1,7 +1,6 @@
 import type {
   DeleteDoseMutation,
   DeleteDoseMutationVariables,
-  FindDoses,
 } from 'types/graphql'
 
 import { routes } from '@cedarjs/router'
@@ -9,7 +8,7 @@ import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
-import { QUERY } from 'src/components/Dose/DosesCell'
+import { QUERY, FindDosesBySlug } from 'src/components/Dose/DosesCell'
 import ListActions from 'src/components/ListActions/ListActions'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
@@ -24,11 +23,11 @@ const DELETE_DOSE_MUTATION: TypedDocumentNode<
   }
 `
 
-type DosesProps = FindDoses & {
-  slug: string
+type DosesProps = {
+  substance: NonNullable<FindDosesBySlug['substance']>
 }
-
-const DosesList = ({ doses, slug }: DosesProps) => {
+const DosesList = ({ substance }: DosesProps) => {
+  const { doses, slug } = substance
   const [deleteDose] = useMutation(DELETE_DOSE_MUTATION, {
     onCompleted: () => {
       toast.success('Dose deleted')
@@ -36,7 +35,7 @@ const DosesList = ({ doses, slug }: DosesProps) => {
     onError: (error) => {
       toast.error(error.message)
     },
-    refetchQueries: [{ query: QUERY }],
+    refetchQueries: [{ query: QUERY, variables: { slug } }],
     awaitRefetchQueries: true,
   })
 
@@ -78,11 +77,11 @@ const DosesList = ({ doses, slug }: DosesProps) => {
               <td>
                 <ListActions
                   viewTo={routes.dose({
-                    slug: dose.substance.slug,
+                    slug,
                     id: dose.id,
                   })}
                   editTo={routes.editDose({
-                    slug: dose.substance.slug,
+                    slug,
                     id: dose.id,
                   })}
                   onDelete={() => onDeleteClick(dose.id)}

@@ -107,7 +107,9 @@ async function handlePut(apiCall: ApiCall) {
       where: { id: existingSubstance.id },
       data: {
         ...(body.name !== undefined && { name: body.name }),
-        ...(body.description !== undefined && { description: body.description }),
+        ...(body.description !== undefined && {
+          description: body.description,
+        }),
         ...(body.slug !== undefined && { slug: body.slug }),
       },
       include: {

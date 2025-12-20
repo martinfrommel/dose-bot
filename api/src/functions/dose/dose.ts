@@ -10,6 +10,7 @@ import { logger } from 'src/lib/logger'
  * GET /dose/:id - Get a specific dose
  * PUT /dose/:id - Update a specific dose
  * DELETE /dose/:id - Delete a specific dose
+ * POST /dose - Create a new dose
  * @param event - The API Gateway event.
  * @param context - The Lambda execution context.
  * @returns A JSON response with the result of the operation.
