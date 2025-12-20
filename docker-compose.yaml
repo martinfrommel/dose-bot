@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         COPY_SCRIPTS: ${COPY_SCRIPTS:-0}
-        SCRIPT_EXCLUDES: ${SCRIPT_EXCLUDES:-buildImage.ts}
+        SCRIPT_EXCLUDES: ${SCRIPT_EXCLUDES:-"buildImage.ts"}
     container_name: dosebot
     expose:
       - "8910"  # Web port
