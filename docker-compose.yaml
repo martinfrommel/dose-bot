@@ -30,8 +30,9 @@ services:
       - "traefik.http.routers.dosebot-api.tls=true"
       - "traefik.http.routers.dosebot-api.service=dosebot-api"
       - "traefik.http.services.dosebot-api.loadbalancer.server.port=8911"
-      - "traefik.http.middlewares.dosebot-api-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.dosebot-api.middlewares=dosebot-api-stripprefix"
+      - "traefik.http.middlewares.dosebot-api-rewrite.replacepathregex.regex=^/api/?(.*)"
+      - "traefik.http.middlewares.dosebot-api-rewrite.replacepathregex.replacement=/.redwood/functions/$1"
+      - "traefik.http.routers.dosebot-api.middlewares=dosebot-api-rewrite"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -X GET http://localhost:8911/health || exit 1"]
