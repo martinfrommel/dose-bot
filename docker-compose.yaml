@@ -31,8 +31,8 @@ services:
       ANALYTICS_SCRIPT_URL: "${ANALYTICS_SCRIPT_URL:-}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dosebot-api.rule=Host(`dosebot-sos4g8cs04g8kkc8g84ow04g.athanor.software`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.dosebot-api.entrypoints=websecure"
+      - "traefik.http.routers.dosebot-api.rule=HostRegexp(`{host:.+}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.dosebot-api.entrypoints=https"
       - "traefik.http.routers.dosebot-api.tls=true"
       - "traefik.http.routers.dosebot-api.service=dosebot-api"
       - "traefik.http.services.dosebot-api.loadbalancer.server.port=8911"
@@ -46,3 +46,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    external: true
