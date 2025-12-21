@@ -87,10 +87,16 @@ async function handleGet(apiCall: ApiCall) {
 async function handlePost(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body || !body.amount || !body.unit || !body.substanceId) {
+  if (!body || body.amount === undefined || !body.unit || !body.substanceId) {
     return apiCall.badRequest(
       'Missing required fields: amount, unit, and substanceId are required'
     )
+  }
+
+  // Validate amount as a positive number (accept string or number input)
+  const amount = parseFloat(String(body.amount))
+  if (Number.isNaN(amount) || amount <= 0) {
+    return apiCall.badRequest('Amount must be a positive number')
   }
 
   try {
@@ -106,7 +112,7 @@ async function handlePost(apiCall: ApiCall) {
     // Create the dose
     const dose = await db.dose.create({
       data: {
-        amount: body.amount,
+        amount,
         unit: body.unit,
         substanceId: body.substanceId,
       },

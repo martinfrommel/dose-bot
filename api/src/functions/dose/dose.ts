@@ -90,6 +90,15 @@ async function handlePut(apiCall: ApiCall) {
     return apiCall.badRequest('Request body is required')
   }
 
+  let parsedAmount: number | undefined
+  if (body.amount !== undefined) {
+    parsedAmount = parseFloat(String(body.amount))
+
+    if (Number.isNaN(parsedAmount) || parsedAmount <= 0) {
+      return apiCall.badRequest('Amount must be a positive number')
+    }
+  }
+
   try {
     // Check if dose exists
     const existingDose = await db.dose.findUnique({
@@ -117,7 +126,9 @@ async function handlePut(apiCall: ApiCall) {
     const dose = await db.dose.update({
       where: { id },
       data: {
-        ...(body.amount !== undefined && { amount: body.amount }),
+        ...(parsedAmount !== undefined && {
+          amount: parsedAmount,
+        }),
         ...(body.unit !== undefined && { unit: body.unit }),
         ...(body.substanceId !== undefined && {
           substanceId: body.substanceId,
@@ -201,7 +212,8 @@ async function handleCreate(apiCall: ApiCall) {
     // Create the dose
     const dose = await db.dose.create({
       data: {
-        amount: Number(amount),
+        // we need to parse this as a float, so it doesn't get rounded to an integer
+        amount: parseFloat(String(amount)),
         unit: unit as Unit,
         substance: {
           connect: { id: substance.id },
