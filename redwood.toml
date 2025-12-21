@@ -13,6 +13,10 @@
   apiUrl = "/.redwood/functions"
   includeEnvironmentVariables = [
     "DEMO_MODE",
+    "ANALYTICS_ENABLED",
+    "ANALYTICS_ENDPOINT",
+    "ANALYTICS_SCRIPT_URL",
+    "ANALYTICS_WEBSITE_ID",
   ]
 [api]
   port = 8911

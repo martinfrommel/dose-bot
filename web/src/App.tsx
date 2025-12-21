@@ -8,7 +8,7 @@ import FatalErrorPage from 'src/pages/FatalErrorPage'
 import { AuthProvider, useAuth } from './auth.js'
 import './index.css'
 import './scaffold.css'
-import AnalyticsProvider from './components/Analytics/Analytics'
+import AnalyticsScript from './components/Analytics/Analytics'
 
 interface AppProps {
   children?: ReactNode
@@ -41,18 +41,17 @@ const DemoBanner = () => {
 const App = ({ children }: AppProps) => (
   <FatalErrorBoundary page={FatalErrorPage}>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
-      <AnalyticsProvider
-        endpoint={process.env.REDWOOD_ENV_ANALYTICS_ENDPOINT}
-        websiteId={process.env.REDWOOD_ENV_ANALYTICS_WEBSITE_ID}
-        scriptUrl={process.env.REDWOOD_ENV_ANALYTICS_SCRIPT_URL}
-      >
-        <DemoBanner />
-        <AuthProvider>
-          <RedwoodApolloProvider useAuth={useAuth}>
-            {children}
-          </RedwoodApolloProvider>
-        </AuthProvider>
-      </AnalyticsProvider>
+      <AnalyticsScript
+        endpoint={process.env.ANALYTICS_ENDPOINT}
+        websiteId={process.env.ANALYTICS_WEBSITE_ID}
+        scriptUrl={process.env.ANALYTICS_SCRIPT_URL}
+      />
+      <DemoBanner />
+      <AuthProvider>
+        <RedwoodApolloProvider useAuth={useAuth}>
+          {children}
+        </RedwoodApolloProvider>
+      </AuthProvider>
     </RedwoodProvider>
   </FatalErrorBoundary>
 )

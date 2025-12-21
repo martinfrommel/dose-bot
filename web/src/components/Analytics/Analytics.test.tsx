@@ -1,6 +1,8 @@
+import { HelmetProvider } from '@dr.pogodin/react-helmet'
+
 import { render, waitFor } from '@cedarjs/testing/web'
 
-import AnalyticsProvider from './Analytics'
+import AnalyticsScript from './Analytics'
 
 describe('Analytics', () => {
   afterEach(() => {
@@ -8,7 +10,11 @@ describe('Analytics', () => {
   })
 
   it('renders nothing and does not inject the script without an endpoint', () => {
-    const { container } = render(<AnalyticsProvider websiteId="site-123" />)
+    const { container } = render(
+      <HelmetProvider>
+        <AnalyticsScript websiteId="site-123" />
+      </HelmetProvider>
+    )
 
     expect(container).toBeEmptyDOMElement()
     expect(document.head.querySelector('#analytics-script')).toBeNull()
@@ -16,11 +22,13 @@ describe('Analytics', () => {
 
   it('injects the analytics script when enabled with an endpoint', async () => {
     render(
-      <AnalyticsProvider
-        endpoint="example.com"
-        websiteId="site-123"
-        scriptUrl="/script.js"
-      />
+      <HelmetProvider>
+        <AnalyticsScript
+          endpoint="example.com"
+          websiteId="site-123"
+          scriptUrl="/script.js"
+        />
+      </HelmetProvider>
     )
 
     await waitFor(() => {
