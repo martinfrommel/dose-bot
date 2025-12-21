@@ -1,7 +1,14 @@
 # 💊 DoseBot
 
-Version: 1.0.0
+Version: 0.5.0
 
+**This Repository is cloned from**: 
+```bash
+https://git.athanor.software/athanor-software/dose-bot
+```
+This is mostly for backups, please have a look at the original to stay up to date. We believe that self-hosting both code and applications is the best way to do it and it aligns with our vision for a truly free web.
+
+## Description
 DoseBot is a simple, open-source application for recording, managing, and serving dosage data for substances via a GraphQL API and a simple web UI. It includes scaffolding to manage API keys, track substances, and record doses, making it easy to integrate with external services or bots.
 
 Full API reference: see [docs/api.md](docs/api.md).
