@@ -23,6 +23,10 @@ services:
       - RUN_SEED=${RUN_SEED:?0}
       - COPY_SCRIPTS=${COPY_SCRIPTS:-0}
       - SCRIPT_EXCLUDES=${SCRIPT_EXCLUDES:-"buildImage.ts, dockerUtils.ts, lib/"}
+      - DEMO_MODE=${DEMO_MODE:-0}
+      - ANALYTICS_ENABLED=${ANALYTICS_ENABLED:-0}
+      - ANALYTICS_ENDPOINT=${ANALYTICS_ENDPOINT:-"https://analytics.dosebot.io"}
+      - ANALYTICS_SITE_ID=${ANALYTICS_SITE_ID:-"fa51b772-c025-4ae6-a912-52263d2ec125"}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -X GET  http://localhost:8911/health || exit 1"]
