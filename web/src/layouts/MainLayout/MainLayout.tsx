@@ -4,7 +4,6 @@ import { Link, routes } from '@cedarjs/router'
 import { Toaster } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
-import Analytics from 'src/components/Analytics/Analytics'
 import LogoutButton from 'src/components/LogoutButton/LogoutButton'
 type MainLayoutProps = {
   children?: React.ReactNode
@@ -16,13 +15,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <>
-      {process.env.ANALYTICS_ENABLED === '1' && (
-        <Analytics
-          endpoint={process.env.ANALYTICS_ENDPOINT}
-          websiteId={process.env.ANALYTICS_WEBSITE_ID}
-          scriptUrl={process.env.ANALYTICS_SCRIPT_URL}
-        />
-      )}
       <div className="flex min-h-screen flex-col bg-base-200">
         <div className="navbar bg-base-100 shadow-md">
           <div className="flex-1">

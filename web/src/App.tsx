@@ -6,9 +6,9 @@ import { RedwoodApolloProvider } from '@cedarjs/web/apollo'
 import FatalErrorPage from 'src/pages/FatalErrorPage'
 
 import { AuthProvider, useAuth } from './auth.js'
-
 import './index.css'
 import './scaffold.css'
+import AnalyticsProvider from './components/Analytics/Analytics'
 
 interface AppProps {
   children?: ReactNode
@@ -41,12 +41,18 @@ const DemoBanner = () => {
 const App = ({ children }: AppProps) => (
   <FatalErrorBoundary page={FatalErrorPage}>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
-      <DemoBanner />
-      <AuthProvider>
-        <RedwoodApolloProvider useAuth={useAuth}>
-          {children}
-        </RedwoodApolloProvider>
-      </AuthProvider>
+      <AnalyticsProvider
+        endpoint={process.env.REDWOOD_ENV_ANALYTICS_ENDPOINT}
+        websiteId={process.env.REDWOOD_ENV_ANALYTICS_WEBSITE_ID}
+        scriptUrl={process.env.REDWOOD_ENV_ANALYTICS_SCRIPT_URL}
+      >
+        <DemoBanner />
+        <AuthProvider>
+          <RedwoodApolloProvider useAuth={useAuth}>
+            {children}
+          </RedwoodApolloProvider>
+        </AuthProvider>
+      </AnalyticsProvider>
     </RedwoodProvider>
   </FatalErrorBoundary>
 )
