@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type {
   DeleteApiKeyMutation,
   DeleteApiKeyMutationVariables,
@@ -9,6 +11,7 @@ import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { timeTag } from 'src/lib/formatters.js'
 
 const DELETE_API_KEY_MUTATION: TypedDocumentNode<
@@ -27,20 +30,33 @@ interface Props {
 }
 
 const ApiKey = ({ apiKey }: Props) => {
-  const [deleteApiKey] = useMutation(DELETE_API_KEY_MUTATION, {
-    onCompleted: () => {
-      toast.success('ApiKey deleted')
-      navigate(routes.apiKeys())
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
-
-  const onDeleteClick = (id: DeleteApiKeyMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete apiKey ' + id + '?')) {
-      deleteApiKey({ variables: { id } })
+  const [deleteApiKey, { loading: deleting }] = useMutation(
+    DELETE_API_KEY_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('ApiKey deleted')
+        navigate(routes.apiKeys())
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
     }
+  )
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+  const openConfirm = () => setIsConfirmOpen(true)
+  const closeConfirm = () => setIsConfirmOpen(false)
+
+  const handleDelete = async (id: DeleteApiKeyMutationVariables['id']) => {
+    try {
+      await deleteApiKey({ variables: { id } })
+    } finally {
+      closeConfirm()
+    }
+  }
+
+  const onDeleteClick = () => {
+    openConfirm()
   }
 
   return (
@@ -98,12 +114,24 @@ const ApiKey = ({ apiKey }: Props) => {
           <button
             type="button"
             className="btn btn-error"
-            onClick={() => onDeleteClick(apiKey.id)}
+            onClick={onDeleteClick}
           >
             Delete
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete API key?"
+        body={`Delete API key ${apiKey.id}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={() => handleDelete(apiKey.id)}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </>
   )
 }

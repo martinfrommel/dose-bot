@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { EditIcon, ListIcon, PlusIcon, TrashIcon } from 'lucide-react'
 import type {
   DeleteSubstanceMutation,
@@ -10,6 +12,7 @@ import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { timeTag } from 'src/lib/formatters.js'
 
 const DELETE_SUBSTANCE_MUTATION: TypedDocumentNode<
@@ -28,19 +31,28 @@ interface Props {
 }
 
 const Substance = ({ substance }: Props) => {
-  const [deleteSubstance] = useMutation(DELETE_SUBSTANCE_MUTATION, {
-    onCompleted: () => {
-      toast.success('Substance deleted')
-      navigate(routes.substances())
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
+  const [deleteSubstance, { loading: deleting }] = useMutation(
+    DELETE_SUBSTANCE_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('Substance deleted')
+        navigate(routes.substances())
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+    }
+  )
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
-  const onDeleteClick = (id: DeleteSubstanceMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete substance ' + id + '?')) {
-      deleteSubstance({ variables: { id } })
+  const openConfirm = () => setIsConfirmOpen(true)
+  const closeConfirm = () => setIsConfirmOpen(false)
+
+  const handleDelete = async (id: DeleteSubstanceMutationVariables['id']) => {
+    try {
+      await deleteSubstance({ variables: { id } })
+    } finally {
+      closeConfirm()
     }
   }
 
@@ -98,13 +110,25 @@ const Substance = ({ substance }: Props) => {
           <button
             type="button"
             className="btn btn-error"
-            onClick={() => onDeleteClick(substance.id)}
+            onClick={openConfirm}
           >
             <TrashIcon className="size-4" />
             Delete
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete substance?"
+        body={`Delete substance ${substance.id}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={() => handleDelete(substance.id)}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </>
   )
 }

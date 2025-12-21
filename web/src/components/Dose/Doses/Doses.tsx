@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type {
   DeleteDoseMutation,
   DeleteDoseMutationVariables,
@@ -9,6 +11,7 @@ import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import { QUERY, FindDosesBySlug } from 'src/components/Dose/DosesCell'
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import ListActions from 'src/components/ListActions/ListActions'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
@@ -28,20 +31,40 @@ type DosesProps = {
 }
 const DosesList = ({ substance }: DosesProps) => {
   const { doses, slug } = substance
-  const [deleteDose] = useMutation(DELETE_DOSE_MUTATION, {
-    onCompleted: () => {
-      toast.success('Dose deleted')
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-    refetchQueries: [{ query: QUERY, variables: { slug } }],
-    awaitRefetchQueries: true,
-  })
+  const [deleteDose, { loading: deleting }] = useMutation(
+    DELETE_DOSE_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('Dose deleted')
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      refetchQueries: [{ query: QUERY, variables: { slug } }],
+      awaitRefetchQueries: true,
+    }
+  )
+  const [pendingDeleteId, setPendingDeleteId] = useState<
+    DeleteDoseMutationVariables['id'] | null
+  >(null)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
-  const onDeleteClick = (id: DeleteDoseMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete dose ' + id + '?')) {
-      deleteDose({ variables: { id } })
+  const openConfirm = (id: DeleteDoseMutationVariables['id']) => {
+    setPendingDeleteId(id)
+    setIsConfirmOpen(true)
+  }
+
+  const closeConfirm = () => {
+    setIsConfirmOpen(false)
+    setPendingDeleteId(null)
+  }
+
+  const handleDelete = async () => {
+    if (!pendingDeleteId) return
+    try {
+      await deleteDose({ variables: { id: pendingDeleteId } })
+    } finally {
+      closeConfirm()
     }
   }
 
@@ -84,7 +107,7 @@ const DosesList = ({ substance }: DosesProps) => {
                     slug,
                     id: dose.id,
                   })}
-                  onDelete={() => onDeleteClick(dose.id)}
+                  onDelete={() => openConfirm(dose.id)}
                   viewTitle={'View dose ' + dose.id}
                   editTitle={'Edit dose ' + dose.id}
                   deleteTitle={'Delete dose ' + dose.id}
@@ -94,6 +117,18 @@ const DosesList = ({ substance }: DosesProps) => {
           ))}
         </tbody>
       </table>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete dose?"
+        body={`Delete dose ${pendingDeleteId}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </div>
   )
 }

@@ -108,6 +108,7 @@ const AnalyticsProvider = ({
         resolve()
       })
 
+      console.log('Appending analytics script:', scriptSrc)
       document.head.appendChild(script)
     })
 

@@ -6,6 +6,8 @@ import { MoreVertical, RotateCcw, Trash2 } from 'lucide-react'
 import { useMutation } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
+
 type UsersUserActionsProps = {
   userId: number
   userEmail: string
@@ -40,6 +42,7 @@ const UsersUserActions = ({
   const [deleteUser, { loading: deleting }] = useMutation(DELETE_USER)
   const [tempPassword, setTempPassword] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Close menus when clicking outside
@@ -80,17 +83,18 @@ const UsersUserActions = ({
   const handleDelete = async () => {
     if (!canDelete) return
     setIsOpen(false)
-    const confirmed = globalThis.window?.confirm(
-      `Delete ${userEmail}? This cannot be undone.`
-    )
-    if (!confirmed) return
+    setIsDeleteConfirmOpen(true)
+  }
 
+  const confirmDelete = async () => {
     try {
       await deleteUser({ variables: { id: userId } })
       toast.success('User deleted')
       onRefresh()
     } catch (error: any) {
       toast.error(error.message || 'Failed to delete user')
+    } finally {
+      setIsDeleteConfirmOpen(false)
     }
   }
 
@@ -194,6 +198,18 @@ const UsersUserActions = ({
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={isDeleteConfirmOpen}
+        title="Delete user?"
+        body={`Delete ${userEmail}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+        tone="danger"
+      />
     </div>
   )
 }

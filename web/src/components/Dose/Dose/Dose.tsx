@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type {
   DeleteDoseMutation,
   DeleteDoseMutationVariables,
@@ -9,6 +11,7 @@ import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { formatEnum, timeTag } from 'src/lib/formatters.js'
 
 const DELETE_DOSE_MUTATION: TypedDocumentNode<
@@ -28,19 +31,28 @@ interface Props {
 }
 
 const Dose = ({ dose, slug }: Props) => {
-  const [deleteDose] = useMutation(DELETE_DOSE_MUTATION, {
-    onCompleted: () => {
-      toast.success('Dose deleted')
-      navigate(routes.doses({ slug }))
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
+  const [deleteDose, { loading: deleting }] = useMutation(
+    DELETE_DOSE_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('Dose deleted')
+        navigate(routes.doses({ slug }))
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+    }
+  )
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
-  const onDeleteClick = (id: DeleteDoseMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete dose ' + id + '?')) {
-      deleteDose({ variables: { id } })
+  const openConfirm = () => setIsConfirmOpen(true)
+  const closeConfirm = () => setIsConfirmOpen(false)
+
+  const handleDelete = async (id: DeleteDoseMutationVariables['id']) => {
+    try {
+      await deleteDose({ variables: { id } })
+    } finally {
+      closeConfirm()
     }
   }
 
@@ -91,12 +103,24 @@ const Dose = ({ dose, slug }: Props) => {
           <button
             type="button"
             className="btn btn-error"
-            onClick={() => onDeleteClick(dose.id)}
+            onClick={openConfirm}
           >
             Delete
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete dose?"
+        body={`Delete dose ${dose.id}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={() => handleDelete(dose.id)}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </>
   )
 }

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type {
   DeleteSubstanceMutation,
   DeleteSubstanceMutationVariables,
@@ -10,6 +12,7 @@ import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import ListActions from 'src/components/ListActions/ListActions'
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { QUERY } from 'src/components/Substance/SubstancesCell'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
@@ -25,20 +28,40 @@ const DELETE_SUBSTANCE_MUTATION: TypedDocumentNode<
 `
 
 const SubstancesList = ({ substances }: FindSubstances) => {
-  const [deleteSubstance] = useMutation(DELETE_SUBSTANCE_MUTATION, {
-    onCompleted: () => {
-      toast.success('Substance deleted')
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-    refetchQueries: [{ query: QUERY }],
-    awaitRefetchQueries: true,
-  })
+  const [deleteSubstance, { loading: deleting }] = useMutation(
+    DELETE_SUBSTANCE_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('Substance deleted')
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      refetchQueries: [{ query: QUERY }],
+      awaitRefetchQueries: true,
+    }
+  )
+  const [pendingDeleteId, setPendingDeleteId] = useState<
+    DeleteSubstanceMutationVariables['id'] | null
+  >(null)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
-  const onDeleteClick = (id: DeleteSubstanceMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete substance ' + id + '?')) {
-      deleteSubstance({ variables: { id } })
+  const openConfirm = (id: DeleteSubstanceMutationVariables['id']) => {
+    setPendingDeleteId(id)
+    setIsConfirmOpen(true)
+  }
+
+  const closeConfirm = () => {
+    setIsConfirmOpen(false)
+    setPendingDeleteId(null)
+  }
+
+  const handleDelete = async () => {
+    if (!pendingDeleteId) return
+    try {
+      await deleteSubstance({ variables: { id: pendingDeleteId } })
+    } finally {
+      closeConfirm()
     }
   }
 
@@ -73,7 +96,7 @@ const SubstancesList = ({ substances }: FindSubstances) => {
                 <ListActions
                   viewTo={routes.substance({ slug: substance.slug })}
                   editTo={routes.editSubstance({ slug: substance.slug })}
-                  onDelete={() => onDeleteClick(substance.id)}
+                  onDelete={() => openConfirm(substance.id)}
                   viewTitle={'View substance ' + substance.name}
                   editTitle={'Edit substance ' + substance.name}
                   deleteTitle={'Delete substance ' + substance.name}
@@ -83,6 +106,18 @@ const SubstancesList = ({ substances }: FindSubstances) => {
           ))}
         </tbody>
       </table>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete substance?"
+        body={`Delete substance ${pendingDeleteId}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </div>
   )
 }

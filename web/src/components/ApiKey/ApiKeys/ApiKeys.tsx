@@ -4,12 +4,15 @@ import type {
   FindApiKeys,
 } from 'types/graphql'
 
+import { useState } from 'react'
+
 import { Link, routes } from '@cedarjs/router'
 import { useMutation } from '@cedarjs/web'
 import type { TypedDocumentNode } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import { QUERY } from 'src/components/ApiKey/ApiKeysCell'
+import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
 const DELETE_API_KEY_MUTATION: TypedDocumentNode<
@@ -24,24 +27,48 @@ const DELETE_API_KEY_MUTATION: TypedDocumentNode<
 `
 
 const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
-  const [deleteApiKey] = useMutation(DELETE_API_KEY_MUTATION, {
-    onCompleted: () => {
-      toast.success('ApiKey deleted')
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
-    refetchQueries: [{ query: QUERY }],
-    awaitRefetchQueries: true,
-  })
+  const [deleteApiKey, { loading: deleting }] = useMutation(
+    DELETE_API_KEY_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('ApiKey deleted')
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      // This refetches the query on the list page. Read more about other ways to
+      // update the cache over here:
+      // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
+      refetchQueries: [{ query: QUERY }],
+      awaitRefetchQueries: true,
+    }
+  )
+  const [pendingDeleteId, setPendingDeleteId] = useState<
+    DeleteApiKeyMutationVariables['id'] | null
+  >(null)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+  const openConfirm = (id: DeleteApiKeyMutationVariables['id']) => {
+    setPendingDeleteId(id)
+    setIsConfirmOpen(true)
+  }
+
+  const closeConfirm = () => {
+    setIsConfirmOpen(false)
+    setPendingDeleteId(null)
+  }
+
+  const handleDelete = async () => {
+    if (!pendingDeleteId) return
+    try {
+      await deleteApiKey({ variables: { id: pendingDeleteId } })
+    } finally {
+      closeConfirm()
+    }
+  }
 
   const onDeleteClick = (id: DeleteApiKeyMutationVariables['id']) => {
-    if (confirm('Are you sure you want to delete apiKey ' + id + '?')) {
-      deleteApiKey({ variables: { id } })
-    }
+    openConfirm(id)
   }
 
   return (
@@ -111,6 +138,18 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
           ))}
         </tbody>
       </table>
+
+      <ConfirmModal
+        open={isConfirmOpen}
+        title="Delete API key?"
+        body={`Delete API key ${pendingDeleteId}? This cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={closeConfirm}
+        tone="danger"
+      />
     </div>
   )
 }
