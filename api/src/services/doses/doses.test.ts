@@ -25,14 +25,16 @@ describe('doses', () => {
   scenario('creates a dose', async (scenario: StandardScenario) => {
     const result = await createDose({
       input: {
-        updatedAt: '2025-12-18T02:47:35.586Z',
+        unit: 'G',
         amount: 5091089.867864489,
         substanceId: scenario.dose.two.substanceId,
       },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-18T02:47:35.586Z'))
+    // updatedAt is managed by Prisma (@updatedAt), so just assert it was set
+    expect(result.updatedAt).toBeInstanceOf(Date)
     expect(result.amount).toEqual(5091089.867864489)
+    expect(result.unit).toEqual('G')
     expect(result.substanceId).toEqual(scenario.dose.two.substanceId)
   })
 
@@ -40,10 +42,10 @@ describe('doses', () => {
     const original = (await dose({ id: scenario.dose.one.id })) as Dose
     const result = await updateDose({
       id: original.id,
-      input: { updatedAt: '2025-12-19T02:47:35.590Z' },
+      input: { unit: 'G' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-19T02:47:35.590Z'))
+    expect(result.unit).toEqual('G')
   })
 
   scenario('deletes a dose', async (scenario: StandardScenario) => {

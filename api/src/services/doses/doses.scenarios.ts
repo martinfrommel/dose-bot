@@ -12,7 +12,7 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
         substance: {
           create: {
             updatedAt: '2025-12-18T02:47:35.623Z',
-            name: 'String',
+            name: 'Substance One',
             slug: 'string-slug-1',
           },
         },
@@ -26,7 +26,7 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
         substance: {
           create: {
             updatedAt: '2025-12-18T02:47:35.627Z',
-            name: 'String',
+            name: 'Substance Two',
             slug: 'string-slug-2',
           },
         },

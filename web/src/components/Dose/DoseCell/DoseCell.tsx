@@ -33,9 +33,14 @@ export const Failure = ({ error }: CellFailureProps<FindDoseByIdVariables>) => (
   </div>
 )
 
-export const Success = ({
-  dose,
-}: CellSuccessProps<FindDoseById, FindDoseByIdVariables>) => {
+type DoseCellSuccessProps = CellSuccessProps<
+  FindDoseById,
+  FindDoseByIdVariables
+> & {
+  slug: string
+}
+
+export const Success = ({ dose, slug }: DoseCellSuccessProps) => {
   const { setDose, setCurrentPageTitle } = useItemView()
 
   // Set dose in context and clear page title when it loads
@@ -44,5 +49,5 @@ export const Success = ({
     setCurrentPageTitle(undefined)
   }, [dose, setDose, setCurrentPageTitle])
 
-  return <Dose dose={dose} />
+  return <Dose dose={dose} slug={slug} />
 }

@@ -53,7 +53,11 @@ export const Failure = ({ error }: CellFailureProps) => (
   </div>
 )
 
-export const Success = ({ dose }: CellSuccessProps<EditDoseById>) => {
+type EditDoseCellSuccessProps = CellSuccessProps<EditDoseById> & {
+  slug: string
+}
+
+export const Success = ({ dose, slug }: EditDoseCellSuccessProps) => {
   const { setDose, setCurrentPageTitle } = useItemView()
 
   // Set dose and page title in context when it loads
@@ -65,7 +69,7 @@ export const Success = ({ dose }: CellSuccessProps<EditDoseById>) => {
   const [updateDose, { loading, error }] = useMutation(UPDATE_DOSE_MUTATION, {
     onCompleted: () => {
       toast.success('Dose updated')
-      navigate(routes.doses())
+      navigate(routes.doses({ slug }))
     },
     onError: (error) => {
       toast.error(error.message)

@@ -24,13 +24,14 @@ const DELETE_DOSE_MUTATION: TypedDocumentNode<
 
 interface Props {
   dose: NonNullable<FindDoseById['dose']>
+  slug: string
 }
 
-const Dose = ({ dose }: Props) => {
+const Dose = ({ dose, slug }: Props) => {
   const [deleteDose] = useMutation(DELETE_DOSE_MUTATION, {
     onCompleted: () => {
       toast.success('Dose deleted')
-      navigate(routes.doses())
+      navigate(routes.doses({ slug }))
     },
     onError: (error) => {
       toast.error(error.message)
@@ -69,7 +70,9 @@ const Dose = ({ dose }: Props) => {
             <div>
               <p className="text-sm text-gray-500">Unit</p>
               <p>
-                <span className="badge badge-outline">{formatEnum(dose.unit)}</span>
+                <span className="badge badge-outline">
+                  {formatEnum(dose.unit)}
+                </span>
               </p>
             </div>
             <div>
@@ -79,7 +82,10 @@ const Dose = ({ dose }: Props) => {
           </div>
         </div>
         <div className="card-actions justify-end p-4">
-          <Link to={routes.editDose({ id: dose.id })} className="btn btn-primary">
+          <Link
+            to={routes.editDose({ slug, id: dose.id })}
+            className="btn btn-primary"
+          >
             Edit
           </Link>
           <button
