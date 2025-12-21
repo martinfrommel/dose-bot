@@ -50,3 +50,11 @@ export const deleteApiKey: MutationResolvers['deleteApiKey'] = ({ id }) => {
     where: { id },
   })
 }
+
+export const deleteApiKeys: MutationResolvers['deleteApiKeys'] = ({ ids }) => {
+  if (!ids.length) return 0
+
+  return db.apiKey.deleteMany({
+    where: { id: { in: ids } },
+  }).then((result) => result.count)
+}

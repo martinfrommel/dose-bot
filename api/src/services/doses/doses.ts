@@ -36,6 +36,14 @@ export const deleteDose: MutationResolvers['deleteDose'] = ({ id }) => {
   })
 }
 
+export const deleteDoses: MutationResolvers['deleteDoses'] = ({ ids }) => {
+  if (!ids.length) return 0
+
+  return db.dose
+    .deleteMany({ where: { id: { in: ids } } })
+    .then((result) => result.count)
+}
+
 export const Dose: DoseRelationResolvers = {
   substance: (_obj, { root }) => {
     return db.dose.findUnique({ where: { id: root?.id } }).substance()

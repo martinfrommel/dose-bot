@@ -37,5 +37,6 @@ export const schema = gql`
     createDose(input: CreateDoseInput!): Dose! @requireAuth
     updateDose(id: String!, input: UpdateDoseInput!): Dose! @requireAuth
     deleteDose(id: String!): Dose! @requireAuth
+    deleteDoses(ids: [String!]!): Int! @requireAuth
   }
 `

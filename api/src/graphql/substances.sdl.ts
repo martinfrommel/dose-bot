@@ -30,5 +30,6 @@ export const schema = gql`
     updateSubstance(id: String!, input: UpdateSubstanceInput!): Substance!
       @requireAuth
     deleteSubstance(id: String!): Substance! @requireAuth
+    deleteSubstances(ids: [String!]!): Int! @requireAuth
   }
 `

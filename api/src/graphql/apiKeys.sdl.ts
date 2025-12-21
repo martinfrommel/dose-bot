@@ -43,5 +43,6 @@ export const schema = gql`
     createApiKey(input: CreateApiKeyInput!): ApiKeyWithSecret! @requireAuth
     updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey! @requireAuth
     deleteApiKey(id: String!): ApiKey! @requireAuth
+    deleteApiKeys(ids: [String!]!): Int! @requireAuth
   }
 `

@@ -58,6 +58,16 @@ export const deleteSubstance: MutationResolvers['deleteSubstance'] = ({
   })
 }
 
+export const deleteSubstances: MutationResolvers['deleteSubstances'] = ({
+  ids,
+}) => {
+  if (!ids.length) return 0
+
+  return db.substance
+    .deleteMany({ where: { id: { in: ids } } })
+    .then((result) => result.count)
+}
+
 export const Substance: SubstanceRelationResolvers = {
   doses: (_obj, { root }) => {
     return db.substance.findUnique({ where: { id: root?.id } }).doses()
