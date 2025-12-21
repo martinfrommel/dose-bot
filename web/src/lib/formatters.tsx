@@ -78,3 +78,11 @@ export const formatUrl = (url: string) => {
   }
   return `https://${url}`
 }
+
+export const asssembleFullUrl = (baseUrl: string, path: string) => {
+  const formattedBaseUrl = baseUrl.endsWith('/')
+    ? baseUrl.slice(0, -1)
+    : baseUrl
+  const formattedPath = path.startsWith('/') ? path : `/${path}`
+  return `${formattedBaseUrl}${formattedPath}`
+}
