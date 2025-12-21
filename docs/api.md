@@ -1,4 +1,4 @@
-# DoseBot API Reference (v1.0.0)
+# DoseBot API Reference (0.5.1)
 
 ## Overview
 
