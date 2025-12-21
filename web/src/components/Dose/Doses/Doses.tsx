@@ -1,15 +1,5 @@
-import type {
-  DeleteDoseMutation,
-  DeleteDoseMutationVariables,
-  FindDosesBySlug,
-} from 'types/graphql'
-
 import { useMemo, useState } from 'react'
 
-import { routes } from '@cedarjs/router'
-import { useMutation } from '@cedarjs/web'
-import type { TypedDocumentNode } from '@cedarjs/web'
-import { toast } from '@cedarjs/web/toast'
 import {
   createColumnHelper,
   flexRender,
@@ -17,9 +7,19 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { RowSelectionState } from '@tanstack/react-table'
+import type {
+  DeleteDoseMutation,
+  DeleteDoseMutationVariables,
+  FindDosesBySlug,
+} from 'types/graphql'
 
-import { QUERY, FindDosesBySlug } from 'src/components/Dose/DosesCell'
+import { Link, routes } from '@cedarjs/router'
+import { useMutation } from '@cedarjs/web'
+import type { TypedDocumentNode } from '@cedarjs/web'
+import { toast } from '@cedarjs/web/toast'
+
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
+import { QUERY } from 'src/components/Dose/DosesCell'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
 type DoseRow = NonNullable<FindDosesBySlug['substance']>['doses'][number]
@@ -72,7 +72,9 @@ const DosesList = ({ substance }: DosesProps) => {
     DELETE_DOSES_BULK_MUTATION,
     {
       onCompleted: ({ deleteDoses }) => {
-        toast.success(`Deleted ${deleteDoses} dose${deleteDoses === 1 ? '' : 's'}`)
+        toast.success(
+          `Deleted ${deleteDoses} dose${deleteDoses === 1 ? '' : 's'}`
+        )
       },
       onError: (error) => {
         toast.error(error.message)
@@ -127,11 +129,15 @@ const DosesList = ({ substance }: DosesProps) => {
       }),
       columnHelper.accessor('createdAt', {
         header: 'Created',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.accessor('updatedAt', {
         header: 'Updated',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.accessor('amount', {
         header: 'Amount',
@@ -195,7 +201,9 @@ const DosesList = ({ substance }: DosesProps) => {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original.id)
+  const selectedIds = table
+    .getSelectedRowModel()
+    .flatRows.map((row) => row.original.id)
   const selectedCount = selectedIds.length
 
   const closeConfirm = () => {
@@ -238,7 +246,9 @@ const DosesList = ({ substance }: DosesProps) => {
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">Doses</h2>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-base-content/70">{selectedCount} selected</span>
+          <span className="text-sm text-base-content/70">
+            {selectedCount} selected
+          </span>
           <button
             type="button"
             className="btn btn-error btn-sm"
@@ -259,7 +269,10 @@ const DosesList = ({ substance }: DosesProps) => {
                   <th key={header.id} style={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>

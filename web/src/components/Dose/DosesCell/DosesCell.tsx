@@ -1,4 +1,4 @@
-import type { Unit } from 'types/graphql'
+import type { FindDosesBySlug, FindDosesBySlugVariables } from 'types/graphql'
 
 import { routes } from '@cedarjs/router'
 import type {
@@ -10,31 +10,6 @@ import type {
 import Doses from 'src/components/Dose/Doses'
 import EmptyState from 'src/components/EmptyState/EmptyState'
 import { useItemView } from 'src/contexts/ItemViewContext'
-
-type DoseForSubstance = {
-  id: string
-  createdAt: string
-  updatedAt: string
-  amount: number
-  unit: Unit
-  substanceId: string
-}
-
-export type FindDosesBySlug = {
-  substance?: {
-    id: string
-    createdAt: string
-    updatedAt: string
-    name: string
-    description?: string | null
-    slug: string
-    doses: DoseForSubstance[]
-  }
-}
-
-export type FindDosesBySlugVariables = {
-  slug: string
-}
 
 export const QUERY: TypedDocumentNode<
   FindDosesBySlug,
