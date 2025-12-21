@@ -6,6 +6,8 @@ DoseBot is a simple, open-source application for recording, managing, and servin
 
 Full API reference: see [docs/api.md](docs/api.md).
 
+**Deployment routing note:** The API can be served behind a reverse proxy (e.g., Traefik) that mounts the API at `/api` via labels while still pointing to the internal Cedar functions root. If you self-host, you can keep the default root (`/`) or choose your own prefix; adjust the proxy rule accordingly.
+
 The project uses Prisma with SQLite by default, optional Memcached for caching, Tailwind CSS with daisyUI for UI components, and Vite for the web dev server.
 
 ## 🌱 Motivation behind this project
@@ -71,6 +73,7 @@ Create a `.env` file at the project root (or use your preferred env management).
 - `DEMO_MODE`: Set to `1` to enable demo mode on the API (seeds a demo user) and nightly-reset messaging. Default: unset/`0`.
 - `REDWOOD_ENV_DEMO_MODE`: Set to `1` to surface demo mode in the web UI (floating banner). Default: unset/`0`.
 - `COPY_SCRIPTS`: Optional; when `1`, copies scripts into the image for `cedar exec`. Independently, if `DEMO_MODE=1`, `seed.ts` is copied to the image to ensure demo seeding is available at runtime.
+- `DEMO_MODE`:
 
 ## 🛡️ Authentication & Access
 

@@ -8,13 +8,16 @@ DoseBot exposes both GraphQL and REST interfaces over the same API server (defau
 - REST: API key-based. Functions live at the root (e.g., `/substances`).
 - Responses: REST handlers consistently wrap JSON as `{ success: boolean, data?: T, error?: string }` and may include `errors` for validation or `stack` in development.
 
+### Reverse proxy / path prefix
+
+In deployment, the API is typically routed through Traefik with labels that mount it at `/api`, while internally it still points to the default Cedar functions root. You can keep using Traefik or any reverse proxy of your choice—just ensure requests to your chosen prefix are forwarded to the API server on port 8911.
+
 ## Authentication
 
 ### Session (GraphQL)
 
 - Uses Cedar dbAuth with email/password.
 - Seed creates/updates an Admin user using `ADMIN_EMAIL` (default `admin@dosebot.local`) with a generated password printed during `yarn cedar prisma db seed` or first `yarn cedar prisma migrate`.
-
 
 ### API Keys (REST)
 
@@ -24,9 +27,17 @@ DoseBot exposes both GraphQL and REST interfaces over the same API server (defau
 
 ## Base URLs
 
-- API server: `http://localhost:8911`
-- GraphQL endpoint: `http://localhost:8911/graphql`
-- REST endpoints: `http://localhost:8911/<resource>` (see below)
+- Local development (no proxy):
+	- API server: `http://localhost:8911`
+	- GraphQL endpoint: `http://localhost:8911/graphql`
+	- REST endpoints: `http://localhost:8911/<resource>` (see below)
+
+- Deployed with Traefik (path prefix `/api` via labels):
+	- API server (through proxy): `https://<your-host>/api`
+	- GraphQL endpoint: `https://<your-host>/api/graphql`
+	- REST endpoints: `https://<your-host>/api/<resource>` (see below)
+
+If you choose a different reverse proxy or prefix, adjust the URLs accordingly; the internal app continues to serve from the functions root.
 
 ## REST Endpoints
 

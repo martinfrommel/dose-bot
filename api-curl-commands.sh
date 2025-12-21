@@ -1,11 +1,14 @@
 #!/bin/bash
 # DoseBot API - cURL Commands
-# Base URL: http://localhost:8911
-# Usage: ./api-curl-commands.sh [API_KEY]
+# Base URL: http://localhost:8911 (set PATH_PREFIX=/api when behind Traefik or another proxy)
+# Usage: PATH_PREFIX=/api ./api-curl-commands.sh [API_KEY]
 # Default API Key: test-api-key-123
 
 API_KEY="${1:-test-api-key-123}"
+BASE_URL="${BASE_URL:-http://localhost:8911}"
+PATH_PREFIX="${PATH_PREFIX:-}"
 echo "Using API Key: $API_KEY"
+echo "Base URL: ${BASE_URL}${PATH_PREFIX}"
 echo ""
 
 # ============================================
@@ -13,15 +16,15 @@ echo ""
 # ============================================
 
 # Get All Substances
-curl -X GET http://localhost:8911/substances \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/substances" \
   -H "Authorization: Bearer $API_KEY"
 
 # Get All Substances with Doses
-curl -X GET "http://localhost:8911/substances?includeDoses=true" \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/substances?includeDoses=true" \
   -H "Authorization: Bearer $API_KEY"
 
 # Create Substance
-curl -X POST http://localhost:8911/substances \
+curl -X POST "${BASE_URL}${PATH_PREFIX}/substances" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -30,15 +33,15 @@ curl -X POST http://localhost:8911/substances \
   }'
 
 # Get Substance by ID
-curl -X GET http://localhost:8911/substance/1 \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/substance/1" \
   -H "Authorization: Bearer $API_KEY"
 
 # Get Substance by Slug
-curl -X GET http://localhost:8911/substance/caffeine \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/substance/caffeine" \
   -H "Authorization: Bearer $API_KEY"
 
 # Update Substance
-curl -X PUT http://localhost:8911/substance/1 \
+curl -X PUT "${BASE_URL}${PATH_PREFIX}/substance/1" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -48,7 +51,7 @@ curl -X PUT http://localhost:8911/substance/1 \
   }'
 
 # Delete Substance
-curl -X DELETE http://localhost:8911/substance/1 \
+curl -X DELETE "${BASE_URL}${PATH_PREFIX}/substance/1" \
   -H "Authorization: Bearer $API_KEY"
 
 
@@ -57,19 +60,19 @@ curl -X DELETE http://localhost:8911/substance/1 \
 # ============================================
 
 # Get All Doses
-curl -X GET http://localhost:8911/doses \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/doses" \
   -H "Authorization: Bearer $API_KEY"
 
 # Get Doses by Substance ID
-curl -X GET "http://localhost:8911/doses?substanceId=1" \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/doses?substanceId=1" \
   -H "Authorization: Bearer $API_KEY"
 
 # Get Doses by Substance Slug
-curl -X GET "http://localhost:8911/doses?slug=caffeine" \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/doses?slug=caffeine" \
   -H "Authorization: Bearer $API_KEY"
 
 # Create Dose (Units: MG, ML, G, IU)
-curl -X POST http://localhost:8911/doses \
+curl -X POST "${BASE_URL}${PATH_PREFIX}/doses" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -79,11 +82,11 @@ curl -X POST http://localhost:8911/doses \
   }'
 
 # Get Dose by ID
-curl -X GET http://localhost:8911/dose/1 \
+curl -X GET "${BASE_URL}${PATH_PREFIX}/dose/1" \
   -H "Authorization: Bearer $API_KEY"
 
 # Update Dose
-curl -X PUT http://localhost:8911/dose/1 \
+curl -X PUT "${BASE_URL}${PATH_PREFIX}/dose/1" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -93,5 +96,5 @@ curl -X PUT http://localhost:8911/dose/1 \
   }'
 
 # Delete Dose
-curl -X DELETE http://localhost:8911/dose/1 \
+curl -X DELETE "${BASE_URL}${PATH_PREFIX}/dose/1" \
   -H "Authorization: Bearer $API_KEY"
