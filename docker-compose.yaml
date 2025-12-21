@@ -17,7 +17,7 @@ services:
     environment:
       # Coolify: route everything to the web port (8910); web server proxies /.redwood/functions to API
       SERVICE_URL_DOSEBOT_8910: "${SERVICE_URL_DOSEBOT_8910:-}"
-      SESSION_SECRET: "${SERVICE_BASE64_DOSEBOT}"
+      SESSION_SECRET: "${SERVICE_PASSWORD_64_DOSEBOT}"
       NODE_ENV: production
       DATABASE_URL: file:/app/data/dosebot.db
       ADMIN_EMAIL: "${ADMIN_EMAIL:-}"

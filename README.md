@@ -2,7 +2,7 @@
 
 Version: 0.5.0
 
-**This Repository is cloned from**: 
+**This Repository is cloned from**:
 ```bash
 https://git.athanor.software/athanor-software/dose-bot
 ```
