@@ -113,5 +113,4 @@ All endpoints require a valid API key. Content-Type for writes: `application/jso
 
 ## Versioning
 
-- Current API/package version: **1.0.0**.
-- Tagging recommendation: after release, create `v1.0.0` git tag to align with package versions.
+- Current API/package version: **0.5.1**.
