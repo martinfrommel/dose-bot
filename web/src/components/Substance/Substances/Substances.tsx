@@ -1,15 +1,5 @@
-import type {
-  DeleteSubstanceMutation,
-  DeleteSubstanceMutationVariables,
-  FindSubstances,
-} from 'types/graphql'
-
 import { useMemo, useState } from 'react'
 
-import { Link, routes } from '@cedarjs/router'
-import { useMutation } from '@cedarjs/web'
-import type { TypedDocumentNode } from '@cedarjs/web'
-import { toast } from '@cedarjs/web/toast'
 import {
   createColumnHelper,
   flexRender,
@@ -17,6 +7,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { RowSelectionState } from '@tanstack/react-table'
+import type {
+  DeleteSubstanceMutation,
+  DeleteSubstanceMutationVariables,
+  FindSubstances,
+} from 'types/graphql'
+
+import { Link, routes } from '@cedarjs/router'
+import { useMutation } from '@cedarjs/web'
+import type { TypedDocumentNode } from '@cedarjs/web'
+import { toast } from '@cedarjs/web/toast'
 
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { QUERY } from 'src/components/Substance/SubstancesCell'
@@ -144,11 +144,15 @@ const SubstancesList = ({ substances }: FindSubstances) => {
       }),
       columnHelper.accessor('createdAt', {
         header: 'Created',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.accessor('updatedAt', {
         header: 'Updated',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.display({
         id: 'actions',
@@ -196,7 +200,9 @@ const SubstancesList = ({ substances }: FindSubstances) => {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original.id)
+  const selectedIds = table
+    .getSelectedRowModel()
+    .flatRows.map((row) => row.original.id)
   const selectedCount = selectedIds.length
 
   const closeConfirm = () => {
@@ -264,7 +270,10 @@ const SubstancesList = ({ substances }: FindSubstances) => {
                   <th key={header.id} style={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>
