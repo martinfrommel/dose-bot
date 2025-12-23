@@ -31,7 +31,7 @@ const HomePage = () => {
                 Create and manage API keys for programmatic access to DoseBot.
               </p>
               <div className="card-actions">
-                <Link to={routes.apiKeys()} className="btn btn-outline">
+                <Link to={routes.apiKeys()} className="btn btn-primary">
                   Manage API Keys
                 </Link>
               </div>
