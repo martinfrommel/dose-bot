@@ -23,6 +23,7 @@ import { toast } from '@cedarjs/web/toast'
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { getDaisyUiColor } from 'src/lib/chartColors'
 import { timeTag } from 'src/lib/formatters.js'
+import { useDaisyUiTheme } from 'src/lib/useDaisyUiTheme'
 
 const DELETE_SUBSTANCE_MUTATION: TypedDocumentNode<
   DeleteSubstanceMutation,
@@ -40,6 +41,8 @@ interface Props {
 }
 
 const Substance = ({ substance }: Props) => {
+  const theme = useDaisyUiTheme()
+
   const [deleteSubstance, { loading: deleting }] = useMutation(
     DELETE_SUBSTANCE_MUTATION,
     {
@@ -113,6 +116,11 @@ const Substance = ({ substance }: Props) => {
 
   const openConfirm = () => setIsConfirmOpen(true)
   const closeConfirm = () => setIsConfirmOpen(false)
+
+  const barFill = useMemo(() => {
+    const _theme = theme
+    return getDaisyUiColor('--p') ?? 'currentColor'
+  }, [theme])
 
   const handleDelete = async (id: DeleteSubstanceMutationVariables['id']) => {
     try {
@@ -212,7 +220,7 @@ const Substance = ({ substance }: Props) => {
                 />
                 <Bar
                   dataKey="value"
-                  fill={getDaisyUiColor('--p') ?? 'currentColor'}
+                  fill={barFill}
                   isAnimationActive={false}
                   radius={[4, 4, 0, 0]}
                 />

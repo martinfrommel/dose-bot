@@ -23,6 +23,7 @@ import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { QUERY } from 'src/components/Substance/SubstancesCell'
 import { getDefaultChartPalette } from 'src/lib/chartColors'
 import { timeTag, truncate } from 'src/lib/formatters.js'
+import { useDaisyUiTheme } from 'src/lib/useDaisyUiTheme'
 
 type SubstanceRow = FindSubstances['substances'][number]
 
@@ -52,6 +53,8 @@ const DELETE_SUBSTANCES_BULK_MUTATION: TypedDocumentNode<
 const columnHelper = createColumnHelper<SubstanceRow>()
 
 const SubstancesList = ({ substances }: FindSubstances) => {
+  const theme = useDaisyUiTheme()
+
   const pie = useMemo(() => {
     const items = substances
       .map((s) => ({ name: s.name, value: s.doses?.length ?? 0 }))
@@ -62,9 +65,10 @@ const SubstancesList = ({ substances }: FindSubstances) => {
   }, [substances])
 
   const sliceFills = useMemo(() => {
+    const _theme = theme
     const palette = getDefaultChartPalette()
     return palette.length ? palette : ['currentColor']
-  }, [])
+  }, [theme])
 
   const [deleteSubstance, { loading: deletingSingle }] = useMutation(
     DELETE_SUBSTANCE_MUTATION,
