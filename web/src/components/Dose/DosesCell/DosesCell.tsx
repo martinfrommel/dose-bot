@@ -22,6 +22,7 @@ export const QUERY: TypedDocumentNode<
       updatedAt
       name
       description
+      unit
       slug
       doses {
         id
