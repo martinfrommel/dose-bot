@@ -7,6 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { RowSelectionState } from '@tanstack/react-table'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type {
   DeleteSubstanceMutation,
   DeleteSubstanceMutationVariables,
@@ -20,6 +21,7 @@ import { toast } from '@cedarjs/web/toast'
 
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
 import { QUERY } from 'src/components/Substance/SubstancesCell'
+import { getDefaultChartPalette } from 'src/lib/chartColors'
 import { timeTag, truncate } from 'src/lib/formatters.js'
 
 type SubstanceRow = FindSubstances['substances'][number]
@@ -50,6 +52,20 @@ const DELETE_SUBSTANCES_BULK_MUTATION: TypedDocumentNode<
 const columnHelper = createColumnHelper<SubstanceRow>()
 
 const SubstancesList = ({ substances }: FindSubstances) => {
+  const pie = useMemo(() => {
+    const items = substances
+      .map((s) => ({ name: s.name, value: s.doses?.length ?? 0 }))
+      .filter((d) => d.value > 0)
+
+    const total = items.reduce((acc, cur) => acc + cur.value, 0)
+    return { items, total }
+  }, [substances])
+
+  const sliceFills = useMemo(() => {
+    const palette = getDefaultChartPalette()
+    return palette.length ? palette : ['currentColor']
+  }, [])
+
   const [deleteSubstance, { loading: deletingSingle }] = useMutation(
     DELETE_SUBSTANCE_MUTATION,
     {
@@ -244,6 +260,56 @@ const SubstancesList = ({ substances }: FindSubstances) => {
 
   return (
     <div className="space-y-3">
+      <div className="card bg-base-100 shadow-lg">
+        <div className="card-body">
+          <h3 className="card-title text-base">Dose contribution</h3>
+          <div className="divider my-2" />
+          {pie.total === 0 ? (
+            <p className="text-sm text-base-content/70">No doses yet.</p>
+          ) : (
+            <div className="h-56 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pie.items}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    isAnimationActive={false}
+                  >
+                    {pie.items.map((_, index) => (
+                      <Cell
+                        key={`slice-${index}`}
+                        fill={sliceFills[index % sliceFills.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+                      const item = payload[0]
+                      const name = String(item.name ?? '')
+                      const value =
+                        typeof item.value === 'number' ? item.value : 0
+                      return (
+                        <div className="rounded-box border border-base-300 bg-base-100 p-2 text-sm shadow">
+                          <div className="font-semibold">{name}</div>
+                          <div className="text-base-content/70">
+                            Doses: {value}
+                          </div>
+                        </div>
+                      )
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">Substances</h2>
         <div className="flex items-center gap-2">

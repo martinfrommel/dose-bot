@@ -20,6 +20,9 @@ export const QUERY: TypedDocumentNode<FindSubstances, FindSubstancesVariables> =
         name
         description
         slug
+        doses {
+          id
+        }
       }
     }
   `
