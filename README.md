@@ -2,7 +2,7 @@
 
 Version: 0.7.0
 
-![CI Quality Check](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/quality/badge.svg?branch=master) ![Demo Deployment](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/deploy/badge.svg?branch=master) ![Latest Docker Release](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/docker-release/badge.svg)
+![CI Quality Check](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/ci.yml/badge.svg?branch=master) ![Demo Deployment](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/deploy.yml/badge.svg) ![Latest Docker Release](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/release-docker.yml/badge.svg)
 
 Roadmap: see [ROADMAP.md](ROADMAP.md).
 
