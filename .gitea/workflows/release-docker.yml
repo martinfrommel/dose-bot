@@ -1,0 +1,49 @@
+name: Release Docker image
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to build (e.g. 0.6.0)
+        required: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then TAG="${{ inputs.tag }}"; fi
+          if [ -z "$TAG" ]; then TAG="${GITHUB_REF_NAME:-}"; fi
+          if [ -z "$TAG" ] && [ -n "${GITHUB_REF:-}" ]; then TAG="${GITHUB_REF##*/}"; fi
+          if [ -z "$TAG" ]; then TAG="${{ github.ref_name }}"; fi
+          if [ -z "$TAG" ]; then echo "Could not resolve tag"; exit 1; fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.vars.outputs.tag }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_IMAGE }}:${{ steps.vars.outputs.tag }}
