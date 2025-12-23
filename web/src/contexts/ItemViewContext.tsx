@@ -32,13 +32,20 @@ export const ItemViewProvider = ({
   const [dose, setDose] = useState(initialDose)
   const [currentPageTitle, setCurrentPageTitle] = useState<string | undefined>()
 
+  const setSubstanceAndClearDose: ItemViewContextType['setSubstance'] = (
+    nextSubstance
+  ) => {
+    setSubstance(nextSubstance)
+    setDose(undefined)
+  }
+
   return (
     <ItemViewContext.Provider
       value={{
         substance,
         dose,
         currentPageTitle,
-        setSubstance,
+        setSubstance: setSubstanceAndClearDose,
         setDose,
         setCurrentPageTitle,
       }}
