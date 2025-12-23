@@ -16,6 +16,7 @@ import { toast } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
 import AuthLayout from 'src/layouts/AuthLayout/AuthLayout'
+import { getErrorMessage } from 'src/lib/getErrorMessage'
 
 type SetupFormValues = {
   email: string
@@ -88,8 +89,10 @@ const SetupPage = () => {
 
       toast.success('Admin account created')
       navigate(routes.home(), { replace: true })
-    } catch (setupError: any) {
-      toast.error(setupError?.message || 'Failed to create admin account')
+    } catch (setupError: unknown) {
+      toast.error(
+        getErrorMessage(setupError) || 'Failed to create admin account'
+      )
       await refetch()
     }
   }

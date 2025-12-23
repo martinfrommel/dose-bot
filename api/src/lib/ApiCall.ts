@@ -137,7 +137,7 @@ export class ApiCall {
   /**
    * Get request body (parsed as JSON if applicable)
    */
-  get body(): any {
+  get body(): unknown {
     if (!this.event.body) {
       return null
     }
@@ -154,7 +154,7 @@ export class ApiCall {
    */
   private createResponse(
     statusCode: number,
-    data: any,
+    data: unknown,
     headers: Record<string, string> = {}
   ): ApiResponse {
     return {

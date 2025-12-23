@@ -105,7 +105,7 @@ describe('dose API function', () => {
         expect(body.success).toBe(true)
         expect(body.data.id).toBe(doseId)
         expect(body.data.amount).toBe(50)
-      expect(body.data.unit).toBe('MG')
+        expect(body.data.unit).toBe('MG')
         expect(body.data.substance).toBeDefined()
       }
     )
@@ -147,7 +147,6 @@ describe('dose API function', () => {
         expect(body.error).toContain('not found')
       }
     )
-
   })
 
   // PUT Request Tests
@@ -357,7 +356,7 @@ describe('dose API function', () => {
         expect(response.statusCode).toBe(405)
         expect(body.success).toBe(false)
         expect(body.error).toContain('not allowed')
-      expect(body.allowedMethods).toEqual(['GET', 'PUT', 'DELETE'])
+        expect(body.allowedMethods).toEqual(['GET', 'PUT', 'DELETE'])
       }
     )
   })

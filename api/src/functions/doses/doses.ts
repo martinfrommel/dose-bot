@@ -1,8 +1,12 @@
+import type { Prisma } from '@prisma/client'
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 
 import { ApiCall } from 'src/lib/ApiCall'
 import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
 
 /**
  * Handler for multiple doses operations
@@ -47,7 +51,7 @@ async function handleGet(apiCall: ApiCall) {
 
   try {
     // Build where clause based on query parameters
-    const where: any = {}
+    const where: Prisma.DoseWhereInput = {}
 
     if (substanceId) {
       where.substanceId = substanceId
@@ -87,11 +91,17 @@ async function handleGet(apiCall: ApiCall) {
 async function handlePost(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body || body.amount === undefined || !body.substanceId) {
+  if (!isRecord(body)) {
+    return apiCall.badRequest('Request body must be a JSON object')
+  }
+
+  if (body.amount === undefined || body.substanceId === undefined) {
     return apiCall.badRequest(
       'Missing required fields: amount and substanceId are required'
     )
   }
+
+  const substanceId = String(body.substanceId)
 
   // Validate amount as a positive number (accept string or number input)
   const amount = parseFloat(String(body.amount))
@@ -102,11 +112,11 @@ async function handlePost(apiCall: ApiCall) {
   try {
     // Verify substance exists
     const substance = await db.substance.findUnique({
-      where: { id: body.substanceId },
+      where: { id: substanceId },
     })
 
     if (!substance) {
-      return apiCall.notFound(`Substance with ID ${body.substanceId} not found`)
+      return apiCall.notFound(`Substance with ID ${substanceId} not found`)
     }
 
     if (substance.unit == null) {
@@ -121,7 +131,7 @@ async function handlePost(apiCall: ApiCall) {
         amount,
         unit: substance.unit,
         substance: {
-          connect: { id: body.substanceId },
+          connect: { id: substanceId },
         },
       },
       include: {

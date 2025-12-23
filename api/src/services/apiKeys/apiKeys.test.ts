@@ -1,7 +1,5 @@
 import type { ApiKey } from '@prisma/client'
 
-import { verifyApiKey } from 'src/lib/hash'
-
 import {
   apiKeys,
   apiKey,
@@ -24,9 +22,12 @@ describe('apiKeys', () => {
       return
     }
 
-    ;(globalThis as typeof globalThis & { context?: Record<string, unknown> }).context = {
-      ...(globalThis as typeof globalThis & { context?: Record<string, unknown> })
-        .context,
+    ;(
+      globalThis as typeof globalThis & { context?: Record<string, unknown> }
+    ).context = {
+      ...(
+        globalThis as typeof globalThis & { context?: Record<string, unknown> }
+      ).context,
       currentUser: user,
     }
   }

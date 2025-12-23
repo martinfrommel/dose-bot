@@ -1,8 +1,9 @@
 import type { Dose } from '@prisma/client'
 
+import { db } from 'src/lib/db'
+
 import { doses, dose, createDose, updateDose, deleteDose } from './doses.js'
 import type { StandardScenario } from './doses.scenarios.js'
-import { db } from 'src/lib/db'
 
 // Generated boilerplate tests do not account for all circumstances
 // and can fail without adjustments, e.g. Float.

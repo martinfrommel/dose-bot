@@ -8,6 +8,7 @@ import { toast } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
 import UsersUserForm from 'src/components/UsersUserForm/UsersUserForm'
+import { getErrorMessage } from 'src/lib/getErrorMessage'
 
 const CREATE_USER = gql`
   mutation CreateUser($email: String!, $plainPassword: String!, $role: Role) {
@@ -61,8 +62,8 @@ const UsersNewUserPage = () => {
 
       toast.success(`User ${result.createUser.email} created successfully`)
       navigate(routes.users())
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create user')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to create user')
     }
   }
 

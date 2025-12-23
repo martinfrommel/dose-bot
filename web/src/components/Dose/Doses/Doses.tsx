@@ -57,7 +57,8 @@ const DosesList = ({ substance }: DosesProps) => {
 
   const sortedDoses = useMemo(() => {
     return [...doses].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   }, [doses])
 

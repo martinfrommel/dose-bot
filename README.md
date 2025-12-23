@@ -1,14 +1,17 @@
 # 💊 DoseBot
 
-Version: 0.5.0
+Version: 0.7.0
 
 **This Repository is cloned from**:
+
 ```bash
 https://git.athanor.software/athanor-software/dose-bot
 ```
+
 This is mostly for backups, please have a look at the original to stay up to date. We believe that self-hosting both code and applications is the best way to do it and it aligns with our vision for a truly free web.
 
 ## Description
+
 DoseBot is a simple, open-source application for recording, managing, and serving dosage data for substances via a GraphQL API and a simple web UI. It includes scaffolding to manage API keys, track substances, and record doses, making it easy to integrate with external services or bots.
 
 Full API reference: see [docs/api.md](docs/api.md).
@@ -139,8 +142,22 @@ docker build \
 
 ## 🏷️ Versioning
 
-- Current release: 1.0.0
-- Tag releases with `git tag v1.0.0 && git push origin v1.0.0` to align git tags with package versions.
+- Current release: 0.7.0
+- Tag releases with `git tag 0.7.0 && git push origin 0.7.0` to align git tags with package versions.
+
+## 🤖 CI/CD (Gitea Actions + Coolify)
+
+This repo includes basic Gitea Actions workflows:
+
+- CI: runs on pushes to `master` and on PRs: `.gitea/workflows/ci.yml`
+- Deploy: runs on tag pushes matching `0.*.*`: `.gitea/workflows/deploy.yml`
+
+To enable deployments via Coolify, add these **repository secrets** in Gitea:
+
+- `COOLIFY_WEBHOOK_DEMO`: webhook URL for the public/demo app
+- `COOLIFY_WEBHOOK_PRIVATE`: webhook URL for the private app
+
+On a successful tag build, the deploy workflow POSTs to both webhooks (if set).
 
 ## ✅ Testing
 

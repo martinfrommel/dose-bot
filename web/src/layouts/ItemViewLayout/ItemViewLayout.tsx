@@ -10,7 +10,12 @@ type ItemViewLayoutProps = {
   currentPageTitle?: string
 }
 
-const ItemViewLayout = ({ children, substance, dose, currentPageTitle }: ItemViewLayoutProps) => {
+const ItemViewLayout = ({
+  children,
+  substance,
+  dose,
+  currentPageTitle,
+}: ItemViewLayoutProps) => {
   return (
     <ItemViewProvider substance={substance} dose={dose}>
       <Breadcrumbs currentPageTitle={currentPageTitle} />

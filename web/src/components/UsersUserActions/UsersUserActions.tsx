@@ -7,6 +7,7 @@ import { useMutation } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
+import { getErrorMessage } from 'src/lib/getErrorMessage'
 
 type UsersUserActionsProps = {
   userId: number
@@ -75,8 +76,8 @@ const UsersUserActions = ({
         setTempPassword(newPassword)
         toast.success('Temporary password generated')
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to reset password')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to reset password')
     }
   }
 
@@ -91,8 +92,8 @@ const UsersUserActions = ({
       await deleteUser({ variables: { id: userId } })
       toast.success('User deleted')
       onRefresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete user')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to delete user')
     } finally {
       setIsDeleteConfirmOpen(false)
     }

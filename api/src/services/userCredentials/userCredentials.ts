@@ -18,15 +18,29 @@ export const userCredential: QueryResolvers['userCredential'] = ({ id }) => {
 
 export const createUserCredential: MutationResolvers['createUserCredential'] =
   ({ input }) => {
+    const { userId, counter, publicKey, ...rest } = input
+
     return db.userCredential.create({
-      data: input,
+      data: {
+        ...rest,
+        counter: BigInt(counter),
+        publicKey: new Uint8Array(publicKey),
+        user: { connect: { id: userId } },
+      },
     })
   }
 
 export const updateUserCredential: MutationResolvers['updateUserCredential'] =
   ({ id, input }) => {
+    const { userId, counter, publicKey, ...rest } = input
+
     return db.userCredential.update({
-      data: input,
+      data: {
+        ...rest,
+        ...(counter == null ? {} : { counter: BigInt(counter) }),
+        ...(publicKey == null ? {} : { publicKey: new Uint8Array(publicKey) }),
+        ...(userId == null ? {} : { user: { connect: { id: userId } } }),
+      },
       where: { id },
     })
   }

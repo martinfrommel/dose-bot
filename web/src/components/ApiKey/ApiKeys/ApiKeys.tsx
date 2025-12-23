@@ -1,15 +1,5 @@
-import type {
-  DeleteApiKeyMutation,
-  DeleteApiKeyMutationVariables,
-  FindApiKeys,
-} from 'types/graphql'
-
 import { useMemo, useState } from 'react'
 
-import { Link, routes } from '@cedarjs/router'
-import { useMutation } from '@cedarjs/web'
-import type { TypedDocumentNode } from '@cedarjs/web'
-import { toast } from '@cedarjs/web/toast'
 import {
   createColumnHelper,
   flexRender,
@@ -17,6 +7,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { RowSelectionState } from '@tanstack/react-table'
+import type {
+  DeleteApiKeyMutation,
+  DeleteApiKeyMutationVariables,
+  FindApiKeys,
+} from 'types/graphql'
+
+import { Link, routes } from '@cedarjs/router'
+import { useMutation } from '@cedarjs/web'
+import type { TypedDocumentNode } from '@cedarjs/web'
+import { toast } from '@cedarjs/web/toast'
 
 import { QUERY } from 'src/components/ApiKey/ApiKeysCell'
 import ConfirmModal from 'src/components/ConfirmModal/ConfirmModal'
@@ -68,7 +68,9 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
     DELETE_API_KEYS_BULK_MUTATION,
     {
       onCompleted: ({ deleteApiKeys }) => {
-        toast.success(`Deleted ${deleteApiKeys} API key${deleteApiKeys === 1 ? '' : 's'}`)
+        toast.success(
+          `Deleted ${deleteApiKeys} API key${deleteApiKeys === 1 ? '' : 's'}`
+        )
       },
       onError: (error) => {
         toast.error(error.message)
@@ -123,11 +125,15 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
       }),
       columnHelper.accessor('createdAt', {
         header: 'Created',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.accessor('updatedAt', {
         header: 'Updated',
-        cell: ({ getValue }) => <span className="text-xs">{timeTag(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span className="text-xs">{timeTag(getValue())}</span>
+        ),
       }),
       columnHelper.accessor('enabled', {
         header: 'Enabled',
@@ -203,7 +209,9 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original.id)
+  const selectedIds = table
+    .getSelectedRowModel()
+    .flatRows.map((row) => row.original.id)
   const selectedCount = selectedIds.length
 
   const closeConfirm = () => {
@@ -271,7 +279,10 @@ const ApiKeysList = ({ apiKeys }: FindApiKeys) => {
                   <th key={header.id} style={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>

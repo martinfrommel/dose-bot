@@ -7,6 +7,7 @@ import { useMutation } from '@cedarjs/web'
 import { toast } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
+import { getErrorMessage } from 'src/lib/getErrorMessage'
 
 type UsersPasswordResetButtonProps = {
   userId: number
@@ -50,8 +51,8 @@ const UsersPasswordResetButton = ({
         setTempPassword(password)
         toast.success('Password reset successfully')
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to reset password')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to reset password')
     }
   }
 

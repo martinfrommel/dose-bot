@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import type {
   QueryResolvers,
   MutationResolvers,
@@ -45,21 +46,15 @@ export const createDose: MutationResolvers['createDose'] = ({ input }) => {
 export const updateDose: MutationResolvers['updateDose'] = ({ id, input }) => {
   // Unit is canonical on Substance; any provided unit updates are ignored.
   // Keep unit optional in SDL to support legacy clients that still send it.
-  const data: Record<string, unknown> = { ...input }
-  delete data.unit
+  const { amount, substanceId } = input
 
-  const substanceId = data.substanceId
-  delete data.substanceId
-
-  const updateData =
-    typeof substanceId === 'string'
-      ? { ...data, substance: { connect: { id: substanceId } } }
-      : data
+  const updateData: Prisma.DoseUpdateInput = {
+    ...(amount == null ? {} : { amount }),
+    ...(substanceId ? { substance: { connect: { id: substanceId } } } : {}),
+  }
 
   return db.dose.update({
-    // Prisma accepts a wider shape than our GraphQL input type.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: updateData as any,
+    data: updateData,
     where: { id },
   })
 }

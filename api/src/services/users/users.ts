@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto'
 
 import { Role } from '@prisma/client'
-import { ForbiddenError } from '@cedarjs/graphql-server'
 import type { QueryResolvers, MutationResolvers } from 'types/graphql'
 
 import { hashPassword } from '@cedarjs/auth-dbauth-api'
+import { ForbiddenError } from '@cedarjs/graphql-server'
 
 import { requireAuth } from 'src/lib/auth'
 import { db } from 'src/lib/db'
@@ -99,9 +99,7 @@ export const resetUserPassword: MutationResolvers['resetUserPassword'] =
 
     const currentUserRole = currentUser?.role ?? currentUser?.roles?.[0]
     if (targetUser.role === Role.Admin && currentUserRole === Role.Admin) {
-      throw new ForbiddenError(
-        'Admins cannot reset passwords for other admins'
-      )
+      throw new ForbiddenError('Admins cannot reset passwords for other admins')
     }
 
     // Generate temp password

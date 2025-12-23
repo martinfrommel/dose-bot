@@ -4,6 +4,12 @@ import { ApiCall } from 'src/lib/ApiCall'
 import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const isUnit = (value: unknown): value is 'MG' | 'ML' | 'G' | 'IU' =>
+  value === 'MG' || value === 'ML' || value === 'G' || value === 'IU'
+
 /**
  * Handler for single substance operations
  * GET /substance/:id - Get a specific substance (by ID or slug)
@@ -86,8 +92,8 @@ async function handlePut(apiCall: ApiCall) {
     return apiCall.badRequest('Substance ID or slug is required in the path')
   }
 
-  if (!body) {
-    return apiCall.badRequest('Request body is required')
+  if (!isRecord(body)) {
+    return apiCall.badRequest('Request body must be a JSON object')
   }
 
   try {
@@ -102,16 +108,23 @@ async function handlePut(apiCall: ApiCall) {
       return apiCall.notFound(`Substance with ID or slug ${id} not found`)
     }
 
+    if (body.unit !== undefined && body.unit !== null && !isUnit(body.unit)) {
+      return apiCall.badRequest('Unit must be one of: MG, ML, G, IU')
+    }
+
     // Update the substance
     const substance = await db.substance.update({
       where: { id: existingSubstance.id },
       data: {
-        ...(body.name !== undefined && { name: body.name }),
+        ...(body.name !== undefined && { name: String(body.name) }),
         ...(body.description !== undefined && {
-          description: body.description,
+          description:
+            body.description == null ? null : String(body.description),
         }),
-        ...(body.slug !== undefined && { slug: body.slug }),
-        ...(body.unit !== undefined && { unit: body.unit }),
+        ...(body.slug !== undefined && { slug: String(body.slug) }),
+        ...(body.unit !== undefined && {
+          unit: body.unit === null ? null : body.unit,
+        }),
       },
       include: {
         doses: {

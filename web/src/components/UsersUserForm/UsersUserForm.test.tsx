@@ -8,7 +8,13 @@ import UsersUserForm from './UsersUserForm'
 describe('UsersUserForm', () => {
   it('renders successfully', () => {
     expect(() => {
-      render(<UsersUserForm />)
+      render(
+        <UsersUserForm
+          onSubmit={() => {
+            // noop
+          }}
+        />
+      )
     }).not.toThrow()
   })
 })

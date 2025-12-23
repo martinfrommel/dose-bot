@@ -42,7 +42,7 @@ describe('userCredentials', () => {
         id: 'cred-new',
         userId: scenario.userCredential.two.userId,
         publicKey: new Uint8Array([181, 175, 209]),
-        counter: 8608631n,
+        counter: 8608631,
       },
     })
 

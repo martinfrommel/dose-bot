@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import type { GetUsers } from 'types/graphql'
 
 import { Link, routes } from '@cedarjs/router'
 import { Metadata, useQuery } from '@cedarjs/web'
@@ -20,7 +21,7 @@ const GET_USERS = gql`
 `
 
 const UsersUsersPage = () => {
-  const { data, loading, error, refetch } = useQuery(GET_USERS)
+  const { data, loading, error, refetch } = useQuery<GetUsers>(GET_USERS)
   const { currentUser } = useAuth()
 
   const users = data?.users ?? []
@@ -72,7 +73,7 @@ const UsersUsersPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user: any) => {
+                {users.map((user) => {
                   const joined = new Date(user.createdAt).toLocaleDateString()
                   const roleClass =
                     user.role === 'Admin' ? 'badge-warning' : 'badge-info'

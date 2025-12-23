@@ -78,7 +78,9 @@ const DemoBanner = () => {
     <div
       className={
         'alert alert-warning fixed bottom-24 left-4 z-[70] flex w-80 flex-col gap-1 shadow-lg transition duration-200 ease-out sm:bottom-4 ' +
-        (expandedVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2')
+        (expandedVisible
+          ? 'translate-y-0 opacity-100'
+          : 'translate-y-2 opacity-0')
       }
     >
       <div className="flex items-start justify-between gap-2">

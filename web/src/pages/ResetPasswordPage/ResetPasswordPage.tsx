@@ -75,7 +75,10 @@ const ResetPasswordPage = ({ resetToken }: { resetToken: string }) => {
                 },
               }}
             />
-            <FieldError name="password" className="label-text-alt text-error mt-1" />
+            <FieldError
+              name="password"
+              className="label-text-alt mt-1 text-error"
+            />
           </div>
 
           <div className="form-control mt-6">

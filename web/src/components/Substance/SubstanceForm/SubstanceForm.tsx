@@ -1,4 +1,4 @@
-import type { EditSubstanceById, UpdateSubstanceInput } from 'types/graphql'
+import type { EditSubstanceBySlug, UpdateSubstanceInput } from 'types/graphql'
 
 import type { RWGqlError } from '@cedarjs/forms'
 import {
@@ -11,10 +11,10 @@ import {
   Submit,
 } from '@cedarjs/forms'
 
-type FormSubstance = NonNullable<EditSubstanceById['substance']>
+type FormSubstance = NonNullable<EditSubstanceBySlug['substance']>
 
 interface SubstanceFormProps {
-  substance?: EditSubstanceById['substance']
+  substance?: EditSubstanceBySlug['substance']
   onSave: (data: UpdateSubstanceInput, id?: FormSubstance['id']) => void
   error: RWGqlError
   loading: boolean
@@ -62,10 +62,7 @@ const SubstanceForm = (props: SubstanceFormProps) => {
           errorClassName="input input-bordered input-error w-full"
         />
 
-        <FieldError
-          name="description"
-          className="label-text-alt text-error"
-        />
+        <FieldError name="description" className="label-text-alt text-error" />
       </div>
 
       <div className="form-control mb-4 w-full">

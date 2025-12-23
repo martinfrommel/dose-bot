@@ -1,5 +1,6 @@
 import { Link, routes } from '@cedarjs/router'
 import { Metadata } from '@cedarjs/web'
+
 import EditApiKeyCell from 'src/components/ApiKey/EditApiKeyCell'
 
 type ApiKeyPageProps = {

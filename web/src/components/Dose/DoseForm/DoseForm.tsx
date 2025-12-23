@@ -4,13 +4,7 @@ import { SaveIcon } from 'lucide-react'
 import type { Dose, EditDoseById, UpdateDoseInput } from 'types/graphql'
 
 import type { RWGqlError } from '@cedarjs/forms'
-import {
-  Form,
-  FormError,
-  FieldError,
-  Label,
-  Submit,
-} from '@cedarjs/forms'
+import { Form, FormError, FieldError, Label, Submit } from '@cedarjs/forms'
 
 import AmountSlider from 'src/components/AmountSlider'
 
@@ -85,7 +79,7 @@ const DoseForm = (props: DoseFormProps) => {
         <Label name="unit" className="label">
           <span className="label-text">Unit</span>
         </Label>
-        <div className="input input-bordered w-full flex items-center">
+        <div className="input input-bordered flex w-full items-center">
           <span className="font-mono text-sm">{unit}</span>
         </div>
         <div className="label">

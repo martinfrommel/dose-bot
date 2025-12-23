@@ -4,6 +4,9 @@ import { ApiCall } from 'src/lib/ApiCall'
 import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
 /**
  * Handler for single dose operations
  * GET /dose/:id - Get a specific dose
@@ -85,8 +88,8 @@ async function handlePut(apiCall: ApiCall) {
     return apiCall.badRequest('Dose ID is required in the path')
   }
 
-  if (!body) {
-    return apiCall.badRequest('Request body is required')
+  if (!isRecord(body)) {
+    return apiCall.badRequest('Request body must be a JSON object')
   }
 
   let parsedAmount: number | undefined
@@ -109,14 +112,17 @@ async function handlePut(apiCall: ApiCall) {
     }
 
     // If substanceId is being updated, verify it exists
-    if (body.substanceId && body.substanceId !== existingDose.substanceId) {
+    const bodySubstanceId =
+      body.substanceId === undefined ? undefined : String(body.substanceId)
+
+    if (bodySubstanceId && bodySubstanceId !== existingDose.substanceId) {
       const substance = await db.substance.findUnique({
-        where: { id: body.substanceId },
+        where: { id: bodySubstanceId },
       })
 
       if (!substance) {
         return apiCall.notFound(
-          `Substance with ID ${body.substanceId} not found`
+          `Substance with ID ${bodySubstanceId} not found`
         )
       }
     }
@@ -128,8 +134,8 @@ async function handlePut(apiCall: ApiCall) {
         ...(parsedAmount !== undefined && {
           amount: parsedAmount,
         }),
-        ...(body.substanceId !== undefined && {
-          substanceId: body.substanceId,
+        ...(bodySubstanceId !== undefined && {
+          substanceId: bodySubstanceId,
         }),
       },
       include: {
@@ -182,11 +188,13 @@ async function handleDelete(apiCall: ApiCall) {
 async function handleCreate(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body) {
-    return apiCall.badRequest('Request body is required')
+  if (!isRecord(body)) {
+    return apiCall.badRequest('Request body must be a JSON object')
   }
 
-  const { amount, substanceName } = body
+  const amount = body.amount
+  const substanceName =
+    typeof body.substanceName === 'string' ? body.substanceName : undefined
 
   if (amount === undefined || !substanceName) {
     return apiCall.badRequest('Amount and substanceName are required')

@@ -100,11 +100,7 @@ const Dose = ({ dose, slug }: Props) => {
           >
             Edit
           </Link>
-          <button
-            type="button"
-            className="btn btn-error"
-            onClick={openConfirm}
-          >
+          <button type="button" className="btn btn-error" onClick={openConfirm}>
             Delete
           </button>
         </div>

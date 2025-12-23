@@ -5,6 +5,12 @@ import { db } from 'src/lib/db'
 import { logger } from 'src/lib/logger'
 import { slugify } from 'src/lib/slug'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const isUnit = (value: unknown): value is 'MG' | 'ML' | 'G' | 'IU' =>
+  value === 'MG' || value === 'ML' || value === 'G' || value === 'IU'
+
 /**
  * Handler for multiple substances operations
  * GET /substances - List all substances
@@ -66,15 +72,27 @@ async function handleGet(apiCall: ApiCall) {
 async function handlePost(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body || !body.name || !body.unit) {
+  if (!isRecord(body)) {
+    return apiCall.badRequest('Request body must be a JSON object')
+  }
+
+  if (!body.name || !body.unit) {
     return apiCall.badRequest(
       'Missing required fields: name and unit are required'
     )
   }
 
+  const name = String(body.name)
+
+  if (!isUnit(body.unit)) {
+    return apiCall.badRequest('Unit must be one of: MG, ML, G, IU')
+  }
+
+  const unit = body.unit
+
   try {
     // Generate slug if not provided
-    const slug = body.slug || slugify(body.name)
+    const slug = typeof body.slug === 'string' ? body.slug : slugify(name)
 
     // Check if slug already exists
     const existingSubstance = await db.substance.findFirst({
@@ -88,10 +106,11 @@ async function handlePost(apiCall: ApiCall) {
     // Create the substance
     const substance = await db.substance.create({
       data: {
-        name: body.name,
+        name,
         slug,
-        description: body.description || null,
-        unit: body.unit,
+        description:
+          typeof body.description === 'string' ? body.description : null,
+        unit,
       },
     })
 
