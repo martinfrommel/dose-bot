@@ -39,6 +39,7 @@ model Substance {
   updatedAt   DateTime @updatedAt
   name        String   @unique
   description String?
+  unit        Unit?
   slug        String
   doses       Dose[]
 

@@ -9,7 +9,6 @@ import {
   FormError,
   FieldError,
   Label,
-  RadioField,
   Submit,
 } from '@cedarjs/forms'
 
@@ -24,6 +23,7 @@ interface DoseFormProps {
   onSave: (data: UpdateDoseInput, id?: FormDose['id']) => void
   error: RWGqlError
   loading: boolean
+  unit?: DoseUnit
 }
 
 interface MaxAmounts {
@@ -32,8 +32,6 @@ interface MaxAmounts {
   G: number
   IU: number
 }
-
-const AVAILABLE_UNITS: DoseUnit[] = ['MG', 'ML', 'G', 'IU']
 
 const MAX_AMOUNTS: MaxAmounts = {
   MG: 5000,
@@ -51,12 +49,12 @@ const AVAILABLE_STEPS = {
 
 const DoseForm = (props: DoseFormProps) => {
   const [amount, setAmount] = React.useState(props.dose?.amount || 0)
-  const [unit, setUnit] = React.useState<DoseUnit>(
-    props.dose?.unit || AVAILABLE_UNITS[0]
-  )
+  const unit: DoseUnit = props.unit || props.dose?.unit || 'MG'
 
   const onSubmit = (data: FormDose) => {
-    props.onSave({ ...data, amount }, props?.dose?.id)
+    // Unit is canonical on Substance; do not submit unit edits from the UI.
+    const { unit: _unit, ...rest } = data as FormDose & { unit?: DoseUnit }
+    props.onSave({ ...rest, amount }, props?.dose?.id)
   }
 
   return (
@@ -84,30 +82,17 @@ const DoseForm = (props: DoseFormProps) => {
       </div>
 
       <div className="form-control mb-4 w-full">
-        <Label name="unit" className="label" errorClassName="label">
+        <Label name="unit" className="label">
           <span className="label-text">Unit</span>
         </Label>
-        <div className="flex flex-wrap gap-4">
-          {AVAILABLE_UNITS.map((u, i) => (
-            <label key={u} className="label cursor-pointer gap-2">
-              <RadioField
-                id={`dose-unit-${i}`}
-                name="unit"
-                defaultValue={u}
-                defaultChecked={props.dose?.unit?.includes(u)}
-                className="radio"
-                errorClassName="radio"
-                onChange={() => setUnit(u)}
-                validation={{
-                  required: true,
-                  value: u,
-                }}
-              />
-              <span className="label-text">{u}</span>
-            </label>
-          ))}
+        <div className="input input-bordered w-full flex items-center">
+          <span className="font-mono text-sm">{unit}</span>
         </div>
-        <FieldError name="unit" className="label-text-alt text-error" />
+        <div className="label">
+          <span className="label-text-alt">
+            Unit is set on the substance and can’t be edited here.
+          </span>
+        </div>
       </div>
 
       <div className="form-control mt-6">

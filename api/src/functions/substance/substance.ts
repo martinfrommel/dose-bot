@@ -111,6 +111,7 @@ async function handlePut(apiCall: ApiCall) {
           description: body.description,
         }),
         ...(body.slug !== undefined && { slug: body.slug }),
+        ...(body.unit !== undefined && { unit: body.unit }),
       },
       include: {
         doses: {

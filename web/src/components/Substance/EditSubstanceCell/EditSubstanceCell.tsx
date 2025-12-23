@@ -24,6 +24,7 @@ export const QUERY: TypedDocumentNode<EditSubstanceBySlug> = gql`
       updatedAt
       name
       description
+      unit
       slug
     }
   }
@@ -43,6 +44,7 @@ const UPDATE_SUBSTANCE_MUTATION: TypedDocumentNode<
       updatedAt
       name
       description
+      unit
     }
   }
 `

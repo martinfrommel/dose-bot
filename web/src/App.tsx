@@ -1,9 +1,13 @@
+import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 
 import { FatalErrorBoundary, RedwoodProvider } from '@cedarjs/web'
 import { RedwoodApolloProvider } from '@cedarjs/web/apollo'
 
+import DemoBanner from 'src/components/DemoBanner/DemoBanner'
 import FatalErrorPage from 'src/pages/FatalErrorPage'
+
+import { getPersistedDaisyUiTheme, setDaisyUiTheme } from 'src/lib/useDaisyUiTheme'
 
 import { AuthProvider, useAuth } from './auth.js'
 import './index.css'
@@ -14,33 +18,19 @@ interface AppProps {
   children?: ReactNode
 }
 
-const DemoBanner = () => {
-  const isDemoMode = process.env.DEMO_MODE === '1'
+const ThemeInitializer = () => {
+  useEffect(() => {
+    const persisted = getPersistedDaisyUiTheme()
+    if (persisted) setDaisyUiTheme(persisted, { persist: false })
+  }, [])
 
-  if (!isDemoMode) return null
-
-  return (
-    <div className="alert alert-warning fixed bottom-4 left-4 z-50 flex w-80  flex-col gap-1  opacity-70 shadow-lg">
-      <div className="font-semibold">Demo mode</div>
-      <div className="text-sm leading-snug">
-        This sandbox resets its data every midnight. Try things out
-        freely—changes will not persist.
-      </div>
-      <ul className="flex w-full flex-col gap-1 pt-2 text-sm">
-        <li>
-          <strong>Username:</strong>&nbsp; <span>demo@dosebot.local</span>
-        </li>
-        <li>
-          <strong>Password:</strong>&nbsp; <span>demo</span>
-        </li>
-      </ul>
-    </div>
-  )
+  return null
 }
 
 const App = ({ children }: AppProps) => (
   <FatalErrorBoundary page={FatalErrorPage}>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
+      <ThemeInitializer />
       <AnalyticsScript
         endpoint={process.env.ANALYTICS_ENDPOINT}
         websiteId={process.env.ANALYTICS_WEBSITE_ID}

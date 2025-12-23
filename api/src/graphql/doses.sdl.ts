@@ -23,7 +23,7 @@ export const schema = gql`
 
   input CreateDoseInput {
     amount: Float!
-    unit: Unit!
+    unit: Unit
     substanceId: String!
   }
 

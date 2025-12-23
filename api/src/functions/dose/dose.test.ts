@@ -179,6 +179,34 @@ describe('dose API function', () => {
     })
 
     scenario(
+      'silently ignores unit when updating a dose',
+      async (scenario: StandardScenario) => {
+        const doseId = scenario.dose.caffeineLight.id
+
+        const httpEvent = mockHttpEvent({
+          httpMethod: 'PUT',
+          pathParameters: { id: doseId },
+          headers: {
+            Authorization: 'Bearer test-api-key-123',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            unit: 'G',
+          }),
+        })
+
+        const response = await handler(httpEvent, mockContext())
+        const body = JSON.parse(response.body)
+
+        expect(response.statusCode).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.id).toBe(doseId)
+        // Original fixture unit is MG; unit updates must be ignored.
+        expect(body.data.unit).toBe('MG')
+      }
+    )
+
+    scenario(
       'returns 400 when dose ID is missing',
       async (_scenario: StandardScenario) => {
         const httpEvent = mockHttpEvent({

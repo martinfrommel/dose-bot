@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 
 import {
   createColumnHelper,
@@ -54,6 +54,14 @@ const columnHelper = createColumnHelper<DoseRow>()
 
 const DosesList = ({ substance }: DosesProps) => {
   const { doses, slug } = substance
+
+  const sortedDoses = useMemo(() => {
+    return [...doses].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+  }, [doses])
+
+  const canonicalUnit = substance.unit || sortedDoses[0]?.unit
   const [deleteDose, { loading: deletingSingle }] = useMutation(
     DELETE_DOSE_MUTATION,
     {
@@ -193,13 +201,66 @@ const DosesList = ({ substance }: DosesProps) => {
   )
 
   const table = useReactTable({
-    data: doses,
+    data: sortedDoses,
     columns,
     state: { rowSelection },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  const groupedRows = useMemo(() => {
+    type TableRow = ReturnType<typeof table.getRowModel>['rows'][number]
+    const groups: Array<{
+      dayKey: string
+      label: string
+      total: number
+      rows: TableRow[]
+    }> = []
+
+    const keyForLocalDay = (dateLike: string | Date) => {
+      const d = new Date(dateLike)
+      const y = d.getFullYear()
+      const m = String(d.getMonth() + 1).padStart(2, '0')
+      const day = String(d.getDate()).padStart(2, '0')
+      return `${y}-${m}-${day}`
+    }
+
+    const labelForDayKey = (dayKey: string) => {
+      const [y, m, d] = dayKey.split('-').map(Number)
+      const dt = new Date(y, (m || 1) - 1, d || 1)
+      return dt.toLocaleDateString(undefined, {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+    }
+
+    for (const row of table.getRowModel().rows) {
+      const dayKey = keyForLocalDay(row.original.createdAt)
+      const last = groups[groups.length - 1]
+
+      if (!last || last.dayKey !== dayKey) {
+        groups.push({
+          dayKey,
+          label: labelForDayKey(dayKey),
+          total: 0,
+          rows: [row],
+        })
+      } else {
+        last.rows.push(row)
+      }
+
+      // Total is per-substance and should be unit-consistent.
+      // Use canonicalUnit when available; otherwise sum everything.
+      if (!canonicalUnit || row.original.unit === canonicalUnit) {
+        groups[groups.length - 1].total += row.original.amount
+      }
+    }
+
+    return groups
+  }, [table, canonicalUnit])
 
   const selectedIds = table
     .getSelectedRowModel()
@@ -279,14 +340,45 @@ const DosesList = ({ substance }: DosesProps) => {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={row.getIsSelected() ? 'active' : ''}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {groupedRows.map((group) => (
+              <Fragment key={group.dayKey}>
+                <tr className="bg-base-200">
+                  <td colSpan={table.getVisibleLeafColumns().length}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-semibold">{group.label}</span>
+                      <span className="text-sm text-base-content/70">
+                        Total:{' '}
+                        {group.total.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}{' '}
+                        {canonicalUnit ?? ''}
+                      </span>
+                    </div>
                   </td>
+                </tr>
+
+                {group.rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={row.getIsSelected() ? 'active' : ''}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
+
+                <tr>
+                  <td colSpan={table.getVisibleLeafColumns().length}>
+                    <div className="divider my-0" />
+                  </td>
+                </tr>
+              </Fragment>
             ))}
           </tbody>
         </table>

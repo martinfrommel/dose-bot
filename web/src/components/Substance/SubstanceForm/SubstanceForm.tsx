@@ -6,6 +6,7 @@ import {
   FormError,
   FieldError,
   Label,
+  SelectField,
   TextField,
   Submit,
 } from '@cedarjs/forms'
@@ -65,6 +66,35 @@ const SubstanceForm = (props: SubstanceFormProps) => {
           name="description"
           className="label-text-alt text-error"
         />
+      </div>
+
+      <div className="form-control mb-4 w-full">
+        <Label name="unit" className="label" errorClassName="label">
+          <span className="label-text">Unit</span>
+        </Label>
+
+        <SelectField
+          name="unit"
+          defaultValue={props.substance?.unit || undefined}
+          className="select select-bordered w-full"
+          errorClassName="select select-bordered select-error w-full"
+          validation={{ required: true }}
+        >
+          <option value="MG">MG</option>
+          <option value="ML">ML</option>
+          <option value="G">G</option>
+          <option value="IU">IU</option>
+        </SelectField>
+
+        {props.substance && (
+          <div className="label">
+            <span className="label-text-alt">
+              Changing the unit won’t rewrite existing doses.
+            </span>
+          </div>
+        )}
+
+        <FieldError name="unit" className="label-text-alt text-error" />
       </div>
 
       <div className="form-control mt-6">

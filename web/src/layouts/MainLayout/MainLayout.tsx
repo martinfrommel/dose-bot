@@ -5,6 +5,8 @@ import { Toaster } from '@cedarjs/web/toast'
 
 import { useAuth } from 'src/auth'
 import LogoutButton from 'src/components/LogoutButton/LogoutButton'
+
+import { setDaisyUiTheme, useDaisyUiTheme } from 'src/lib/useDaisyUiTheme'
 type MainLayoutProps = {
   children?: React.ReactNode
 }
@@ -12,6 +14,12 @@ type MainLayoutProps = {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const { isAuthenticated, currentUser } = useAuth()
   const isAdmin = currentUser?.role === 'Admin'
+
+  const rawTheme = useDaisyUiTheme()
+  const theme =
+    rawTheme === 'dark' || rawTheme === 'light' || rawTheme === 'synthwave'
+      ? rawTheme
+      : 'dark'
 
   return (
     <>
@@ -27,7 +35,19 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             </Link>
           </div>
           <div className="flex-none">
-            <ul className="menu menu-horizontal px-1">
+            <div className="flex items-center gap-2">
+              <select
+                className="select select-bordered select-sm"
+                value={theme}
+                onChange={(e) => setDaisyUiTheme(e.target.value)}
+                aria-label="Theme"
+                title="Theme"
+              >
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="synthwave">Synthwave</option>
+              </select>
+              <ul className="menu menu-horizontal px-1">
               <li>
                 <Link to={routes.apiKeys()}>
                   <KeyIcon className="size-3" />
@@ -63,7 +83,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   </div>
                 )}
               </li>
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
         <main className="container mx-auto h-full w-full flex-1 p-4">

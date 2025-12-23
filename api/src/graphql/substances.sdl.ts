@@ -5,6 +5,7 @@ export const schema = gql`
     updatedAt: DateTime!
     name: String!
     description: String
+    unit: Unit
     slug: String!
     doses: [Dose]!
   }
@@ -18,11 +19,13 @@ export const schema = gql`
   input CreateSubstanceInput {
     name: String!
     description: String
+    unit: Unit!
   }
 
   input UpdateSubstanceInput {
     name: String
     description: String
+    unit: Unit
   }
 
   type Mutation {
