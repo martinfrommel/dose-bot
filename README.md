@@ -2,7 +2,11 @@
 
 Version: 0.7.0
 
-**This Repository is cloned from**:
+Roadmap: see [ROADMAP.md](ROADMAP.md).
+
+Issue closure: use commit message trailers like `Fixes: #123` (or `Closes #123`).
+
+**This repository lives at**:
 
 ```bash
 https://git.athanor.software/athanor-software/dose-bot

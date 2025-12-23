@@ -7,6 +7,12 @@
       "web"
     ]
   },
+  "scripts": {
+    "roadmap:sync": "node scripts/gitea-roadmap-sync.mjs",
+    "roadmap:sync:dry": "node scripts/gitea-roadmap-sync.mjs --dry-run",
+    "roadmap:sync:close-done": "node scripts/gitea-roadmap-sync.mjs --close-done",
+    "prepare": "husky"
+  },
   "devDependencies": {
     "@cedarjs/auth-dbauth-setup": "2.1.1",
     "@cedarjs/cli-data-migrate": "2.1.1",
@@ -15,6 +21,7 @@
     "@cedarjs/testing": "2.1.1",
     "@types/colors": "^1.2.4",
     "colors": "^1.4.0",
+    "husky": "^9.1.7",
     "picospinner": "2",
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-tailwindcss": "^0.5.12"
