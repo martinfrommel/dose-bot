@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { MoveLeft } from 'lucide-react'
 
@@ -15,6 +15,28 @@ const DemoBanner = () => {
       return false
     }
   })
+
+  const [expandedVisible, setExpandedVisible] = useState(false)
+  const collapseTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (collapseTimerRef.current != null) {
+      window.clearTimeout(collapseTimerRef.current)
+      collapseTimerRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (collapsed) {
+      setExpandedVisible(false)
+      return
+    }
+
+    // Ensure we transition in (avoid first-paint flicker).
+    setExpandedVisible(false)
+    const raf = window.requestAnimationFrame(() => setExpandedVisible(true))
+    return () => window.cancelAnimationFrame(raf)
+  }, [collapsed])
 
   const setCollapsedPersisted = (next: boolean) => {
     setCollapsed(next)
@@ -33,24 +55,37 @@ const DemoBanner = () => {
     return (
       <button
         type="button"
-        className="fixed bottom-4 left-0 z-50 flex items-center gap-2 rounded-r-box bg-warning px-3 py-2 text-sm font-semibold text-warning-content shadow-lg"
+        className="fixed bottom-14 left-0 z-[999] flex items-center gap-2 rounded-r-box bg-warning px-3 py-2 text-sm font-semibold text-warning-content shadow-lg"
         onClick={() => setCollapsedPersisted(false)}
         aria-label="Expand demo mode banner"
         title="Expand"
       >
-        Demo mode
+        <span className="hidden sm:inline">Demo mode</span>
         <span aria-hidden>›</span>
       </button>
     )
   }
 
+  const startCollapse = () => {
+    setExpandedVisible(false)
+    collapseTimerRef.current = window.setTimeout(() => {
+      collapseTimerRef.current = null
+      setCollapsedPersisted(true)
+    }, 200)
+  }
+
   return (
-    <div className="alert alert-warning fixed bottom-4 left-4 z-50 flex w-80 flex-col gap-1 shadow-lg">
+    <div
+      className={
+        'alert alert-warning fixed bottom-24 left-4 z-[70] flex w-80 flex-col gap-1 shadow-lg transition duration-200 ease-out sm:bottom-4 ' +
+        (expandedVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2')
+      }
+    >
       <div className="flex items-start justify-between gap-2">
         <button
           type="button"
           className="btn btn-neutral btn-xs"
-          onClick={() => setCollapsedPersisted(true)}
+          onClick={startCollapse}
           aria-label="Collapse demo mode banner"
           title="Collapse"
         >

@@ -61,8 +61,8 @@ const UsersUsersPage = () => {
 
       {!loading && !error && users.length > 0 && (
         <div className="mt-6 rounded-lg border border-base-300 bg-base-100 shadow">
-          <div className="overflow-visible">
-            <table className="table">
+          <div className="overflow-x-auto">
+            <table className="table table-sm">
               <thead>
                 <tr>
                   <th>User</th>
@@ -95,8 +95,13 @@ const UsersUsersPage = () => {
                             size="sm"
                           />
                           <div>
-                            <div className="font-semibold">{user.email}</div>
-                            <div className="text-sm text-base-content/70">
+                            <div
+                              className="max-w-[16rem] truncate font-semibold sm:max-w-none"
+                              title={user.email}
+                            >
+                              {user.email}
+                            </div>
+                            <div className="break-all text-sm text-base-content/70">
                               ID: {user.id}
                             </div>
                           </div>

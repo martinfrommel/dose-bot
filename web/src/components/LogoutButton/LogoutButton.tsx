@@ -1,9 +1,17 @@
 import { useAuth } from 'src/auth'
 
-const LogoutButton = () => {
+type LogoutButtonProps = {
+  className?: string
+}
+
+const LogoutButton = ({ className }: LogoutButtonProps) => {
   const { logOut } = useAuth()
   return (
-    <button className="btn btn-secondary" onClick={() => logOut()}>
+    <button
+      className={className ?? 'btn btn-secondary'}
+      onClick={() => logOut()}
+      type="button"
+    >
       Logout
     </button>
   )

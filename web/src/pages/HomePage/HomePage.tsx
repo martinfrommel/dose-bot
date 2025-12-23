@@ -23,8 +23,8 @@ const HomePage = () => {
             </p>
           </div>
         </section>
-        <div className="flex flex-row justify-around gap-4">
-          <section className="card bg-neutral text-neutral-content">
+        <div className="flex flex-col gap-4 md:flex-row">
+          <section className="card w-full bg-neutral text-neutral-content">
             <div className="card-body">
               <h3 className="card-title text-lg">API Keys</h3>
               <p className="mb-4">
@@ -37,7 +37,7 @@ const HomePage = () => {
               </div>
             </div>
           </section>
-          <section className="card bg-primary text-primary-content">
+          <section className="card w-full bg-primary text-primary-content">
             <div className="card-body">
               <h3 className="card-title text-lg">Substances</h3>
               <p className="mb-4">

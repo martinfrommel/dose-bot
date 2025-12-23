@@ -5,9 +5,11 @@ import { FatalErrorBoundary, RedwoodProvider } from '@cedarjs/web'
 import { RedwoodApolloProvider } from '@cedarjs/web/apollo'
 
 import DemoBanner from 'src/components/DemoBanner/DemoBanner'
+import {
+  getPersistedDaisyUiTheme,
+  setDaisyUiTheme,
+} from 'src/lib/useDaisyUiTheme'
 import FatalErrorPage from 'src/pages/FatalErrorPage'
-
-import { getPersistedDaisyUiTheme, setDaisyUiTheme } from 'src/lib/useDaisyUiTheme'
 
 import { AuthProvider, useAuth } from './auth.js'
 import './index.css'

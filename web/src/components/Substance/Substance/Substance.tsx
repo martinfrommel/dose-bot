@@ -188,7 +188,7 @@ const Substance = ({ substance }: Props) => {
         </div>
       </div>
 
-      <div className="card bg-base-100 shadow-lg">
+      <div className="card my-4 bg-base-100 shadow-lg">
         <div className="card-body">
           <h3 className="card-title text-base">Last 5 days</h3>
           <div className="divider my-2" />
