@@ -24,6 +24,7 @@ const SUBSTANCE_QUERY: TypedDocumentNode<
     substance: substanceBySlug(slug: $slug) {
       id
       name
+      unit
     }
   }
 `
@@ -45,14 +46,15 @@ type NewDoseProps = {
 }
 
 const NewDose = ({ slug, currentPageTitle }: NewDoseProps) => {
-  const { setCurrentPageTitle } = useItemView()
+  const { setDose, setCurrentPageTitle } = useItemView()
   const { data, loading: queryLoading } = useQuery(SUBSTANCE_QUERY, {
     variables: { slug },
   })
 
   React.useEffect(() => {
+    setDose(undefined)
     setCurrentPageTitle(currentPageTitle)
-  }, [currentPageTitle, setCurrentPageTitle])
+  }, [currentPageTitle, setDose, setCurrentPageTitle])
 
   const [createDose, { loading, error }] = useMutation(CREATE_DOSE_MUTATION, {
     onCompleted: () => {
@@ -64,8 +66,9 @@ const NewDose = ({ slug, currentPageTitle }: NewDoseProps) => {
     },
   })
 
-  const onSave = (input: Omit<CreateDoseInput, 'substanceId'>) => {
+  const onSave = (input: Omit<CreateDoseInput, 'substanceId' | 'unit'>) => {
     if (!data?.substance?.id) return
+    if (!data.substance.unit) return
     createDose({
       variables: {
         input: {
@@ -84,7 +87,21 @@ const NewDose = ({ slug, currentPageTitle }: NewDoseProps) => {
         <h2 className="card-title">
           New Dose for {data?.substance?.name || 'Substance'}
         </h2>
-        <DoseForm onSave={onSave} loading={loading} error={error} />
+        {!data?.substance?.unit ? (
+          <div className="alert alert-warning">
+            <span>
+              This substance has no unit set yet. Set a unit on the substance
+              before creating doses.
+            </span>
+          </div>
+        ) : (
+          <DoseForm
+            onSave={onSave}
+            loading={loading}
+            error={error}
+            unit={data.substance.unit}
+          />
+        )}
       </div>
     </div>
   )

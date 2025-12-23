@@ -53,7 +53,7 @@ async function handleGet(apiCall: ApiCall) {
       where.substanceId = substanceId
     } else if (slug) {
       // Find substance by slug first
-      const substance = await db.substance.findUnique({
+      const substance = await db.substance.findFirst({
         where: { slug },
       })
 
@@ -87,9 +87,9 @@ async function handleGet(apiCall: ApiCall) {
 async function handlePost(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body || body.amount === undefined || !body.unit || !body.substanceId) {
+  if (!body || body.amount === undefined || !body.substanceId) {
     return apiCall.badRequest(
-      'Missing required fields: amount, unit, and substanceId are required'
+      'Missing required fields: amount and substanceId are required'
     )
   }
 
@@ -109,12 +109,20 @@ async function handlePost(apiCall: ApiCall) {
       return apiCall.notFound(`Substance with ID ${body.substanceId} not found`)
     }
 
+    if (substance.unit == null) {
+      return apiCall.badRequest(
+        'Substance unit is not set. Set the substance unit before creating doses.'
+      )
+    }
+
     // Create the dose
     const dose = await db.dose.create({
       data: {
         amount,
-        unit: body.unit,
-        substanceId: body.substanceId,
+        unit: substance.unit,
+        substance: {
+          connect: { id: body.substanceId },
+        },
       },
       include: {
         substance: true,

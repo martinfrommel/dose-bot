@@ -66,8 +66,10 @@ async function handleGet(apiCall: ApiCall) {
 async function handlePost(apiCall: ApiCall) {
   const body = apiCall.body
 
-  if (!body || !body.name) {
-    return apiCall.badRequest('Missing required field: name is required')
+  if (!body || !body.name || !body.unit) {
+    return apiCall.badRequest(
+      'Missing required fields: name and unit are required'
+    )
   }
 
   try {
@@ -75,7 +77,7 @@ async function handlePost(apiCall: ApiCall) {
     const slug = body.slug || slugify(body.name)
 
     // Check if slug already exists
-    const existingSubstance = await db.substance.findUnique({
+    const existingSubstance = await db.substance.findFirst({
       where: { slug },
     })
 
@@ -89,6 +91,7 @@ async function handlePost(apiCall: ApiCall) {
         name: body.name,
         slug,
         description: body.description || null,
+        unit: body.unit,
       },
     })
 

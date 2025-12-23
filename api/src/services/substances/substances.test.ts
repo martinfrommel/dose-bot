@@ -30,11 +30,12 @@ describe('substances', () => {
 
   scenario('creates a substance', async () => {
     const result = await createSubstance({
-      input: { updatedAt: '2025-12-18T02:47:21.831Z', name: 'String' },
+      input: { name: 'String', unit: 'MG' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-18T02:47:21.831Z'))
     expect(result.name).toEqual('String')
+    expect(result.unit).toEqual('MG')
+    expect(result.updatedAt).toBeInstanceOf(Date)
   })
 
   scenario('updates a substance', async (scenario: StandardScenario) => {
@@ -43,10 +44,11 @@ describe('substances', () => {
     })) as Substance
     const result = await updateSubstance({
       id: original.id,
-      input: { updatedAt: '2025-12-19T02:47:21.835Z' },
+      input: { description: 'Updated description', unit: 'IU' },
     })
 
-    expect(result.updatedAt).toEqual(new Date('2025-12-19T02:47:21.835Z'))
+    expect(result.description).toEqual('Updated description')
+    expect(result.unit).toEqual('IU')
   })
 
   scenario('deletes a substance', async (scenario: StandardScenario) => {

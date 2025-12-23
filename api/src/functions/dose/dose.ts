@@ -1,4 +1,3 @@
-import { type Unit } from '@prisma/client'
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 
 import { ApiCall } from 'src/lib/ApiCall'
@@ -129,7 +128,6 @@ async function handlePut(apiCall: ApiCall) {
         ...(parsedAmount !== undefined && {
           amount: parsedAmount,
         }),
-        ...(body.unit !== undefined && { unit: body.unit }),
         ...(body.substanceId !== undefined && {
           substanceId: body.substanceId,
         }),
@@ -188,7 +186,7 @@ async function handleCreate(apiCall: ApiCall) {
     return apiCall.badRequest('Request body is required')
   }
 
-  const { amount, unit, substanceName } = body
+  const { amount, substanceName } = body
 
   if (amount === undefined || !substanceName) {
     return apiCall.badRequest('Amount and substanceName are required')
@@ -209,12 +207,18 @@ async function handleCreate(apiCall: ApiCall) {
       return apiCall.notFound(`Substance with name ${substanceName} not found`)
     }
 
+    if (substance.unit == null) {
+      return apiCall.badRequest(
+        'Substance unit is not set. Set the substance unit before creating doses.'
+      )
+    }
+
     // Create the dose
     const dose = await db.dose.create({
       data: {
         // we need to parse this as a float, so it doesn't get rounded to an integer
         amount: parseFloat(String(amount)),
-        unit: unit as Unit,
+        unit: substance.unit,
         substance: {
           connect: { id: substance.id },
         },

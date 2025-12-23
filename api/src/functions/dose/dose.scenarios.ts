@@ -16,7 +16,7 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
           create: {
             name: 'Caffeine Test Substance',
             slug: 'caffeine-test-substance-1',
-            updatedAt: '2025-12-18T00:00:00.000Z',
+            unit: 'MG',
           },
         },
       },
@@ -31,6 +31,20 @@ export const standard = defineScenario<Prisma.DoseCreateArgs>({
             name: 'Caffeine Test Substance 2',
             slug: 'caffeine-test-substance-2',
             updatedAt: '2025-12-18T00:00:00.000Z',
+            unit: 'MG',
+          },
+        },
+      },
+    },
+    caffeineHeavy: {
+      data: {
+        amount: 200,
+        unit: 'MG',
+        substance: {
+          create: {
+            name: 'Caffeine Heavy',
+            slug: 'caffeine-heavy',
+            unit: 'MG',
           },
         },
       },

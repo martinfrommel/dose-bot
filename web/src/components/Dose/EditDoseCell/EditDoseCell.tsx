@@ -25,6 +25,10 @@ export const QUERY: TypedDocumentNode<EditDoseById> = gql`
       amount
       unit
       substanceId
+      substance {
+        id
+        unit
+      }
     }
   }
 `
@@ -84,7 +88,13 @@ export const Success = ({ dose, slug }: EditDoseCellSuccessProps) => {
     <div className="card bg-base-100 shadow">
       <div className="card-body">
         <h2 className="card-title">Edit Dose {dose?.id}</h2>
-        <DoseForm dose={dose} onSave={onSave} error={error} loading={loading} />
+        <DoseForm
+          dose={dose}
+          onSave={onSave}
+          error={error}
+          loading={loading}
+          unit={dose?.substance?.unit || dose?.unit}
+        />
       </div>
     </div>
   )
