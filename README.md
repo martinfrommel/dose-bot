@@ -2,6 +2,8 @@
 
 Version: 0.7.0
 
+![CI Quality Check](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/quality/badge.svg?branch=master) ![Demo Deployment](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/deploy/badge.svg?branch=master) ![Latest Docker Release](https://git.athanor.software/athanor-software/dose-bot/actions/workflows/docker-release/badge.svg)
+
 Roadmap: see [ROADMAP.md](ROADMAP.md).
 
 Issue closure: use commit message trailers like `Fixes: #123` (or `Closes #123`).
