@@ -1,0 +1,13 @@
+# Best-effort roadmap sync after commits.
+# Note: Git has no built-in post-push hook. This runs locally after commit.
+
+set +e
+
+if [ -n "$GITEA_TOKEN" ] || [ -f .env ] && grep -q '^GITEA_TOKEN=' .env; then
+  echo "[husky] syncing roadmap (and closing done items)…"
+  yarn roadmap:sync -- --close-done || echo "[husky] roadmap sync failed (non-blocking)"
+else
+  echo "[husky] skipping roadmap sync (missing GITEA_TOKEN)"
+fi
+
+exit 0
