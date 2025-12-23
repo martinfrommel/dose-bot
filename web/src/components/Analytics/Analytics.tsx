@@ -16,13 +16,17 @@ const AnalyticsScript = ({
   const formattedEndpoint = endpoint ? formatUrl(endpoint) : undefined
   const resolvedScriptUrl = scriptUrl || '/script.js'
 
-  const scriptSrc = formattedEndpoint
-    ? asssembleFullUrl(formattedEndpoint, resolvedScriptUrl)
+  // Defensive: env vars can accidentally include newlines/extra content.
+  // Only use the first whitespace-separated token to avoid leaking secrets
+  // (e.g. if multiple env blocks are concatenated).
+  const safeEndpoint = formattedEndpoint?.split(/\s+/)[0]
+  const safeScriptUrl = resolvedScriptUrl.split(/\s+/)[0]
+
+  const scriptSrc = safeEndpoint
+    ? asssembleFullUrl(safeEndpoint, safeScriptUrl)
     : undefined
 
   if (!websiteId || !scriptSrc) return null
-
-  console.debug('💉 Injecting analytics script:', { scriptSrc, websiteId })
   return (
     <Helmet>
       <script
