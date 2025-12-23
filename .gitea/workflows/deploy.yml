@@ -44,6 +44,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality
     steps:
+      - name: Fail if no Coolify webhooks configured
+        if: ${{ secrets.COOLIFY_WEBHOOK_DEMO == '' && secrets.COOLIFY_WEBHOOK_PRIVATE == '' }}
+        run: |
+          echo "Neither COOLIFY_WEBHOOK_DEMO nor COOLIFY_WEBHOOK_PRIVATE is set."
+          echo "Refusing to report success without triggering a deployment."
+          exit 1
+
       - name: Trigger Coolify (demo)
         if: ${{ secrets.COOLIFY_WEBHOOK_DEMO != '' }}
         env:
