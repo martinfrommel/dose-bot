@@ -58,9 +58,9 @@ jobs:
           COOLIFY_TOKEN_DEMO: ${{ secrets.COOLIFY_TOKEN_DEMO }}
         run: |
           if [ -n "$COOLIFY_TOKEN_DEMO" ]; then
-            curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_DEMO" "$COOLIFY_WEBHOOK_DEMO"
+            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_DEMO" "$COOLIFY_WEBHOOK_DEMO"
           else
-            curl -fsSL -X POST "$COOLIFY_WEBHOOK_DEMO"
+            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X POST "$COOLIFY_WEBHOOK_DEMO"
           fi
 
       - name: Trigger Coolify (private)
@@ -70,7 +70,7 @@ jobs:
           COOLIFY_TOKEN_PRIVATE: ${{ secrets.COOLIFY_TOKEN_PRIVATE }}
         run: |
           if [ -n "$COOLIFY_TOKEN_PRIVATE" ]; then
-            curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_PRIVATE" "$COOLIFY_WEBHOOK_PRIVATE"
+            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_PRIVATE" "$COOLIFY_WEBHOOK_PRIVATE"
           else
-            curl -fsSL -X POST "$COOLIFY_WEBHOOK_PRIVATE"
+            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X POST "$COOLIFY_WEBHOOK_PRIVATE"
           fi
