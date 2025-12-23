@@ -21,10 +21,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Enable Corepack + activate Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.12.0 --activate
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -46,12 +48,22 @@ jobs:
         if: ${{ secrets.COOLIFY_WEBHOOK_DEMO != '' }}
         env:
           COOLIFY_WEBHOOK_DEMO: ${{ secrets.COOLIFY_WEBHOOK_DEMO }}
+          COOLIFY_TOKEN_DEMO: ${{ secrets.COOLIFY_TOKEN_DEMO }}
         run: |
-          curl -fsSL -X POST "$COOLIFY_WEBHOOK_DEMO"
+          if [ -n "$COOLIFY_TOKEN_DEMO" ]; then
+            curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_DEMO" "$COOLIFY_WEBHOOK_DEMO"
+          else
+            curl -fsSL -X POST "$COOLIFY_WEBHOOK_DEMO"
+          fi
 
       - name: Trigger Coolify (private)
         if: ${{ secrets.COOLIFY_WEBHOOK_PRIVATE != '' }}
         env:
           COOLIFY_WEBHOOK_PRIVATE: ${{ secrets.COOLIFY_WEBHOOK_PRIVATE }}
+          COOLIFY_TOKEN_PRIVATE: ${{ secrets.COOLIFY_TOKEN_PRIVATE }}
         run: |
-          curl -fsSL -X POST "$COOLIFY_WEBHOOK_PRIVATE"
+          if [ -n "$COOLIFY_TOKEN_PRIVATE" ]; then
+            curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_TOKEN_PRIVATE" "$COOLIFY_WEBHOOK_PRIVATE"
+          else
+            curl -fsSL -X POST "$COOLIFY_WEBHOOK_PRIVATE"
+          fi

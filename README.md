@@ -151,15 +151,20 @@ docker build \
 
 ## 🤖 CI/CD (Gitea Actions + Coolify)
 
-This repo includes basic Gitea Actions workflows:
+This repo includes basic Gitea Actions workflows for reference:
 
 - CI: runs on pushes to `master` and on PRs: `.gitea/workflows/ci.yml`
 - Deploy: runs on tag pushes matching `0.*.*`: `.gitea/workflows/deploy.yml`
 
-To enable deployments via Coolify, add these **repository secrets** in Gitea:
+These are configured for our internal deployment, but feel free to adapt them for your own setup. To enable deployments via Coolify, add these **repository secrets** in Gitea:
 
 - `COOLIFY_WEBHOOK_DEMO`: webhook URL for the public/demo app
 - `COOLIFY_WEBHOOK_PRIVATE`: webhook URL for the private app
+
+If your Coolify deploy endpoint requires authentication (recommended), also add:
+
+- `COOLIFY_TOKEN_DEMO`: Coolify API token used as `Authorization: Bearer ...` for the demo deploy trigger
+- `COOLIFY_TOKEN_PRIVATE`: Coolify API token used as `Authorization: Bearer ...` for the private deploy trigger
 
 On a successful tag build, the deploy workflow POSTs to both webhooks (if set).
 
