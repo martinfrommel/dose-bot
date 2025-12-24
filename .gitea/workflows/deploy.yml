@@ -53,26 +53,93 @@ jobs:
           echo "Refusing to report success without triggering a deployment."
           exit 1
 
-      - name: Trigger Coolify (demo)
-        if: ${{ secrets.COOLIFY_WEBHOOK_DEMO != '' }}
+      - name: Trigger Coolify webhooks
+        if: ${{ secrets.COOLIFY_WEBHOOK_DEMO != '' || secrets.COOLIFY_WEBHOOK_PRIVATE != '' }}
         env:
           COOLIFY_WEBHOOK_DEMO: ${{ secrets.COOLIFY_WEBHOOK_DEMO }}
           COOLIFY_TOKEN_DEMO: ${{ secrets.COOLIFY_TOKEN_DEMO }}
-        run: |
-          if [ -n "$COOLIFY_TOKEN_DEMO" ]; then
-            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X GET -H "Authorization: Bearer $COOLIFY_TOKEN_DEMO" "$COOLIFY_WEBHOOK_DEMO"
-          else
-            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X GET "$COOLIFY_WEBHOOK_DEMO"
-          fi
-
-      - name: Trigger Coolify (private)
-        if: ${{ secrets.COOLIFY_WEBHOOK_PRIVATE != '' }}
-        env:
           COOLIFY_WEBHOOK_PRIVATE: ${{ secrets.COOLIFY_WEBHOOK_PRIVATE }}
           COOLIFY_TOKEN_PRIVATE: ${{ secrets.COOLIFY_TOKEN_PRIVATE }}
         run: |
-          if [ -n "$COOLIFY_TOKEN_PRIVATE" ]; then
-            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X GET -H "Authorization: Bearer $COOLIFY_TOKEN_PRIVATE" "$COOLIFY_WEBHOOK_PRIVATE"
-          else
-            curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 -fsSL -X GET "$COOLIFY_WEBHOOK_PRIVATE"
+          set -u
+
+          redact_url() {
+            # Avoid leaking secret webhook paths/tokens in logs.
+            # Print only the origin, e.g. https://coolify.example.com
+            echo "$1" | sed -E 's#(https?://[^/]+).*#\1#'
+          }
+
+          trigger_webhook() {
+            local name="$1"
+            local url="$2"
+            local token="$3"
+
+            if [ -z "${url:-}" ]; then
+              return 0
+            fi
+
+            echo "::group::Trigger Coolify (${name})"
+            echo "url=$(redact_url "$url")"
+
+            local headers_file
+            local body_file
+            headers_file="$(mktemp)"
+            body_file="$(mktemp)"
+
+            local curl_exit=0
+            local http_code=""
+            local time_total=""
+
+            if [ -n "${token:-}" ]; then
+              http_code="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
+                -sS -X GET \
+                -H "Authorization: Bearer $token" \
+                -D "$headers_file" \
+                -o "$body_file" \
+                -w '%{http_code}' \
+                "$url" || curl_exit=$?)"
+            else
+              http_code="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
+                -sS -X GET \
+                -D "$headers_file" \
+                -o "$body_file" \
+                -w '%{http_code}' \
+                "$url" || curl_exit=$?)"
+            fi
+
+            time_total="$(curl -sS -o /dev/null -w '%{time_total}' "$url" 2>/dev/null || true)"
+
+            echo "curl_exit=${curl_exit} http_code=${http_code} time_total=${time_total}s"
+            echo "-- response headers (first 200 lines) --"
+            sed -n '1,200p' "$headers_file" || true
+            echo "-- response body (first 4096 bytes) --"
+            head -c 4096 "$body_file" || true
+            echo
+
+            rm -f "$headers_file" "$body_file" || true
+            echo "::endgroup::"
+
+            if [ "$curl_exit" -ne 0 ]; then
+              return 1
+            fi
+
+            case "$http_code" in
+              2*|3*) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          failed=0
+
+          if ! trigger_webhook "demo" "${COOLIFY_WEBHOOK_DEMO:-}" "${COOLIFY_TOKEN_DEMO:-}"; then
+            failed=1
+          fi
+
+          if ! trigger_webhook "private" "${COOLIFY_WEBHOOK_PRIVATE:-}" "${COOLIFY_TOKEN_PRIVATE:-}"; then
+            failed=1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            echo "One or more Coolify webhook triggers failed."
+            exit 1
           fi
