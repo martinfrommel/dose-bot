@@ -1,3 +1,3 @@
 set -e
 
-yarn cedar build
+yarn cedar type-check

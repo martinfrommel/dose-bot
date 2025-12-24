@@ -19,8 +19,8 @@ Thanks for contributing to DoseBot.
 
 This repo uses Husky to enforce basic quality gates:
 
-- `pre-commit`: runs `yarn cedar test --watch=false`
-- `pre-push`: runs `yarn cedar build`
+- `pre-commit`: runs `yarn cedar lint`
+- `pre-push`: runs `yarn cedar type-check`
 - `post-commit`: best-effort roadmap sync (see below)
 
 If you need to bypass hooks temporarily (e.g. during emergency debugging), you can set `HUSKY=0` for that command.
