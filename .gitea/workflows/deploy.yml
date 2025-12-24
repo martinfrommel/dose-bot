@@ -97,14 +97,14 @@ jobs:
                 -H "Authorization: Bearer $token" \
                 -D "$headers_file" \
                 -o "$body_file" \
-                -w '%{http_code} %{time_total}' \
+                -w '%{http_code} %{time_total} remote=%{remote_ip} local=%{local_ip} ssl=%{ssl_verify_result}' \
                 "$url" || curl_exit=$?)"
             else
               curl_out="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
                 -sS -X GET \
                 -D "$headers_file" \
                 -o "$body_file" \
-                -w '%{http_code} %{time_total}' \
+                -w '%{http_code} %{time_total} remote=%{remote_ip} local=%{local_ip} ssl=%{ssl_verify_result}' \
                 "$url" || curl_exit=$?)"
             fi
 
@@ -115,6 +115,7 @@ jobs:
             fi
 
             echo "curl_exit=${curl_exit} http_code=${http_code} time_total=${time_total}s"
+            echo "curl_meta=${curl_out#* }"
             echo "-- response headers (first 200 lines) --"
             sed -n '1,200p' "$headers_file" || true
             echo "-- response body (first 4096 bytes) --"
