@@ -59,7 +59,7 @@ jobs:
           COOLIFY_WEBHOOK_DEMO: ${{ secrets.COOLIFY_WEBHOOK_DEMO }}
           COOLIFY_TOKEN_DEMO: ${{ secrets.COOLIFY_TOKEN_DEMO }}
           COOLIFY_WEBHOOK_PRIVATE: ${{ secrets.COOLIFY_WEBHOOK_PRIVATE }}
-          COOLIFY_TOKEN_PRIVATE: ${{ secrets.COOLIFY_TOKEN_PRIVATE }}
+          COOLIFY_TOKEN_PERSONAL: ${{ secrets.COOLIFY_TOKEN_PERSONAL }}
         run: |
           set -u
 
@@ -89,25 +89,30 @@ jobs:
             local curl_exit=0
             local http_code=""
             local time_total=""
+            local curl_out=""
 
             if [ -n "${token:-}" ]; then
-              http_code="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
+              curl_out="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
                 -sS -X GET \
                 -H "Authorization: Bearer $token" \
                 -D "$headers_file" \
                 -o "$body_file" \
-                -w '%{http_code}' \
+                -w '%{http_code} %{time_total}' \
                 "$url" || curl_exit=$?)"
             else
-              http_code="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
+              curl_out="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
                 -sS -X GET \
                 -D "$headers_file" \
                 -o "$body_file" \
-                -w '%{http_code}' \
+                -w '%{http_code} %{time_total}' \
                 "$url" || curl_exit=$?)"
             fi
 
-            time_total="$(curl -sS -o /dev/null -w '%{time_total}' "$url" 2>/dev/null || true)"
+            http_code="${curl_out%% *}"
+            time_total="${curl_out#* }"
+            if [ "$time_total" = "$curl_out" ]; then
+              time_total=""
+            fi
 
             echo "curl_exit=${curl_exit} http_code=${http_code} time_total=${time_total}s"
             echo "-- response headers (first 200 lines) --"
@@ -135,7 +140,7 @@ jobs:
             failed=1
           fi
 
-          if ! trigger_webhook "private" "${COOLIFY_WEBHOOK_PRIVATE:-}" "${COOLIFY_TOKEN_PRIVATE:-}"; then
+          if ! trigger_webhook "private" "${COOLIFY_WEBHOOK_PRIVATE:-}" "${COOLIFY_TOKEN_PERSONAL:-}"; then
             failed=1
           fi
 
