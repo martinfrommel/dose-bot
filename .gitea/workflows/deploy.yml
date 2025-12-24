@@ -63,12 +63,6 @@ jobs:
         run: |
           set -u
 
-          redact_url() {
-            # Avoid leaking secret webhook paths/tokens in logs.
-            # Print only the origin, e.g. https://coolify.example.com
-            echo "$1" | sed -E 's#(https?://[^/]+).*#\1#'
-          }
-
           trigger_webhook() {
             local name="$1"
             local url="$2"
@@ -78,13 +72,7 @@ jobs:
               return 0
             fi
 
-            echo "::group::Trigger Coolify (${name})"
-            echo "url=$(redact_url "$url")"
-
-            local headers_file
-            local body_file
-            headers_file="$(mktemp)"
-            body_file="$(mktemp)"
+            echo "Trigger Coolify (${name})"
 
             local curl_exit=0
             local http_code=""
@@ -95,16 +83,14 @@ jobs:
               curl_out="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
                 -sS -X GET \
                 -H "Authorization: Bearer $token" \
-                -D "$headers_file" \
-                -o "$body_file" \
-                -w '%{http_code} %{time_total} remote=%{remote_ip} local=%{local_ip} ssl=%{ssl_verify_result}' \
+                -o /dev/null \
+                -w '%{http_code} %{time_total}' \
                 "$url" || curl_exit=$?)"
             else
               curl_out="$(curl --http1.1 --retry 3 --retry-all-errors --retry-delay 2 \
                 -sS -X GET \
-                -D "$headers_file" \
-                -o "$body_file" \
-                -w '%{http_code} %{time_total} remote=%{remote_ip} local=%{local_ip} ssl=%{ssl_verify_result}' \
+                -o /dev/null \
+                -w '%{http_code} %{time_total}' \
                 "$url" || curl_exit=$?)"
             fi
 
@@ -114,20 +100,12 @@ jobs:
               time_total=""
             fi
 
-            echo "curl_exit=${curl_exit} http_code=${http_code} time_total=${time_total}s"
-            echo "curl_meta=${curl_out#* }"
-            echo "-- response headers (first 200 lines) --"
-            sed -n '1,200p' "$headers_file" || true
-            echo "-- response body (first 4096 bytes) --"
-            head -c 4096 "$body_file" || true
-            echo
-
-            rm -f "$headers_file" "$body_file" || true
-            echo "::endgroup::"
-
             if [ "$curl_exit" -ne 0 ]; then
+              echo "result=error curl_exit=${curl_exit}"
               return 1
             fi
+
+            echo "result=http http_code=${http_code} time_total=${time_total}s"
 
             case "$http_code" in
               2*|3*) return 0 ;;
