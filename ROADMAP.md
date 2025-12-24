@@ -31,6 +31,7 @@ This file is the source of truth for high-level work tracking.
 - [ ] Set up a Gitea Actions runner (act_runner) for CI
 - [ ] Add Coolify webhook secrets in Gitea (`COOLIFY_WEBHOOK_DEMO`, `COOLIFY_WEBHOOK_PRIVATE`)
 - [ ] Verify tag-based deploy workflow triggers Coolify on release tags
+- [ ] Fix deploy and release-docker scripts
 - [ ] Add automated release notes / changelog process
 - [ ] Document backup/restore procedure for the production database
 - [ ] Add a Cedar Cell for the main dashboard to reuse across pages
