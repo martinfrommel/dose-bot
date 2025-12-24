@@ -8,6 +8,8 @@ import colors from 'colors/safe.js'
 
 const { bold, cyan, dim, green, red, yellow } = colors
 
+const DEFAULT_LABEL_COLOR = '#1d76db'
+
 async function loadDotEnvIfPresent(
   dotenvPath = path.join(process.cwd(), '.env')
 ) {
@@ -216,7 +218,14 @@ async function listAllLabels({ apiBase, owner, repo, token }) {
   return labels
 }
 
-async function ensureLabels({ apiBase, owner, repo, token, labelNames }) {
+async function ensureLabels({
+  apiBase,
+  owner,
+  repo,
+  token,
+  labelNames,
+  labelColorsByName,
+}) {
   const existing = await listAllLabels({ apiBase, owner, repo, token })
   const existingByName = new Map(
     existing.map((l) => [String(l.name).toLowerCase(), l])
@@ -227,10 +236,29 @@ async function ensureLabels({ apiBase, owner, repo, token, labelNames }) {
     const key = name.toLowerCase()
     const found = existingByName.get(key)
     if (found) {
+      const desiredColor = labelColorsByName?.get(key)
+      const currentColor = String(found?.color ?? '')
+        .trim()
+        .toLowerCase()
+      if (desiredColor && currentColor && currentColor !== desiredColor) {
+        const updated = await giteaRequest({
+          apiBase,
+          token,
+          method: 'PATCH',
+          pathname: `/repos/${owner}/${repo}/labels/${found.id}`,
+          body: {
+            name: found.name,
+            color: desiredColor,
+          },
+        })
+        ensured.push(updated)
+        continue
+      }
       ensured.push(found)
       continue
     }
 
+    const color = labelColorsByName?.get(key)
     const created = await giteaRequest({
       apiBase,
       token,
@@ -238,8 +266,8 @@ async function ensureLabels({ apiBase, owner, repo, token, labelNames }) {
       pathname: `/repos/${owner}/${repo}/labels`,
       body: {
         name,
-        // A sensible default blue; can be changed later in UI.
-        color: '#1d76db',
+        // Defaults to a sensible blue; special labels may override.
+        color: color ?? DEFAULT_LABEL_COLOR,
       },
     })
     ensured.push(created)
@@ -248,10 +276,55 @@ async function ensureLabels({ apiBase, owner, repo, token, labelNames }) {
   return ensured
 }
 
+function normalizeHexColor(raw) {
+  if (!raw) return null
+  const s = String(raw).trim()
+  if (!s) return null
+
+  const hex = s.startsWith('#') ? s.slice(1) : s
+  if (!/^[0-9a-fA-F]{6}$/.test(hex)) return null
+  return `#${hex.toLowerCase()}`
+}
+
+function parseInlineLabelsFromTitle(title) {
+  const raw = String(title ?? '').trim()
+  if (!raw) return { cleanTitle: raw, labels: [] }
+
+  /** @type {{name: string, color: string}[]} */
+  const labels = []
+
+  // Supports markers like: "Fix deploy scripts [priority:high]".
+  const markerRegex = /\s*\[([^\]]+)\]\s*$/
+  const m = raw.match(markerRegex)
+  if (!m) return { cleanTitle: raw, labels }
+
+  const tokens = m[1]
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+
+  for (const token of tokens) {
+    const spec = token.match(/^(.+?)(?:\((.+)\))?$/)
+    if (!spec) continue
+
+    const name = String(spec[1] ?? '').trim()
+    if (!name) continue
+
+    // Allow common label names like "priority:high", "type:dx", "stage:potential", "foo-bar".
+    if (!/^[a-z0-9][a-z0-9:_-]*$/i.test(name)) continue
+
+    const explicitColor = normalizeHexColor(spec[2])
+    labels.push({ name, color: explicitColor ?? DEFAULT_LABEL_COLOR })
+  }
+
+  const cleanTitle = raw.replace(markerRegex, '').trim()
+  return { cleanTitle, labels }
+}
+
 function extractRoadmapTopLevelItems(markdown) {
   const lines = markdown.split(/\r?\n/)
 
-  /** @type {{section: string, title: string, checked: boolean}[]} */
+  /** @type {{section: string, title: string, checked: boolean, labels: {name: string, color: string}[]}[]} */
   const items = []
 
   let section = null
@@ -266,17 +339,106 @@ function extractRoadmapTopLevelItems(markdown) {
     if (!m) continue
 
     const checked = m[1].toLowerCase() === 'x'
-    const title = m[2].trim()
+    const { cleanTitle: title, labels } = parseInlineLabelsFromTitle(
+      m[2].trim()
+    )
 
     // Only track top-level items.
     const isTopLevel = /^-\s*\[/.test(line)
     if (!isTopLevel) continue
     if (!section) continue
 
-    items.push({ section, title, checked })
+    items.push({ section, title, checked, labels })
   }
 
   return items
+}
+
+function labelsForTodo(todo) {
+  const labels = new Set(labelsForSection(todo.section))
+  if (Array.isArray(todo?.labels)) {
+    for (const l of todo.labels) {
+      const name = String(l?.name ?? '').trim()
+      if (name) labels.add(name)
+    }
+  }
+  return Array.from(labels)
+}
+
+async function ensureIssueHasLabels({
+  apiBase,
+  owner,
+  repo,
+  token,
+  issue,
+  desiredLabelIds,
+}) {
+  const currentIds = Array.isArray(issue?.labels)
+    ? issue.labels.map((l) => l?.id).filter((id) => typeof id === 'number')
+    : []
+
+  const desired = desiredLabelIds.filter((id) => typeof id === 'number')
+  const missing = desired.filter((id) => !currentIds.includes(id))
+  if (missing.length === 0) return false
+
+  const nextIds = Array.from(new Set([...currentIds, ...desired]))
+  await giteaRequest({
+    apiBase,
+    token,
+    method: 'PUT',
+    pathname: `/repos/${owner}/${repo}/issues/${issue.number}/labels`,
+    body: {
+      labels: nextIds,
+    },
+  })
+
+  return true
+}
+
+function computeDesiredLabelState(todos) {
+  const desiredLabelNames = new Set()
+  /** @type {Map<string, string>} */
+  const labelColorsByName = new Map()
+
+  const addLabelName = (name) => {
+    const norm = String(name).trim().toLowerCase()
+    if (!norm) return
+    desiredLabelNames.add(name)
+  }
+
+  const addExplicitColor = (name, color) => {
+    const norm = String(name).trim().toLowerCase()
+    if (!norm) return
+    // First explicit color wins.
+    if (!labelColorsByName.has(norm)) {
+      labelColorsByName.set(norm, color ?? DEFAULT_LABEL_COLOR)
+    }
+  }
+
+  for (const todo of todos) {
+    for (const baseName of labelsForSection(todo.section)) {
+      addLabelName(baseName)
+    }
+    if (Array.isArray(todo?.labels)) {
+      for (const label of todo.labels) {
+        if (!label || typeof label !== 'object') continue
+        const name = String(label.name ?? '').trim()
+        if (!name) continue
+        addLabelName(name)
+        addExplicitColor(name, label.color)
+      }
+    }
+  }
+
+  // Apply default color only if no explicit color was specified.
+  for (const name of desiredLabelNames) {
+    const norm = String(name).trim().toLowerCase()
+    if (!labelColorsByName.has(norm)) {
+      labelColorsByName.set(norm, DEFAULT_LABEL_COLOR)
+    }
+  }
+
+  return { desiredLabelNames, labelColorsByName }
 }
 
 function isRoadmapManagedIssue(issue) {
@@ -348,7 +510,7 @@ async function main() {
     if (openTodos.length > 0) {
       process.stdout.write(`${dim('Would create (if missing):')}\n`)
       for (const todo of openTodos) {
-        const labels = labelsForSection(todo.section)
+        const labels = labelsForTodo(todo)
         process.stdout.write(`- ${todo.title} [labels: ${labels.join(', ')}]\n`)
       }
     }
@@ -373,11 +535,10 @@ async function main() {
   const repoInfo = normalizeRepoUrl(args.repoUrl)
   if (!repoInfo) throw new Error('Failed to parse repo URL.')
 
-  const desiredLabelNames = new Set()
-  for (const todo of [...openTodos, ...doneTodos]) {
-    for (const name of labelsForSection(todo.section))
-      desiredLabelNames.add(name)
-  }
+  const { desiredLabelNames, labelColorsByName } = computeDesiredLabelState([
+    ...openTodos,
+    ...doneTodos,
+  ])
 
   await ensureLabels({
     apiBase: repoInfo.apiBase,
@@ -385,6 +546,7 @@ async function main() {
     repo: repoInfo.repo,
     token: args.token,
     labelNames: Array.from(desiredLabelNames),
+    labelColorsByName,
   })
 
   const allLabels = await listAllLabels({
@@ -416,6 +578,11 @@ async function main() {
 
     if (existing) {
       const state = String(existing.state ?? '').toLowerCase()
+      const desiredLabels = labelsForTodo(todo)
+      const desiredLabelIds = desiredLabels
+        .map((name) => labelIdByName.get(name.toLowerCase()))
+        .filter((id) => typeof id === 'number')
+
       if (state === 'closed' && isRoadmapManagedIssue(existing)) {
         const pathname = `/repos/${repoInfo.owner}/${repoInfo.repo}/issues/${existing.number}`
         const reopened = await giteaRequest({
@@ -426,18 +593,39 @@ async function main() {
           body: { state: 'open' },
         })
         const number = reopened?.number ?? existing.number
+
+        const didUpdateLabels = await ensureIssueHasLabels({
+          apiBase: repoInfo.apiBase,
+          owner: repoInfo.owner,
+          repo: repoInfo.repo,
+          token: args.token,
+          issue: reopened ?? existing,
+          desiredLabelIds,
+        })
+
         process.stdout.write(
-          `${green(bold('REOPENED'))} ${normalizedTitle} ${dim(`(#${number})`)}\n`
+          `${green(bold('REOPENED'))} ${normalizedTitle} ${dim(`(#${number})`)}${didUpdateLabels ? ` ${dim('(labels updated)')}` : ''}\n`
         )
       } else {
+        let didUpdateLabels = false
+        if (isRoadmapManagedIssue(existing)) {
+          didUpdateLabels = await ensureIssueHasLabels({
+            apiBase: repoInfo.apiBase,
+            owner: repoInfo.owner,
+            repo: repoInfo.repo,
+            token: args.token,
+            issue: existing,
+            desiredLabelIds,
+          })
+        }
         process.stdout.write(
-          `${yellow(bold('SKIP'))} ${dim('exists:')} ${normalizedTitle} ${dim(`(#${existing.number})`)}\n`
+          `${yellow(bold('SKIP'))} ${dim('exists:')} ${normalizedTitle} ${dim(`(#${existing.number})`)}${didUpdateLabels ? ` ${dim('(labels updated)')}` : ''}\n`
         )
       }
       continue
     }
 
-    const labels = labelsForSection(todo.section)
+    const labels = labelsForTodo(todo)
     const labelIds = labels
       .map((name) => labelIdByName.get(name.toLowerCase()))
       .filter((id) => typeof id === 'number')
@@ -488,6 +676,11 @@ async function main() {
     const key = normalizedTitle.toLowerCase()
     const existing = existingByTitle.get(key)
 
+    const desiredLabels = labelsForTodo(todo)
+    const desiredLabelIds = desiredLabels
+      .map((name) => labelIdByName.get(name.toLowerCase()))
+      .filter((id) => typeof id === 'number')
+
     const closeIfRequested = async (issue) => {
       if (!args.closeDone) return
 
@@ -522,7 +715,7 @@ async function main() {
 
     if (!existing) {
       // Create the issue so the roadmap has a matching resolved issue.
-      const labels = labelsForSection(todo.section)
+      const labels = labelsForTodo(todo)
       const labelIds = labels
         .map((name) => labelIdByName.get(name.toLowerCase()))
         .filter((id) => typeof id === 'number')
@@ -565,6 +758,17 @@ async function main() {
 
       await closeIfRequested(created)
       continue
+    }
+
+    if (isRoadmapManagedIssue(existing)) {
+      await ensureIssueHasLabels({
+        apiBase: repoInfo.apiBase,
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        token: args.token,
+        issue: existing,
+        desiredLabelIds,
+      })
     }
 
     await closeIfRequested(existing)

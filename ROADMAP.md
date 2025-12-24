@@ -7,17 +7,17 @@ This file is the source of truth for high-level work tracking.
 
 ## Features
 
-- [x] Authentication and roles (Cedar dbAuth + role checks)
-- [x] Add bulk delete actions for API keys, doses, and substances (with confirmation)
-- [x] Add per-substance charts (analytics)
-- [x] Add substance slug routing (human-friendly URLs)
-- [x] Add theme switching (persisted)
-- [x] Group doses list by day
-- [x] Add canonical unit field on substance (default unit groundwork)
-- [ ] Add “scheduled doses” (recurring plan) and quick “taken” logging
-- [ ] Add safe unit conversions (e.g. mg ⇄ g)
-- [ ] Add personal dashboard (last 7/30 days) with streak + totals
-- [ ] Add audit log entries for sensitive actions (API keys, auth changes)
+- [x] Authentication and roles (Cedar dbAuth + role checks) [type:feature(#fbca04)]
+- [x] Add bulk delete actions for API keys, doses, and substances (with confirmation) [type:feature(#fbca04)]
+- [x] Add per-substance charts (analytics) [type:feature(#fbca04)]
+- [x] Add substance slug routing (human-friendly URLs) [type:feature(#fbca04)]
+- [x] Add theme switching (persisted) [type:feature(#fbca04)]
+- [x] Group doses list by day [type:feature(#fbca04)]
+- [x] Add canonical unit field on substance (default unit groundwork) [type:feature(#fbca04)]
+- [ ] Add “scheduled doses” (recurring plan) and quick “taken” logging [type:feature(#fbca04)]
+- [ ] Add safe unit conversions (e.g. mg ⇄ g) [type:feature(#fbca04)]
+- [ ] Add personal dashboard (last 7/30 days) with streak + totals [type:feature(#fbca04)]
+- [ ] Add audit log entries for sensitive actions (API keys, auth changes) [type:feature(#fbca04)]
 
 ## DX
 
@@ -28,17 +28,17 @@ This file is the source of truth for high-level work tracking.
 - [x] Add Husky git hooks (pre-commit/pre-push)
 - [x] Add contributing guidelines and development instructions
 - [x] Demo reset automation for the demo deployment (handled by Coolify cron)
-- [ ] Set up a Gitea Actions runner (act_runner) for CI
-- [ ] Add Coolify webhook secrets in Gitea (`COOLIFY_WEBHOOK_DEMO`, `COOLIFY_WEBHOOK_PRIVATE`)
-- [ ] Verify tag-based deploy workflow triggers Coolify on release tags
-- [ ] Fix deploy and release-docker scripts
+- [x] Set up a Gitea Actions runner (act_runner) for CI
+- [x] Add Coolify webhook secrets in Gitea (`COOLIFY_WEBHOOK_DEMO`, `COOLIFY_WEBHOOK_PRIVATE`)
+- [ ] Verify tag-based deploy workflow triggers Coolify on release tags [priority:high(#d73a4a)]
+- [ ] Fix deploy and release-docker scripts [priority:high(#d73a4a)]
 - [ ] Add automated release notes / changelog process
 - [ ] Document backup/restore procedure for the production database
 - [ ] Add a Cedar Cell for the main dashboard to reuse across pages
 
 ## Potential
 
-- [ ] [Feature] Add export/import for doses (CSV/JSON) for backups and portability
-- [ ] [Feature] Add reminders/notifications for scheduled doses (email/push)
-- [ ] [Feature] Add “stack builder”: define a protocol with substances + timing
-- [ ] [Feature] Add analytics improvements: rolling averages
+- [ ] [Feature] Add export/import for doses (CSV/JSON) for backups and portability [type:feature(#fbca04)]
+- [ ] [Feature] Add reminders/notifications for scheduled doses (email/push) [type:feature(#fbca04)]
+- [ ] [Feature] Add “stack builder”: define a protocol with substances + timing [type:feature(#fbca04)]
+- [ ] [Feature] Add analytics improvements: rolling averages [type:feature(#fbca04)]
