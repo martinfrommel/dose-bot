@@ -12,6 +12,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-latest
     steps:
       - name: Resolve release tag
         id: vars
@@ -30,6 +32,20 @@ jobs:
         with:
           ref: ${{ steps.vars.outputs.tag }}
 
+      - name: Install Docker CLI
+        shell: bash
+        run: |
+          if command -v docker >/dev/null 2>&1; then
+            docker --version
+            exit 0
+          fi
+
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -o Acquire::Retries=3 update
+          apt-get -o Acquire::Retries=3 install -y --no-install-recommends docker.io
+          rm -rf /var/lib/apt/lists/*
+          docker --version
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -47,3 +63,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_IMAGE }}:${{ steps.vars.outputs.tag }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_IMAGE }}:buildcache,mode=max
