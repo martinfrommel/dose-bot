@@ -5,11 +5,44 @@ import type { DbAuthHandlerOptions } from '@cedarjs/auth-dbauth-api'
 
 import { cookieName } from 'src/lib/auth'
 import { db } from 'src/lib/db'
+import {
+  checkRateLimit,
+  clearRateLimit,
+  getClientIp,
+  recordFailedAttempt,
+} from 'src/lib/rateLimit'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ) => {
+  // Check if this is a login attempt and apply rate limiting
+  const method = event.httpMethod
+  const isLoginAttempt =
+    method === 'POST' && event.body?.includes('"method":"login"')
+
+  if (isLoginAttempt) {
+    const clientIp = getClientIp(event)
+    const rateLimitCheck = checkRateLimit(clientIp)
+
+    if (rateLimitCheck.isBlocked) {
+      const retryAfterSeconds = Math.ceil(
+        (rateLimitCheck.retryAfterMs || 0) / 1000
+      )
+      return {
+        statusCode: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': String(retryAfterSeconds),
+        },
+        body: JSON.stringify({
+          error: 'Too many login attempts. Please try again later.',
+          retryAfter: retryAfterSeconds,
+        }),
+      }
+    }
+  }
+
   const forgotPasswordOptions: DbAuthHandlerOptions['forgotPassword'] = {
     // handler() is invoked after verifying that a user was found with the given
     // username. This is where you can send the user an email with a link to
@@ -53,6 +86,9 @@ export const handler = async (
     // by the `logIn()` function from `useAuth()` in the form of:
     // `{ message: 'Error message' }`
     handler: (user) => {
+      // Clear rate limit on successful login
+      const clientIp = getClientIp(event)
+      clearRateLimit(clientIp)
       return user
     },
 
@@ -178,5 +214,31 @@ export const handler = async (
     },
   })
 
-  return await authHandler.invoke()
+  const response = await authHandler.invoke()
+
+  // Record failed login attempts for rate limiting
+  if (isLoginAttempt && response.statusCode !== 200) {
+    const clientIp = getClientIp(event)
+    const rateLimitResult = recordFailedAttempt(clientIp)
+
+    // If now blocked after this attempt, update the response
+    if (rateLimitResult.isBlocked) {
+      const retryAfterSeconds = Math.ceil(
+        (rateLimitResult.retryAfterMs || 0) / 1000
+      )
+      return {
+        statusCode: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': String(retryAfterSeconds),
+        },
+        body: JSON.stringify({
+          error: 'Too many login attempts. Please try again later.',
+          retryAfter: retryAfterSeconds,
+        }),
+      }
+    }
+  }
+
+  return response
 }
