@@ -24,7 +24,7 @@
     "husky": "^9.1.7",
     "picospinner": "2",
     "prettier-plugin-prisma": "^5.0.0",
-    "prettier-plugin-tailwindcss": "^0.5.12"
+    "prettier-plugin-tailwindcss": "^0.7.0"
   },
   "engines": {
     "node": "=24.x"
