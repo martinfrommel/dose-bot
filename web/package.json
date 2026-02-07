@@ -15,7 +15,7 @@
     "@cedarjs/forms": "2.2.0",
     "@cedarjs/router": "2.2.0",
     "@cedarjs/web": "2.2.0",
-    "@simplewebauthn/browser": "^9",
+    "@simplewebauthn/browser": "^13.0.0",
     "@tanstack/react-table": "^8.21.3",
     "humanize-string": "2.1.0",
     "lucide-react": "^0.563.0",
