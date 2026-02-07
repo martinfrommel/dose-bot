@@ -19,14 +19,14 @@
     "@tanstack/react-table": "^8.21.3",
     "humanize-string": "2.1.0",
     "lucide-react": "^0.563.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "recharts": "^3.6.0"
   },
   "devDependencies": {
     "@cedarjs/vite": "2.2.0",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.23",
     "daisyui": "v4",
     "postcss": "^8.5.6",
