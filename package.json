@@ -14,11 +14,11 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@cedarjs/auth-dbauth-setup": "2.2.0",
-    "@cedarjs/cli-data-migrate": "2.2.0",
-    "@cedarjs/core": "2.2.0",
-    "@cedarjs/project-config": "2.2.0",
-    "@cedarjs/testing": "2.2.0",
+    "@cedarjs/auth-dbauth-setup": "2.5.1",
+    "@cedarjs/cli-data-migrate": "2.5.1",
+    "@cedarjs/core": "2.5.1",
+    "@cedarjs/project-config": "2.5.1",
+    "@cedarjs/testing": "2.5.1",
     "@types/colors": "^1.2.4",
     "colors": "^1.4.0",
     "husky": "^9.1.7",
